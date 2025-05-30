@@ -23,7 +23,12 @@
             color: #2563eb;
             font-weight: 600;
         }
-        .tab-button {
+        .sub-tab-button.active {
+            background-color: #e0e7ff; /* indigo-100 */
+            color: #3730a3; /* indigo-700 */
+            font-weight: 600;
+        }
+        .tab-button, .sub-tab-button {
             border-bottom: 2px solid transparent;
         }
         .card {
@@ -40,6 +45,9 @@
         }
         .kpi-sub-value {
             font-size: 1.5rem; /* text-2xl */
+        }
+        .kpi-turbine-value {
+            font-size: 1.25rem; /* text-xl */
         }
         .kpi-label {
             font-size: 0.875rem; /* text-sm */
@@ -61,13 +69,18 @@
             height: 300px; /* Adjust as needed */
             width: 100%;
         }
+        .small-chart-container {
+            position: relative;
+            height: 200px;
+            width: 100%;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
     <div class="flex h-screen">
-        <aside class="w-72 bg-gray-800 text-gray-200 flex flex-col">
+        <aside class="w-64 bg-gray-800 text-gray-200 flex flex-col">
             <div class="p-6 text-2xl font-semibold text-white border-b border-gray-700">
-                <i class="fas fa-wind mr-2"></i>풍력 발전량 예측
+                <i class="fas fa-wind mr-2"></i>풍력 예측
             </div>
             <nav class="flex-1 mt-4">
                 <a href="#" class="sidebar-item active block py-3 px-6" data-target="overview">
@@ -82,12 +95,15 @@
                 <a href="#" class="sidebar-item block py-3 px-6" data-target="3month">
                     <i class="fas fa-calendar-check mr-3 w-5 text-center"></i>3개월 예측
                 </a>
+                <a href="#" class="sidebar-item block py-3 px-6" data-target="6month">
+                    <i class="fas fa-calendar-plus mr-3 w-5 text-center"></i>6개월 예측
+                </a>
                 <a href="#" class="sidebar-item block py-3 px-6" data-target="details">
                     <i class="fas fa-info-circle mr-3 w-5 text-center"></i>상세 정보
                 </a>
             </nav>
             <div class="p-4 border-t border-gray-700">
-                <p class="text-xs text-gray-400">버전 1.0.1</p>
+                <p class="text-xs text-gray-400">버전 1.0.2</p>
             </div>
         </aside>
 
@@ -103,11 +119,12 @@
                             <option value="finance">재정 계획</option>
                         </select>
                     </div>
-                    <button class="text-gray-500 hover:text-blue-600">
+                    <button class="text-gray-500 hover:text-blue-600 relative">
                         <i class="fas fa-bell fa-lg"></i>
-                        <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">2</span>
+                        <span class="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">2</span>
                     </button>
                     <div class="flex items-center">
+                         <img src="https://placehold.co/40x40/E2E8F0/A0AEC0?text=User" alt="사용자 아바타" class="w-8 h-8 rounded-full mr-2">
                         <span class="text-sm text-gray-700">사용자명</span>
                     </div>
                 </div>
@@ -126,12 +143,12 @@
                                     </div>
                                     <div>
                                         <p class="kpi-label">오늘 예상 발전량</p>
-                                        <p class="kpi-value">850 <span class="text-lg">MWh</span></p>
+                                        <p class="kpi-value">1.85 <span class="text-lg">GWh</span></p>
                                         <p class="text-xs text-green-500"><i class="fas fa-arrow-up"></i> 3% (어제 대비)</p>
                                     </div>
                                     <div>
                                         <p class="kpi-label">내일 예상 발전량</p>
-                                        <p class="kpi-value">1200 <span class="text-lg">MWh</span></p>
+                                        <p class="kpi-value">2.10 <span class="text-lg">GWh</span></p>
                                         <p class="text-xs text-gray-500">(1.90 ~ 2.30 GWh)</p>
                                     </div>
                                     <div>
@@ -218,41 +235,140 @@
                 <section id="2week-content" class="content-section hidden">
                     <h2 class="section-title">2주 발전량 예측</h2>
                     <div class="mb-4 border-b border-gray-200">
-                        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="twoWeekTabs" role="tablist">
+                        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="twoWeekMainTabs" role="tablist">
                             <li class="mr-2" role="presentation">
-                                <button class="tab-button inline-block p-4 rounded-t-lg active" id="2week-weekly-tab" data-tabs-target="#2week-weekly" type="button" role="tab" aria-controls="2week-weekly" aria-selected="true">주평균 예측</button>
+                                <button class="tab-button inline-block p-4 rounded-t-lg active" id="2week-total-tab" data-tabs-target="#2week-total-content" type="button" role="tab" aria-controls="2week-total-content" aria-selected="true">발전소 전체 예측</button>
                             </li>
                             <li class="mr-2" role="presentation">
-                                <button class="tab-button inline-block p-4 rounded-t-lg" id="2week-daily-tab" data-tabs-target="#2week-daily" type="button" role="tab" aria-controls="2week-daily" aria-selected="false">일평균 예측 (참고)</button>
+                                <button class="tab-button inline-block p-4 rounded-t-lg" id="2week-turbine-tab" data-tabs-target="#2week-turbine-content" type="button" role="tab" aria-controls="2week-turbine-content" aria-selected="false">발전기별 예측</button>
                             </li>
                         </ul>
                     </div>
-                    <div id="twoWeekTabsContent">
-                        <div class="card" id="2week-weekly" role="tabpanel" aria-labelledby="2week-weekly-tab">
-                            <h3 class="text-xl font-semibold mb-3">주평균 발전량</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                                <div class="p-4 bg-blue-50 rounded-lg">
-                                    <p class="kpi-label">1주차 예상 발전량</p>
-                                    <p class="kpi-value text-3xl">7.2 <span class="text-base">GWh</span></p>
-                                    <p class="text-xs text-gray-500">(6.5 ~ 7.9 GWh 범위)</p>
+
+                    <div id="2week-total-content" class="main-tab-content">
+                        <div class="mb-4 border-b border-gray-200">
+                             <ul class="flex flex-wrap -mb-px text-sm font-medium" id="twoWeekSubTabsTotal" role="tablist">
+                                <li class="mr-2" role="presentation">
+                                    <button class="sub-tab-button inline-block p-3 rounded-t-md active" id="2week-weekly-total-tab" data-tabs-target="#2week-weekly-total" type="button" role="tab" aria-controls="2week-weekly-total" aria-selected="true">주평균 예측</button>
+                                </li>
+                                <li class="mr-2" role="presentation">
+                                    <button class="sub-tab-button inline-block p-3 rounded-t-md" id="2week-daily-total-tab" data-tabs-target="#2week-daily-total" type="button" role="tab" aria-controls="2week-daily-total" aria-selected="false">일평균 예측 (참고)</button>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="twoWeekSubTabsTotalContent">
+                            <div class="card sub-tab-panel" id="2week-weekly-total" role="tabpanel" aria-labelledby="2week-weekly-total-tab">
+                                <h3 class="text-xl font-semibold mb-3">전체 주평균 발전량</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                    <div class="p-4 bg-blue-50 rounded-lg">
+                                        <p class="kpi-label">1주차 예상 발전량</p>
+                                        <p class="kpi-value text-3xl">7.2 <span class="text-base">GWh</span></p>
+                                        <p class="text-xs text-gray-500">(6.5 ~ 7.9 GWh 범위)</p>
+                                    </div>
+                                    <div class="p-4 bg-blue-50 rounded-lg">
+                                        <p class="kpi-label">2주차 예상 발전량</p>
+                                        <p class="kpi-value text-3xl">8.1 <span class="text-base">GWh</span></p>
+                                        <p class="text-xs text-gray-500">(7.0 ~ 9.2 GWh 범위)</p>
+                                    </div>
                                 </div>
-                                <div class="p-4 bg-blue-50 rounded-lg">
-                                    <p class="kpi-label">2주차 예상 발전량</p>
-                                    <p class="kpi-value text-3xl">8.1 <span class="text-base">GWh</span></p>
-                                    <p class="text-xs text-gray-500">(7.0 ~ 9.2 GWh 범위)</p>
+                                <div class="chart-container">
+                                    <canvas id="twoWeekWeeklyTotalChart"></canvas>
                                 </div>
                             </div>
-                            <div class="chart-container">
-                                <canvas id="twoWeekWeeklyChart"></canvas>
+                            <div class="card sub-tab-panel hidden" id="2week-daily-total" role="tabpanel" aria-labelledby="2week-daily-total-tab">
+                                <div class="p-4 mb-4 text-sm text-yellow-700 bg-yellow-100 rounded-lg alert-warning" role="alert">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i><strong>주의:</strong> 일평균 예측은 변동성이 크므로, 주간 경향성 및 변동성 파악 용도로 활용하십시오.
+                                </div>
+                                <h3 class="text-xl font-semibold mb-3">전체 일평균 발전량 (참고용)</h3>
+                                <div class="chart-container">
+                                    <canvas id="twoWeekDailyTotalChart"></canvas>
+                                </div>
                             </div>
                         </div>
-                        <div class="card hidden" id="2week-daily" role="tabpanel" aria-labelledby="2week-daily-tab">
-                            <div class="p-4 mb-4 text-sm text-yellow-700 bg-yellow-100 rounded-lg alert-warning" role="alert">
-                                <i class="fas fa-exclamation-triangle mr-2"></i><strong>주의:</strong> 일평균 예측은 변동성이 크므로, 주간 경향성 및 변동성 파악 용도로 활용하십시오.
+                    </div>
+
+                    <div id="2week-turbine-content" class="main-tab-content hidden">
+                        <h3 class="text-xl font-semibold mb-4">발전기별 2주 주평균 예상 발전량</h3>
+                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="card" id="wtg1Card">
+                                <h4 class="font-semibold text-lg mb-2">WTG #1</h4>
+                                <div class="grid grid-cols-2 gap-2 mb-3">
+                                    <div>
+                                        <p class="kpi-label">1주차</p>
+                                        <p class="kpi-turbine-value text-blue-700">1.4 <span class="text-xs">GWh</span></p>
+                                    </div>
+                                    <div>
+                                        <p class="kpi-label">2주차</p>
+                                        <p class="kpi-turbine-value text-blue-700">1.6 <span class="text-xs">GWh</span></p>
+                                    </div>
+                                </div>
+                                <div class="small-chart-container">
+                                    <canvas id="wtg1Chart"></canvas>
+                                </div>
                             </div>
-                            <h3 class="text-xl font-semibold mb-3">일평균 발전량 (참고용)</h3>
-                            <div class="chart-container">
-                                <canvas id="twoWeekDailyChart"></canvas>
+                            <div class="card" id="wtg2Card">
+                                <h4 class="font-semibold text-lg mb-2">WTG #2</h4>
+                               <div class="grid grid-cols-2 gap-2 mb-3">
+                                    <div>
+                                        <p class="kpi-label">1주차</p>
+                                        <p class="kpi-turbine-value text-blue-700">1.5 <span class="text-xs">GWh</span></p>
+                                    </div>
+                                    <div>
+                                        <p class="kpi-label">2주차</p>
+                                        <p class="kpi-turbine-value text-blue-700">1.7 <span class="text-xs">GWh</span></p>
+                                    </div>
+                                </div>
+                                <div class="small-chart-container">
+                                    <canvas id="wtg2Chart"></canvas>
+                                </div>
+                            </div>
+                            <div class="card" id="wtg3Card">
+                                <h4 class="font-semibold text-lg mb-2">WTG #3</h4>
+                                <div class="grid grid-cols-2 gap-2 mb-3">
+                                    <div>
+                                        <p class="kpi-label">1주차</p>
+                                        <p class="kpi-turbine-value text-blue-700">1.3 <span class="text-xs">GWh</span></p>
+                                    </div>
+                                    <div>
+                                        <p class="kpi-label">2주차</p>
+                                        <p class="kpi-turbine-value text-blue-700">1.5 <span class="text-xs">GWh</span></p>
+                                    </div>
+                                </div>
+                                <div class="small-chart-container">
+                                    <canvas id="wtg3Chart"></canvas>
+                                </div>
+                            </div>
+                            <div class="card" id="wtg4Card">
+                                <h4 class="font-semibold text-lg mb-2">WTG #4</h4>
+                                <div class="grid grid-cols-2 gap-2 mb-3">
+                                    <div>
+                                        <p class="kpi-label">1주차</p>
+                                        <p class="kpi-turbine-value text-blue-700">1.6 <span class="text-xs">GWh</span></p>
+                                    </div>
+                                    <div>
+                                        <p class="kpi-label">2주차</p>
+                                        <p class="kpi-turbine-value text-blue-700">1.8 <span class="text-xs">GWh</span></p>
+                                    </div>
+                                </div>
+                                <div class="small-chart-container">
+                                    <canvas id="wtg4Chart"></canvas>
+                                </div>
+                            </div>
+                            <div class="card" id="wtg5Card">
+                                <h4 class="font-semibold text-lg mb-2">WTG #5</h4>
+                                <div class="grid grid-cols-2 gap-2 mb-3">
+                                    <div>
+                                        <p class="kpi-label">1주차</p>
+                                        <p class="kpi-turbine-value text-blue-700">1.4 <span class="text-xs">GWh</span></p>
+                                    </div>
+                                    <div>
+                                        <p class="kpi-label">2주차</p>
+                                        <p class="kpi-turbine-value text-blue-700">1.5 <span class="text-xs">GWh</span></p>
+                                    </div>
+                                </div>
+                                <div class="small-chart-container">
+                                    <canvas id="wtg5Chart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -300,6 +416,17 @@
                     </div>
                 </section>
 
+                 <section id="6month-content" class="content-section hidden">
+                    <h2 class="section-title">6개월 발전량 예측</h2>
+                    <div class="card">
+                        <h3 class="text-xl font-semibold mb-3">월평균 발전량 (6개월)</h3>
+                         <div class="chart-container">
+                            <canvas id="sixMonthMonthlyChart"></canvas>
+                        </div>
+                        <p class="text-center mt-2 text-xs text-gray-500">장기 기후 전망 및 계절적 패턴 중심 예측</p>
+                    </div>
+                </section>
+
                 <section id="details-content" class="content-section hidden">
                     <h2 class="section-title">상세 정보 및 신뢰도</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -320,9 +447,9 @@
                             <ul class="list-disc list-inside text-sm space-y-1 text-gray-700">
                                 <li>기상 예측 모델: GFS, ECMWF (앙상블)</li>
                                 <li>과거 데이터 기간: 2015년 ~ 현재</li>
-                                <li>예측 모델: LSTM 기반 시계열 모델 v2.1</li>
+                                <li>예측 모델: LSTM 기반 시계열 모델 v2.1.1</li>
                                 <li>주요 가정: 터빈 가용률 95% 이상</li>
-                                <li>최근 업데이트: 2025-05-28 09:00 KST</li>
+                                <li>최근 업데이트: 2025-05-30 10:00 KST</li>
                             </ul>
                         </div>
                     </div>
@@ -334,57 +461,35 @@
 
     <script>
         // Helper function to generate random data for charts
-        const generateRandomData = (count, min, max) => {
+        const generateRandomData = (count, min, max, decimals = 0) => {
             const data = [];
             for (let i = 0; i < count; i++) {
-                data.push(Math.floor(Math.random() * (max - min + 1)) + min);
+                let value = Math.random() * (max - min) + min;
+                data.push(parseFloat(value.toFixed(decimals)));
             }
             return data;
         };
 
-        const createLineChart = (ctx, labels, data, label, borderColor = 'rgb(59, 130, 246)') => {
+        const defaultChartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true } },
+            plugins: { legend: { display: true } }
+        };
+
+        const createLineChart = (ctx, labels, datasets, options = {}) => {
             return new Chart(ctx, {
                 type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: label,
-                        data: data,
-                        borderColor: borderColor,
-                        tension: 0.1,
-                        fill: false
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true }
-                    }
-                }
+                data: { labels: labels, datasets: datasets },
+                options: {...defaultChartOptions, ...options}
             });
         };
 
-        const createBarChart = (ctx, labels, data, label, backgroundColor = 'rgba(59, 130, 246, 0.5)') => {
-            return new Chart(ctx, {
+        const createBarChart = (ctx, labels, datasets, options = {}) => {
+             return new Chart(ctx, {
                 type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: label,
-                        data: data,
-                        backgroundColor: backgroundColor,
-                        borderColor: backgroundColor.replace('0.5', '1'),
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true }
-                    }
-                }
+                data: { labels: labels, datasets: datasets },
+                options: {...defaultChartOptions, ...options}
             });
         };
         
@@ -392,7 +497,11 @@
 
         const initCharts = () => {
             // Destroy existing charts if any
-            Object.values(charts).forEach(chart => chart.destroy());
+            Object.values(charts).forEach(chart => {
+                if (chart && typeof chart.destroy === 'function') {
+                    chart.destroy();
+                }
+            });
             charts = {};
 
             // Overview Charts
@@ -400,38 +509,59 @@
             if (recentTrendCtx) {
                 charts.recentTrendChart = createLineChart(recentTrendCtx, 
                     ['D-6', 'D-5', 'D-4', 'D-3', 'D-2', 'D-1', '오늘'], 
-                    generateRandomData(7, 800, 1500), '일일 발전량 (MWh)', 'rgb(16, 185, 129)');
+                    [{ label: '일일 발전량 (MWh)', data: generateRandomData(7, 800, 1500), borderColor: 'rgb(16, 185, 129)', tension: 0.1, fill: false}]
+                );
             }
 
             const hourlyPatternCtx = document.getElementById('hourlyPatternChart')?.getContext('2d');
             if (hourlyPatternCtx) {
                 charts.hourlyPatternChart = createBarChart(hourlyPatternCtx,
                     Array.from({length: 24}, (_, i) => `${i}시`),
-                    generateRandomData(24, 20, 150), '시간대별 예상 발전량 (MW)', 'rgba(99, 102, 241, 0.6)');
+                    [{ label: '시간대별 예상 발전량 (MW)', data: generateRandomData(24, 20, 150), backgroundColor: 'rgba(99, 102, 241, 0.6)'}]
+                );
             }
 
-
-            // 2 Week Forecast Charts
-            const twoWeekWeeklyCtx = document.getElementById('twoWeekWeeklyChart')?.getContext('2d');
-            if (twoWeekWeeklyCtx) {
-                charts.twoWeekWeeklyChart = createBarChart(twoWeekWeeklyCtx, 
+            // 2 Week Forecast Charts - Total Plant
+            const twoWeekWeeklyTotalCtx = document.getElementById('twoWeekWeeklyTotalChart')?.getContext('2d');
+            if (twoWeekWeeklyTotalCtx) {
+                charts.twoWeekWeeklyTotalChart = createBarChart(twoWeekWeeklyTotalCtx, 
                     ['1주차', '2주차'], 
-                    [7200, 8100], '주간 총 발전량 (MWh)');
+                    [{ label: '주간 총 발전량 (GWh)', data: [7.2, 8.1], backgroundColor: 'rgba(59, 130, 246, 0.6)'}]
+                );
             }
 
-            const twoWeekDailyCtx = document.getElementById('twoWeekDailyChart')?.getContext('2d');
-            if (twoWeekDailyCtx) {
-                charts.twoWeekDailyChart = createLineChart(twoWeekDailyCtx,
+            const twoWeekDailyTotalCtx = document.getElementById('twoWeekDailyTotalChart')?.getContext('2d');
+            if (twoWeekDailyTotalCtx) {
+                charts.twoWeekDailyTotalChart = createLineChart(twoWeekDailyTotalCtx,
                     Array.from({length: 14}, (_, i) => `D+${i+1}`), 
-                    generateRandomData(14, 800, 1600), '일일 예상 발전량 (MWh)', 'rgb(245, 158, 11)');
+                    [{ label: '일일 예상 발전량 (MWh)', data: generateRandomData(14, 800, 1600), borderColor: 'rgb(245, 158, 11)', tension: 0.1, fill: false }]
+                );
             }
+
+            // 2 Week Forecast Charts - Per Turbine (WTG #1 to #5)
+            for (let i = 1; i <= 5; i++) {
+                const wtgCtx = document.getElementById(`wtg${i}Chart`)?.getContext('2d');
+                if (wtgCtx) {
+                    charts[`wtg${i}Chart`] = createBarChart(wtgCtx,
+                        ['1주차', '2주차'],
+                        [{ 
+                            label: `WTG #${i} (GWh)`, 
+                            data: generateRandomData(2, 1.2, 1.8, 1), // Random GWh data for each turbine
+                            backgroundColor: `rgba(${Math.random()*150 + 50}, ${Math.random()*150 + 50}, ${Math.random()*150 + 100}, 0.6)` 
+                        }],
+                        { plugins: { legend: { display: false } }, scales: { y: { ticks: { font: { size: 10 }}}}} // Smaller font for y-axis
+                    );
+                }
+            }
+
 
             // 1 Month Forecast Chart
             const oneMonthWeeklyCtx = document.getElementById('oneMonthWeeklyChart')?.getContext('2d');
             if (oneMonthWeeklyCtx) {
                 charts.oneMonthWeeklyChart = createBarChart(oneMonthWeeklyCtx,
                     ['1주차', '2주차', '3주차', '4주차'],
-                    [7500, 8000, 7200, 8500], '주간 총 발전량 (MWh)', 'rgba(79, 70, 229, 0.6)');
+                    [{ label: '주간 총 발전량 (GWh)', data: [7.5, 8.0, 7.2, 8.5], backgroundColor: 'rgba(79, 70, 229, 0.6)'}]
+                );
             }
 
             // 3 Month Forecast Charts
@@ -439,23 +569,34 @@
             if (threeMonthMonthlyCtx) {
                 charts.threeMonthMonthlyChart = createBarChart(threeMonthMonthlyCtx,
                     ['1개월차', '2개월차', '3개월차'],
-                    [30000, 32000, 28000], '월간 총 발전량 (MWh)', 'rgba(134, 25, 143, 0.6)');
+                    [{ label: '월간 총 발전량 (GWh)', data: [30, 32, 28], backgroundColor: 'rgba(134, 25, 143, 0.6)'}]
+                );
             }
             const threeMonthWeeklyCtx = document.getElementById('threeMonthWeeklyChart')?.getContext('2d');
              if (threeMonthWeeklyCtx) {
                 charts.threeMonthWeeklyChart = createLineChart(threeMonthWeeklyCtx,
                     Array.from({length: 12}, (_, i) => `${i+1}주차`),
-                    generateRandomData(12, 6000, 9000), '주간 예상 발전량 (MWh)', 'rgb(14, 116, 144)');
+                    [{ label: '주간 예상 발전량 (GWh)', data: generateRandomData(12, 6, 9, 1), borderColor: 'rgb(14, 116, 144)', tension: 0.1, fill: false }]
+                );
+            }
+            
+            // 6 Month Forecast Chart
+            const sixMonthMonthlyCtx = document.getElementById('sixMonthMonthlyChart')?.getContext('2d');
+            if (sixMonthMonthlyCtx) {
+                charts.sixMonthMonthlyChart = createBarChart(sixMonthMonthlyCtx,
+                    Array.from({length: 6}, (_, i) => `${i+1}개월차`),
+                    [{ label: '월간 총 발전량 (GWh)', data: generateRandomData(6, 25, 35), backgroundColor: 'rgba(21, 128, 61, 0.6)'}] // Dark Green
+                );
             }
 
 
             // Details Chart
             const probabilityDistributionCtx = document.getElementById('probabilityDistributionChart')?.getContext('2d');
             if (probabilityDistributionCtx) {
-                // Example of a simple distribution (more like a bar chart here for simplicity)
                 charts.probabilityDistributionChart = createBarChart(probabilityDistributionCtx,
                     ['낮음', '보통', '높음', '매우 높음'],
-                    [15, 45, 30, 10], '발전량 확률 (%)', 'rgba(234, 179, 8, 0.6)');
+                    [{ label: '발전량 확률 (%)', data: [15, 45, 30, 10], backgroundColor: 'rgba(234, 179, 8, 0.6)'}]
+                );
             }
         };
         
@@ -465,7 +606,11 @@
             const mainTitle = document.getElementById('main-title');
 
             const setActiveSection = (targetId) => {
-                mainTitle.textContent = document.querySelector(`.sidebar-item[data-target="${targetId}"]`).textContent.trim();
+                const activeSidebarItem = document.querySelector(`.sidebar-item[data-target="${targetId}"]`);
+                if (activeSidebarItem) {
+                    mainTitle.textContent = activeSidebarItem.textContent.trim();
+                }
+
 
                 contentSections.forEach(section => {
                     if (section.id === `${targetId}-content`) {
@@ -474,9 +619,7 @@
                         section.classList.add('hidden');
                     }
                 });
-                // Re-initialize charts for the active section if needed, or ensure they render correctly
-                // For simplicity, we'll re-init all. In a real app, you might optimize this.
-                initCharts();
+                initCharts(); // Always re-initialize charts when section changes
             };
 
             sidebarItems.forEach(item => {
@@ -489,34 +632,47 @@
                 });
             });
 
-            // Tab functionality for 2-week forecast
-            const twoWeekTabs = document.querySelectorAll('#twoWeekTabs .tab-button');
-            const twoWeekTabContents = document.querySelectorAll('#twoWeekTabsContent > div');
+            // Tab functionality (generic for main and sub-tabs)
+            const setupTabs = (tabContainerId, tabContentContainerId, tabButtonClass, tabContentClass, defaultActiveIndex = 0) => {
+                const tabs = document.querySelectorAll(`#${tabContainerId} .${tabButtonClass}`);
+                const tabContents = document.querySelectorAll(`#${tabContentContainerId} > .${tabContentClass}`);
 
-            twoWeekTabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    twoWeekTabs.forEach(t => {
-                        t.classList.remove('active');
-                        t.setAttribute('aria-selected', 'false');
-                    });
-                    tab.classList.add('active');
-                    tab.setAttribute('aria-selected', 'true');
+                tabs.forEach((tab, index) => {
+                    tab.addEventListener('click', () => {
+                        tabs.forEach(t => {
+                            t.classList.remove('active');
+                            t.setAttribute('aria-selected', 'false');
+                        });
+                        tab.classList.add('active');
+                        tab.setAttribute('aria-selected', 'true');
 
-                    const targetPanelId = tab.getAttribute('data-tabs-target');
-                    twoWeekTabContents.forEach(panel => {
-                        if (panel.id === targetPanelId.substring(1)) { 
-                            panel.classList.remove('hidden');
-                        } else {
-                            panel.classList.add('hidden');
-                        }
+                        const targetPanelId = tab.getAttribute('data-tabs-target');
+                        tabContents.forEach(panel => {
+                            if (panel.id === targetPanelId.substring(1)) { 
+                                panel.classList.remove('hidden');
+                            } else {
+                                panel.classList.add('hidden');
+                            }
+                        });
+                        initCharts(); 
                     });
-                    // Re-initialize charts when tab changes
-                    initCharts(); 
+                    // Set default active tab
+                    if (index === defaultActiveIndex) {
+                        tab.click();
+                    }
                 });
-            });
+            };
+
+            // Setup Main Tabs for 2 Week Forecast
+            setupTabs('twoWeekMainTabs', '2week-content', 'tab-button', 'main-tab-content');
+            // Setup Sub Tabs for 2 Week Forecast (Total Plant)
+            setupTabs('twoWeekSubTabsTotal', 'twoWeekSubTabsTotalContent', 'sub-tab-button', 'sub-tab-panel');
+
 
             // Initialize default view (Overview)
-            document.querySelector('.sidebar-item[data-target="overview"]').click();
+             const initialTarget = 'overview';
+            document.querySelector(`.sidebar-item[data-target="${initialTarget}"]`).classList.add('active');
+            setActiveSection(initialTarget);
         });
 
     </script>

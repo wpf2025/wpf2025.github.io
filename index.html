@@ -482,19 +482,44 @@
             const sidebarItems = document.querySelectorAll('.sidebar-item');
             const contentSections = document.querySelectorAll('.content-section');
             const mainTitle = document.getElementById('main-title');
-
+            // setActiveSection 함수 내에서 '2week' 클릭시 발전기별 예측(div id="2week-turbine-content")이 기본 노출되도록 수정
             const setActiveSection = (targetId) => {
                 const activeSidebarItem = document.querySelector(`.sidebar-item[data-target="${targetId}"]`);
                 if (activeSidebarItem) {
                     mainTitle.textContent = activeSidebarItem.textContent.trim();
                 }
-
+        
                 contentSections.forEach(section => {
-                    // Check for both original and prefixed ID (e.g., '2week-content' and 's_2week-content')
                     const isTargetSection = section.id === `${targetId}-content` || section.id === `s_${targetId}-content`;
                     section.classList.toggle('hidden', !isTargetSection);
                 });
-                initChartsForCurrentView(); 
+        
+                // 2주 예측이면 발전기별 예측 탭 활성화
+                if (targetId === '2week') {
+                    // 메인탭: 발전기별 예측 탭(id="2week-turbine-tab") 클릭 효과
+                    const mainTabs = document.querySelectorAll('#twoWeekMainTabs .tab-button');
+                    mainTabs.forEach(tab => {
+                        tab.classList.remove('active');
+                        tab.setAttribute('aria-selected', 'false');
+                    });
+                    const turbineTab = document.getElementById('2week-turbine-tab');
+                    if (turbineTab) {
+                        turbineTab.classList.add('active');
+                        turbineTab.setAttribute('aria-selected', 'true');
+                    }
+        
+                    // 모든 main-tab-panel 숨김, 발전기별 예측만 노출
+                    const mainTabPanels = document.querySelectorAll('#s_2week-content .main-tab-panel');
+                    mainTabPanels.forEach(panel => {
+                        panel.classList.add('hidden');
+                    });
+                    const turbinePanel = document.getElementById('2week-turbine-content');
+                    if (turbinePanel) {
+                        turbinePanel.classList.remove('hidden');
+                    }
+                }
+        
+                initChartsForCurrentView();
             };
 
             sidebarItems.forEach(item => {

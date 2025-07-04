@@ -108,13 +108,13 @@
                     <i class="fas fa-tachometer-alt mr-3 w-5 text-center"></i>개요
                 </a>
                 <a href="#" class="sidebar-item block py-3 px-6" data-target="shortterm">
-                    <i class="fas fa-clock mr-3 w-5 text-center"></i>단기(~3일)예측
+                    <i class="fas fa-clock mr-3 w-5 text-center"></i>단기예측
                 </a>
                 <a href="#" class="sidebar-item block py-3 px-6" data-target="2week">
-                    <i class="fas fa-calendar-week mr-3 w-5 text-center"></i>중기(2주)예측
+                    <i class="fas fa-calendar-week mr-3 w-5 text-center"></i>중기예측
                 </a>
                 <a href="#" class="sidebar-item block py-3 px-6" data-target="longterm">
-                    <i class="fas fa-calendar-alt mr-3 w-5 text-center"></i>장기(1개월~6개월)예측
+                    <i class="fas fa-calendar-alt mr-3 w-5 text-center"></i>장기예측
                 </a>
                 <a href="#" class="sidebar-item block py-3 px-6" data-target="details">
                     <i class="fas fa-info-circle mr-3 w-5 text-center"></i>상세 정보
@@ -199,6 +199,8 @@
                         <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="shorttermMainTabs" role="tablist">
                             <li class="mr-2" role="presentation"><button class="tab-button inline-block p-4 rounded-t-lg" id="shortterm-total-tab" data-tabs-target="#shortterm-total-content" type="button" role="tab" aria-controls="shortterm-total-content" aria-selected="true">발전소 전체 예측</button></li>
                             <li class="mr-2" role="presentation"><button class="tab-button inline-block p-4 rounded-t-lg" id="shortterm-turbine-tab" data-tabs-target="#shortterm-turbine-content" type="button" role="tab" aria-controls="shortterm-turbine-content" aria-selected="false">터빈별 예측</button></li>
+                            <li class="mr-2" role="presentation"><button class="tab-button inline-block p-4 rounded-t-lg" id="shortterm-windspeed-tab" data-tabs-target="#shortterm-windspeed-content" type="button" role="tab" aria-controls="shortterm-windspeed-content" aria-selected="false">시간별 풍속 예측</button></li>
+                            <li class="mr-2" role="presentation"><button class="tab-button inline-block p-4 rounded-t-lg" id="shortterm-maintenance-tab" data-tabs-target="#shortterm-maintenance-content" type="button" role="tab" aria-controls="shortterm-maintenance-content" aria-selected="false">정비 스케줄 최적화</button></li>
                         </ul>
                     </div>
 
@@ -351,6 +353,284 @@
                                     <div class="card">
                                         <h5 class="text-md font-semibold mb-3">WTG #5 시간별 예측</h5>
                                         <div class="chart-container h-[250px]"><canvas id="shorttermWtg5HourlyChart"></canvas></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 시간별 풍속 예측 탭 -->
+                    <div id="shortterm-windspeed-content" class="main-tab-panel hidden">
+                        <h3 class="text-xl font-semibold mb-4">시간별 풍속 예측 (48시간)</h3>
+                        
+                        <!-- 풍속 현황 KPI -->
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                            <div class="p-4 bg-blue-50 rounded-lg">
+                                <p class="kpi-label">현재 풍속</p>
+                                <p class="kpi-value text-3xl">7.5 <span class="text-base">m/s</span></p>
+                                <p class="text-xs text-gray-500">실시간 측정값</p>
+                            </div>
+                            <div class="p-4 bg-green-50 rounded-lg">
+                                <p class="kpi-label">평균 풍속 (48시간)</p>
+                                <p class="kpi-value text-3xl">8.2 <span class="text-base">m/s</span></p>
+                                <p class="text-xs text-gray-500">예측 평균값</p>
+                            </div>
+                            <div class="p-4 bg-yellow-50 rounded-lg">
+                                <p class="kpi-label">최대 풍속 (예상)</p>
+                                <p class="kpi-value text-3xl">12.8 <span class="text-base">m/s</span></p>
+                                <p class="text-xs text-gray-500">내일 오후 2시</p>
+                            </div>
+                            <div class="p-4 bg-orange-50 rounded-lg">
+                                <p class="kpi-label">최소 풍속 (예상)</p>
+                                <p class="kpi-value text-3xl">3.2 <span class="text-base">m/s</span></p>
+                                <p class="text-xs text-gray-500">내일 새벽 4시</p>
+                            </div>
+                        </div>
+
+                        <!-- 풍속 예측 차트 -->
+                        <div class="card mb-6">
+                            <h4 class="text-lg font-semibold mb-3">발전소 대표 풍속 예측 (48시간)</h4>
+                            <div class="chart-container h-[400px]"><canvas id="shorttermWindspeedChart"></canvas></div>
+                            <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+                                <p class="text-sm text-blue-700">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    발전소 대표 풍속은 모든 터빈 위치의 풍속을 가중평균한 값입니다. 컷인 풍속(3m/s) 이하 구간은 주황색으로 표시됩니다.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- 풍속 구간별 분석 -->
+                        <div class="card">
+                            <div class="flex justify-between items-center cursor-pointer" onclick="toggleWindspeedDistribution()">
+                                <h4 class="text-lg font-semibold mb-3">풍속 구간별 시간 분포 (48시간)</h4>
+                                <i id="windspeedDistributionIcon" class="fas fa-chevron-down text-gray-500 transition-transform duration-200"></i>
+                            </div>
+                            <div id="windspeedDistributionContent" class="hidden">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <div class="chart-container h-[300px]"><canvas id="windspeedDistributionChart"></canvas></div>
+                                    </div>
+                                    <div class="space-y-4">
+                                        <div class="p-4 border rounded-lg">
+                                            <h5 class="font-semibold text-red-600 mb-2">
+                                                <i class="fas fa-exclamation-triangle mr-2"></i>컷인 미달 (< 3m/s)
+                                            </h5>
+                                            <p class="text-2xl font-bold text-red-600">4시간 <span class="text-sm font-normal">(8.3%)</span></p>
+                                            <p class="text-xs text-gray-500">발전 불가 구간</p>
+                                        </div>
+                                        <div class="p-4 border rounded-lg">
+                                            <h5 class="font-semibold text-green-600 mb-2">
+                                                <i class="fas fa-check-circle mr-2"></i>최적 풍속 (6-12m/s)
+                                            </h5>
+                                            <p class="text-2xl font-bold text-green-600">32시간 <span class="text-sm font-normal">(66.7%)</span></p>
+                                            <p class="text-xs text-gray-500">최적 발전 구간</p>
+                                        </div>
+                                        <div class="p-4 border rounded-lg">
+                                            <h5 class="font-semibold text-blue-600 mb-2">
+                                                <i class="fas fa-wind mr-2"></i>정격 풍속 (> 12m/s)
+                                            </h5>
+                                            <p class="text-2xl font-bold text-blue-600">12시간 <span class="text-sm font-normal">(25.0%)</span></p>
+                                            <p class="text-xs text-gray-500">정격 출력 구간</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 정비 스케줄 최적화 탭 -->
+                    <div id="shortterm-maintenance-content" class="main-tab-panel hidden">
+                        <h3 class="text-xl font-semibold mb-4">정비 스케줄 최적화 (48시간)</h3>
+                        
+                        <!-- 최적화 제어 패널 -->
+                        <div class="card mb-6">
+                            <h4 class="text-lg font-semibold mb-4">최적화 설정</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">정비 작업 유형</label>
+                                    <select id="maintenanceType" class="w-full p-2 border border-gray-300 rounded-md">
+                                        <option value="routine">정기 점검 (2시간)</option>
+                                        <option value="blade">블레이드 점검 (4시간)</option>
+                                        <option value="gearbox">기어박스 정비 (8시간)</option>
+                                        <option value="generator">발전기 정비 (6시간)</option>
+                                        <option value="crane">크레인 작업 (12시간)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">대상 터빈</label>
+                                    <select id="targetTurbine" class="w-full p-2 border border-gray-300 rounded-md">
+                                        <option value="wtg1">WTG #1</option>
+                                        <option value="wtg2">WTG #2</option>
+                                        <option value="wtg3">WTG #3</option>
+                                        <option value="wtg4">WTG #4</option>
+                                        <option value="wtg5">WTG #5</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">우선순위</label>
+                                    <select id="priority" class="w-full p-2 border border-gray-300 rounded-md">
+                                        <option value="revenue">수익 손실 최소화</option>
+                                        <option value="safety">안전성 우선</option>
+                                        <option value="efficiency">작업 효율성</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button id="optimizeSchedule" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
+                                <i id="optimizeIcon" class="fas fa-cogs mr-2"></i>
+                                <span id="optimizeText">최적 스케줄 생성</span>
+                            </button>
+                        </div>
+
+                        <!-- 최적화 결과 요약 -->
+                        <div id="optimizationResults" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 hidden">
+                            <div class="p-4 bg-green-50 rounded-lg">
+                                <p class="kpi-label">권장 정비 시간</p>
+                                <p id="recommendedTime" class="kpi-value text-2xl">-</p>
+                                <p class="text-xs text-gray-500">일출 후 최적 시점</p>
+                            </div>
+                            <div class="p-4 bg-blue-50 rounded-lg">
+                                <p class="kpi-label">예상 수익 손실</p>
+                                <p id="expectedLoss" class="kpi-value text-2xl">-</p>
+                                <p class="text-xs text-gray-500">최소화된 손실</p>
+                            </div>
+                            <div class="p-4 bg-yellow-50 rounded-lg">
+                                <p class="kpi-label">평균 풍속</p>
+                                <p id="avgWindSpeed" class="kpi-value text-2xl">-</p>
+                                <p class="text-xs text-gray-500">정비 시간대</p>
+                            </div>
+                            <div class="p-4 bg-purple-50 rounded-lg">
+                                <p class="kpi-label">작업 안전도</p>
+                                <p id="safetyScore" class="kpi-value text-2xl">-</p>
+                                <p class="text-xs text-gray-500">일광 + 저풍속</p>
+                            </div>
+                        </div>
+
+                        <!-- 정비 시점 최적화 차트 -->
+                        <div class="card mb-6">
+                            <h4 class="text-lg font-semibold mb-3">정비 시점 최적화 분석</h4>
+                            <div class="chart-container h-[400px]"><canvas id="maintenanceOptimizationChart"></canvas></div>
+                            <div class="mt-4 p-3 bg-green-50 rounded-lg">
+                                <p class="text-sm text-green-700">
+                                    <i class="fas fa-lightbulb mr-2"></i>
+                                    <strong>최적 정비 구간:</strong> 저발전량(파란색)과 저풍속(주황색)이 겹치는 시간대가 정비에 가장 적합합니다.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- 크레인 운영 계획 -->
+                        <div class="card mb-6">
+                            <h4 class="text-lg font-semibold mb-3">크레인 운영 계획 (일출/일몰 시간 고려)</h4>
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div>
+                                    <div class="chart-container h-[300px]"><canvas id="craneOperationChart"></canvas></div>
+                                </div>
+                                <div class="space-y-4">
+                                    <div class="p-4 border rounded-lg bg-blue-50">
+                                        <h5 class="font-semibold text-blue-800 mb-2">
+                                            <i class="fas fa-sun mr-2"></i>일출/일몰 정보
+                                        </h5>
+                                        <div class="space-y-2 text-sm">
+                                            <div class="flex justify-between">
+                                                <span>오늘 일출</span>
+                                                <span class="text-blue-700">06:42</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>오늘 일몰</span>
+                                                <span class="text-blue-700">17:28</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>작업 가능 시간</span>
+                                                <span class="text-blue-700">10시간 46분</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="p-4 border rounded-lg">
+                                        <h5 class="font-semibold text-green-600 mb-2">
+                                            <i class="fas fa-clock mr-2"></i>최적 작업 시간
+                                        </h5>
+                                        <div class="space-y-2 text-sm">
+                                            <div class="flex justify-between">
+                                                <span>권장 시작</span>
+                                                <span class="text-green-700">내일 07:00</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>권장 종료</span>
+                                                <span class="text-green-700">내일 15:00</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>평균 풍속</span>
+                                                <span class="text-green-700">3.8 m/s</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="p-4 border rounded-lg">
+                                        <h5 class="font-semibold text-purple-600 mb-2">
+                                            <i class="fas fa-shield-alt mr-2"></i>작업 안전도
+                                        </h5>
+                                        <div class="space-y-2 text-sm">
+                                            <div class="flex justify-between items-center">
+                                                <span>시야 확보</span>
+                                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">양호</span>
+                                            </div>
+                                            <div class="flex justify-between items-center">
+                                                <span>풍속 조건</span>
+                                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">안전</span>
+                                            </div>
+                                            <div class="flex justify-between items-center">
+                                                <span>종합 안전도</span>
+                                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">매우 높음</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 터빈 가동률 조정 계획 -->
+                        <div class="card">
+                            <div class="flex justify-between items-center cursor-pointer" onclick="toggleTurbineOperation()">
+                                <h4 class="text-lg font-semibold mb-3">터빈 가동률 조정 계획</h4>
+                                <i id="turbineOperationIcon" class="fas fa-chevron-down text-gray-500 transition-transform duration-200"></i>
+                            </div>
+                            <div id="turbineOperationContent" class="hidden">
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div>
+                                        <div class="chart-container h-[300px]"><canvas id="turbineOperationChart"></canvas></div>
+                                    </div>
+                                    <div class="space-y-4">
+                                        <div class="p-4 border-l-4 border-green-500 bg-green-50">
+                                            <h5 class="font-semibold text-green-800 mb-2">
+                                                <i class="fas fa-play mr-2"></i>고발전 시간대 (06:00-18:00)
+                                            </h5>
+                                            <p class="text-sm text-green-700 mb-2">모든 터빈 최적 상태 유지</p>
+                                            <ul class="text-xs text-green-600 space-y-1">
+                                                <li>• 예방점검 완료 확인</li>
+                                                <li>• 비상 대응팀 대기</li>
+                                                <li>• 성능 모니터링 강화</li>
+                                            </ul>
+                                        </div>
+                                        <div class="p-4 border-l-4 border-yellow-500 bg-yellow-50">
+                                            <h5 class="font-semibold text-yellow-800 mb-2">
+                                                <i class="fas fa-pause mr-2"></i>저발전 시간대 (22:00-05:00)
+                                            </h5>
+                                            <p class="text-sm text-yellow-700 mb-2">선택적 터빈 정비 모드</p>
+                                            <ul class="text-xs text-yellow-600 space-y-1">
+                                                <li>• WTG #3 정비 작업 수행</li>
+                                                <li>• 나머지 터빈 정상 운전</li>
+                                                <li>• 정비팀 집중 배치</li>
+                                            </ul>
+                                        </div>
+                                        <div class="p-4 border-l-4 border-red-500 bg-red-50">
+                                            <h5 class="font-semibold text-red-800 mb-2">
+                                                <i class="fas fa-exclamation-triangle mr-2"></i>고위험 시간대
+                                            </h5>
+                                            <p class="text-sm text-red-700 mb-2">야외 작업 금지 (풍속 > 10m/s)</p>
+                                            <ul class="text-xs text-red-600 space-y-1">
+                                                <li>• 크레인 작업 중단</li>
+                                                <li>• 실내 작업으로 전환</li>
+                                                <li>• 안전 점검 강화</li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -789,6 +1069,394 @@
                 }
             }
 
+            // Windspeed Forecast (48 hours)
+            if (document.getElementById('shortterm-content')?.offsetParent !== null) {
+                const windspeedChartElement = document.getElementById('shorttermWindspeedChart');
+                const distributionChartElement = document.getElementById('windspeedDistributionChart');
+                
+                if (windspeedChartElement) {
+                    const windspeedLabels = [];
+                    for (let day = 0; day < 2; day++) {
+                        for (let hour = 0; hour < 24; hour++) {
+                            const dayName = day === 0 ? '오늘' : '내일';
+                            windspeedLabels.push(`${dayName} ${hour}시`);
+                        }
+                    }
+                    
+                    // 풍속 데이터 생성 (3-15 m/s 범위)
+                    const windspeedData = generateRandomData(48, 3, 15);
+                    
+                    // 풍속 구간별 색상 설정
+                    const windspeedColors = windspeedData.map(speed => {
+                        if (speed < 3) return 'rgba(239, 68, 68, 0.8)';      // 빨간색 (컷인 미달)
+                        else if (speed >= 3 && speed < 6) return 'rgba(245, 158, 11, 0.8)'; // 주황색 (저풍속)
+                        else if (speed >= 6 && speed <= 12) return 'rgba(16, 185, 129, 0.8)'; // 녹색 (최적)
+                        else return 'rgba(59, 130, 246, 0.8)';               // 파란색 (정격)
+                    });
+                    
+                    // 시간별 풍속 예측 차트
+                    charts.shorttermWindspeedChart = createChart(windspeedChartElement.getContext('2d'), 'line',
+                        windspeedLabels,
+                        [{ 
+                            label: '풍속 (m/s)', 
+                            data: windspeedData, 
+                            borderColor: 'rgb(59, 130, 246)', 
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.3, 
+                            fill: true,
+                            borderWidth: 2,
+                            pointBackgroundColor: windspeedColors,
+                            pointBorderColor: windspeedColors,
+                            pointRadius: 4
+                        }],
+                        {
+                            plugins: {
+                                legend: { display: true },
+                                tooltip: {
+                                    callbacks: {
+                                        afterLabel: function(context) {
+                                            const speed = context.parsed.y;
+                                            if (speed < 3) return '발전 불가 (컷인 미달)';
+                                            else if (speed >= 3 && speed < 6) return '저풍속 구간';
+                                            else if (speed >= 6 && speed <= 12) return '최적 발전 구간';
+                                            else return '정격 출력 구간';
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 16,
+                                    title: {
+                                        display: true,
+                                        text: '풍속 (m/s)'
+                                    },
+                                    grid: {
+                                        color: function(context) {
+                                            if (context.tick.value === 3) return 'rgba(239, 68, 68, 0.5)';
+                                            if (context.tick.value === 6) return 'rgba(245, 158, 11, 0.5)';
+                                            if (context.tick.value === 12) return 'rgba(16, 185, 129, 0.5)';
+                                            return 'rgba(0, 0, 0, 0.1)';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    );
+                }
+                
+                if (distributionChartElement) {
+                    // 풍속 데이터가 이미 생성되었다고 가정하고 분포 계산
+                    const sampleWindspeedData = generateRandomData(48, 3, 15);
+                    const cutInBelow = sampleWindspeedData.filter(speed => speed < 3).length;
+                    const lowWind = sampleWindspeedData.filter(speed => speed >= 3 && speed < 6).length;
+                    const optimal = sampleWindspeedData.filter(speed => speed >= 6 && speed <= 12).length;
+                    const rated = sampleWindspeedData.filter(speed => speed > 12).length;
+                    
+                    charts.windspeedDistributionChart = createChart(distributionChartElement.getContext('2d'), 'doughnut',
+                        ['컷인 미달 (< 3m/s)', '저풍속 (3-6m/s)', '최적 풍속 (6-12m/s)', '정격 풍속 (> 12m/s)'],
+                        [{
+                            data: [cutInBelow, lowWind, optimal, rated],
+                            backgroundColor: [
+                                'rgba(239, 68, 68, 0.8)',   // 빨간색
+                                'rgba(245, 158, 11, 0.8)',  // 주황색
+                                'rgba(16, 185, 129, 0.8)',  // 녹색
+                                'rgba(59, 130, 246, 0.8)'   // 파란색
+                            ],
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }],
+                        {
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 20,
+                                        usePointStyle: true
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                            return `${context.label}: ${context.parsed}시간 (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    );
+                }
+            }
+
+            // Maintenance Schedule Optimization (48 hours)
+            if (document.getElementById('shortterm-content')?.offsetParent !== null) {
+                const maintenanceOptChart = document.getElementById('maintenanceOptimizationChart');
+                const turbineOpChart = document.getElementById('turbineOperationChart');
+                const craneOpChart = document.getElementById('craneOperationChart');
+                
+                if (maintenanceOptChart) {
+                    const labels48h = [];
+                    for (let day = 0; day < 2; day++) {
+                        for (let hour = 0; hour < 24; hour++) {
+                            const dayName = day === 0 ? '오늘' : '내일';
+                            labels48h.push(`${dayName} ${hour}시`);
+                        }
+                    }
+                    
+                    // 발전량과 풍속 데이터 생성
+                    const powerData = generateRandomData(48, 50, 200);
+                    const windData = generateRandomData(48, 3, 15);
+                    
+                    // 정비 최적 구간 계산 (저발전량 + 저풍속)
+                    const maintenanceScore = powerData.map((power, i) => {
+                        const wind = windData[i];
+                        // 낮은 발전량과 낮은 풍속일수록 높은 점수
+                        return ((200 - power) / 200 * 50) + ((15 - wind) / 15 * 50);
+                    });
+                    
+                    charts.maintenanceOptimizationChart = createChart(maintenanceOptChart.getContext('2d'), 'line',
+                        labels48h,
+                        [
+                            { 
+                                label: '발전량 (MW)', 
+                                data: powerData, 
+                                borderColor: 'rgb(59, 130, 246)', 
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                yAxisID: 'y',
+                                tension: 0.3,
+                                fill: false
+                            },
+                            { 
+                                label: '풍속 (m/s)', 
+                                data: windData, 
+                                borderColor: 'rgb(245, 158, 11)', 
+                                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                yAxisID: 'y1',
+                                tension: 0.3,
+                                fill: false
+                            },
+                            { 
+                                label: '정비 적합도', 
+                                data: maintenanceScore, 
+                                borderColor: 'rgb(16, 185, 129)', 
+                                backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                                yAxisID: 'y2',
+                                tension: 0.3,
+                                fill: true,
+                                borderWidth: 3
+                            }
+                        ],
+                        {
+                            plugins: {
+                                legend: { display: true }
+                            },
+                            scales: {
+                                y: {
+                                    type: 'linear',
+                                    display: true,
+                                    position: 'left',
+                                    title: { display: true, text: '발전량 (MW)' }
+                                },
+                                y1: {
+                                    type: 'linear',
+                                    display: true,
+                                    position: 'right',
+                                    title: { display: true, text: '풍속 (m/s)' },
+                                    grid: { drawOnChartArea: false }
+                                },
+                                y2: {
+                                    type: 'linear',
+                                    display: false,
+                                    min: 0,
+                                    max: 100
+                                }
+                            }
+                        }
+                    );
+                }
+                
+                if (turbineOpChart) {
+                    // 터빈 가동률 차트
+                    const operationData = [
+                        { label: 'WTG #1', normal: 20, maintenance: 4, high_risk: 0 },
+                        { label: 'WTG #2', normal: 22, maintenance: 2, high_risk: 0 },
+                        { label: 'WTG #3', normal: 16, maintenance: 8, high_risk: 0 },
+                        { label: 'WTG #4', normal: 21, maintenance: 3, high_risk: 0 },
+                        { label: 'WTG #5', normal: 23, maintenance: 1, high_risk: 0 }
+                    ];
+                    
+                    charts.turbineOperationChart = createChart(turbineOpChart.getContext('2d'), 'bar',
+                        operationData.map(d => d.label),
+                        [
+                            {
+                                label: '정상 운전 (시간)',
+                                data: operationData.map(d => d.normal),
+                                backgroundColor: 'rgba(16, 185, 129, 0.8)'
+                            },
+                            {
+                                label: '정비 모드 (시간)',
+                                data: operationData.map(d => d.maintenance),
+                                backgroundColor: 'rgba(245, 158, 11, 0.8)'
+                            },
+                            {
+                                label: '고위험 중단 (시간)',
+                                data: operationData.map(d => d.high_risk),
+                                backgroundColor: 'rgba(239, 68, 68, 0.8)'
+                            }
+                        ],
+                        {
+                            plugins: {
+                                legend: { display: true }
+                            },
+                            scales: {
+                                x: { stacked: true },
+                                y: { 
+                                    stacked: true,
+                                    title: { display: true, text: '시간 (h)' },
+                                    max: 24
+                                }
+                            }
+                        }
+                    );
+                }
+                
+                if (craneOpChart) {
+                    // 크레인 운영 차트 (풍속 기준, 일출/일몰 시간 고려)
+                    const craneWindData = generateRandomData(24, 2, 12);
+                    const craneLabels = Array.from({length: 24}, (_, i) => `${i}시`);
+                    
+                    // 일출/일몰 시간 설정 (12월 기준)
+                    const sunrise = 7; // 06:42 -> 7시로 반올림
+                    const sunset = 17; // 17:28 -> 17시로 반올림
+                    
+                    charts.craneOperationChart = createChart(craneOpChart.getContext('2d'), 'bar',
+                        craneLabels,
+                        [{
+                            label: '풍속 (m/s)',
+                            data: craneWindData,
+                            backgroundColor: craneWindData.map((wind, hour) => {
+                                // 일출 전/일몰 후는 작업 불가 (회색)
+                                if (hour < sunrise || hour >= sunset) {
+                                    return 'rgba(156, 163, 175, 0.8)'; // 회색 (야간)
+                                }
+                                // 일광 시간대는 풍속에 따라 색상 결정
+                                if (wind <= 5) return 'rgba(16, 185, 129, 0.8)';  // 안전 (녹색)
+                                else if (wind <= 8) return 'rgba(245, 158, 11, 0.8)'; // 주의 (주황)
+                                else return 'rgba(239, 68, 68, 0.8)';  // 위험 (빨강)
+                            }),
+                            borderColor: craneWindData.map((wind, hour) => {
+                                if (hour < sunrise || hour >= sunset) {
+                                    return 'rgb(156, 163, 175)';
+                                }
+                                if (wind <= 5) return 'rgb(16, 185, 129)';
+                                else if (wind <= 8) return 'rgb(245, 158, 11)';
+                                else return 'rgb(239, 68, 68)';
+                            }),
+                            borderWidth: 1
+                        }],
+                        {
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        afterLabel: function(context) {
+                                            const hour = context.dataIndex;
+                                            const wind = context.parsed.y;
+                                            
+                                            if (hour < sunrise || hour >= sunset) {
+                                                return '야간 - 작업 불가';
+                                            }
+                                            
+                                            if (wind <= 5) return '크레인 작업 안전';
+                                            else if (wind <= 8) return '크레인 작업 주의';
+                                            else return '크레인 작업 금지';
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    title: { display: true, text: '풍속 (m/s)' },
+                                    max: 15
+                                },
+                                x: {
+                                    title: { display: true, text: '시간 (일출: 07시, 일몰: 17시)' }
+                                }
+                            }
+                        }
+                    );
+                }
+                
+                // 최적화 버튼 이벤트 리스너
+                const optimizeBtn = document.getElementById('optimizeSchedule');
+                if (optimizeBtn) {
+                    optimizeBtn.addEventListener('click', function() {
+                        // 최적화 실행 시뮬레이션
+                        const maintenanceType = document.getElementById('maintenanceType').value;
+                        const targetTurbine = document.getElementById('targetTurbine').value;
+                        const priority = document.getElementById('priority').value;
+                        
+                        // 버튼 상태 변경 (로딩)
+                        const optimizeIcon = document.getElementById('optimizeIcon');
+                        const optimizeText = document.getElementById('optimizeText');
+                        const resultsDiv = document.getElementById('optimizationResults');
+                        
+                        optimizeBtn.disabled = true;
+                        optimizeIcon.className = 'fas fa-spinner fa-spin mr-2';
+                        optimizeText.textContent = '최적화 중...';
+                        
+                        // 일출/일몰 시간을 고려한 최적 시간 계산
+                        const sunrise = 7;
+                        const sunset = 17;
+                        
+                        // 작업 유형별 소요 시간
+                        const workDuration = {
+                            'routine': 2,
+                            'blade': 4,
+                            'gearbox': 8,
+                            'generator': 6,
+                            'crane': 12
+                        };
+                        
+                        const duration = workDuration[maintenanceType] || 4;
+                        const optimalStartTime = Math.floor(Math.random() * (sunset - sunrise - duration)) + sunrise;
+                        
+                        // 시뮬레이션 지연
+                        setTimeout(() => {
+                            // 결과 계산
+                            const avgWind = (Math.random() * 3 + 3).toFixed(1); // 3-6 m/s
+                            const loss = (Math.random() * 2 + 1).toFixed(1); // 1-3M
+                            const safety = Math.floor(Math.random() * 5 + 95); // 95-99%
+                            
+                            // 결과 업데이트
+                            document.getElementById('recommendedTime').textContent = `내일 ${optimalStartTime.toString().padStart(2, '0')}:00`;
+                            document.getElementById('expectedLoss').textContent = `₩${loss}M`;
+                            document.getElementById('avgWindSpeed').textContent = `${avgWind} m/s`;
+                            document.getElementById('safetyScore').textContent = `${safety}%`;
+                            
+                            // 결과 표시
+                            resultsDiv.classList.remove('hidden');
+                            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            
+                            // 버튼 상태 복원
+                            optimizeBtn.disabled = false;
+                            optimizeIcon.className = 'fas fa-check mr-2';
+                            optimizeText.textContent = '최적화 완료';
+                            
+                            // 3초 후 버튼 텍스트 원래대로
+                            setTimeout(() => {
+                                optimizeIcon.className = 'fas fa-cogs mr-2';
+                                optimizeText.textContent = '최적 스케줄 생성';
+                            }, 3000);
+                            
+                        }, 2000); // 2초 로딩 시뮬레이션
+                    });
+                }
+            }
+
             // 2 Week Forecast Charts
             if (document.getElementById('s_2week-content')?.offsetParent !== null) { 
                 // Total Plant - Weekly & Daily (통합 페이지)
@@ -1177,6 +1845,42 @@
             const initialTarget = 'overview';
             document.querySelector(`.sidebar-item[data-target="${initialTarget}"]`).classList.add('active');
             setActiveSection(initialTarget);
+
+            // 풍속 구간별 분포 토글 함수
+            window.toggleWindspeedDistribution = function() {
+                const content = document.getElementById('windspeedDistributionContent');
+                const icon = document.getElementById('windspeedDistributionIcon');
+                
+                if (content.classList.contains('hidden')) {
+                    content.classList.remove('hidden');
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                    icon.style.transform = 'rotate(180deg)';
+                } else {
+                    content.classList.add('hidden');
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                    icon.style.transform = 'rotate(0deg)';
+                }
+            };
+
+            // 터빈 가동률 조정 계획 토글 함수
+            window.toggleTurbineOperation = function() {
+                const content = document.getElementById('turbineOperationContent');
+                const icon = document.getElementById('turbineOperationIcon');
+                
+                if (content.classList.contains('hidden')) {
+                    content.classList.remove('hidden');
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                    icon.style.transform = 'rotate(180deg)';
+                } else {
+                    content.classList.add('hidden');
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                    icon.style.transform = 'rotate(0deg)';
+                }
+            };
 
             // 정비 스케줄 최적화 기능
             initMaintenanceScheduler();

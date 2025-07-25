@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@sgratzl/chartjs-chart-boxplot"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -846,48 +847,89 @@
                 </section>
 
                 <section id="longterm-content" class="content-section hidden">
-                    <h2 class="section-title">장기(1개월~6개월) 발전량 예측<span class="sample-badge">SAMPLE</span></h2>
-                    <div class="mb-4 border-b border-gray-200">
-                        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="longtermMainTabs" role="tablist">
-                            <li class="mr-2" role="presentation"><button class="tab-button inline-block p-4 rounded-t-lg" id="longterm-1month-tab" data-tabs-target="#longterm-1month-content" type="button" role="tab" aria-controls="longterm-1month-content" aria-selected="true">1개월 예측</button></li>
-                            <li class="mr-2" role="presentation"><button class="tab-button inline-block p-4 rounded-t-lg" id="longterm-3month-tab" data-tabs-target="#longterm-3month-content" type="button" role="tab" aria-controls="longterm-3month-content" aria-selected="false">3개월 예측</button></li>
-                            <li class="mr-2" role="presentation"><button class="tab-button inline-block p-4 rounded-t-lg" id="longterm-6month-tab" data-tabs-target="#longterm-6month-content" type="button" role="tab" aria-controls="longterm-6month-content" aria-selected="false">6개월 예측</button></li>
-                        </ul>
-                    </div>
-
-                    <div id="longterm-1month-content" class="main-tab-panel">
-                        <h3 class="text-xl font-semibold mb-4">1개월 발전량 예측</h3>
-                        <div class="card">
-                            <h4 class="text-lg font-semibold mb-3">주평균 발전량 (4주)</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                                <div class="p-3 bg-indigo-50 rounded-lg"><p class="kpi-label">1주차</p><p class="kpi-value text-2xl">7.5 <span class="text-sm">GWh</span></p></div>
-                                <div class="p-3 bg-indigo-50 rounded-lg"><p class="kpi-label">2주차</p><p class="kpi-value text-2xl">8.0 <span class="text-sm">GWh</span></p></div>
-                                <div class="p-3 bg-indigo-50 rounded-lg"><p class="kpi-label">3주차</p><p class="kpi-value text-2xl">7.2 <span class="text-sm">GWh</span></p></div>
-                                <div class="p-3 bg-indigo-50 rounded-lg"><p class="kpi-label">4주차</p><p class="kpi-value text-2xl">8.5 <span class="text-sm">GWh</span></p></div>
-                            </div>
-                            <p class="text-lg font-semibold mb-2">월 전체 예상 발전량: <span class="text-blue-700">31.2 GWh</span> (28.0 ~ 34.5 GWh 범위)</p>
-                            <div class="chart-container"><canvas id="oneMonthWeeklyChart"></canvas></div>
-                        </div>
-                    </div>
-
-                    <div id="longterm-3month-content" class="main-tab-panel hidden">
-                        <h3 class="text-xl font-semibold mb-4">3개월 발전량 예측</h3>
+                    <h2 class="section-title">장기(3개월) 발전량 예측<span class="sample-badge">SAMPLE</span></h2>
+                    
+                    <div id="longterm-3month-content" class="main-tab-panel">
+                        <h3 class="text-xl font-semibold mb-4">3개월 예측</h3>
+                        
+                        <!-- 발전량 예측 섹션 -->
                         <div class="card mb-6">
-                            <h4 class="text-lg font-semibold mb-3">월평균 발전량</h4>
-                            <div class="chart-container"><canvas id="threeMonthMonthlyChart"></canvas></div>
+                            <h4 class="text-lg font-semibold mb-4">발전량 예측</h4>
+                            
+                            <!-- 월평균 발전량 -->
+                            <div class="mb-6">
+                                <h5 class="text-md font-semibold mb-3">월평균 발전량</h5>
+                                <div class="chart-container"><canvas id="threeMonthMonthlyChart"></canvas></div>
+                            </div>
+                            
+                            <!-- 주평균 발전량 -->
+                            <div>
+                                <h5 class="text-md font-semibold mb-3">주평균 발전량 (12주)</h5>
+                                <div class="chart-container"><canvas id="threeMonthWeeklyChart"></canvas></div>
+                            </div>
                         </div>
+                        
+                        <!-- 기상 예측 섹션 -->
                         <div class="card">
-                            <h4 class="text-lg font-semibold mb-3">주평균 발전량 (12주) - 개략적 추세</h4>
-                            <div class="chart-container"><canvas id="threeMonthWeeklyChart"></canvas></div>
+                            <h4 class="text-lg font-semibold mb-4">기상 예측 (12주)</h4>
+                            <p class="text-sm text-gray-600 mb-4">각 주차를 클릭하면 해당 주의 상세 기상 분포를 확인할 수 있습니다.</p>
+                            
+                            <!-- 풍속 박스플롯 -->
+                            <div class="mb-6">
+                                <h5 class="text-md font-semibold mb-3">풍속 (m/s)</h5>
+                                <div class="chart-container h-[300px]"><canvas id="windspeedBoxplotChart"></canvas></div>
+                            </div>
+                            
+                            <!-- 기온 박스플롯 -->
+                            <div class="mb-6">
+                                <h5 class="text-md font-semibold mb-3">기온 (℃)</h5>
+                                <div class="chart-container h-[300px]"><canvas id="temperatureBoxplotChart"></canvas></div>
+                            </div>
+                            
+                            <!-- 파고 박스플롯 -->
+                            <div class="mb-6">
+                                <h5 class="text-md font-semibold mb-3">파고 (m)</h5>
+                                <div class="chart-container h-[300px]"><canvas id="waveBoxplotChart"></canvas></div>
+                            </div>
                         </div>
-                    </div>
-
-                    <div id="longterm-6month-content" class="main-tab-panel hidden">
-                        <h3 class="text-xl font-semibold mb-4">6개월 발전량 예측</h3>
-                        <div class="card">
-                            <h4 class="text-lg font-semibold mb-3">월평균 발전량 (6개월)</h4>
-                            <div class="chart-container"><canvas id="sixMonthMonthlyChart"></canvas></div>
-                            <p class="text-center mt-2 text-xs text-gray-500">장기 기후 전망 및 계절적 패턴 중심 예측</p>
+                        
+                        <!-- 상세 기상 정보 모달 -->
+                        <div id="weatherDetailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+                            <div class="flex items-center justify-center min-h-screen p-4">
+                                <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                                    <div class="p-6">
+                                        <div class="flex justify-between items-center mb-4">
+                                            <h3 id="modalTitle" class="text-xl font-semibold">주차별 상세 기상 정보</h3>
+                                            <button onclick="closeWeatherModal()" class="text-gray-500 hover:text-gray-700">
+                                                <i class="fas fa-times text-xl"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                            <!-- 풍속 상세 -->
+                                            <div>
+                                                <h4 class="text-lg font-semibold mb-3">풍속 분포</h4>
+                                                <div class="chart-container h-[250px]"><canvas id="modalWindspeedChart"></canvas></div>
+                                                <div id="windspeedStats" class="mt-3 space-y-2 text-sm"></div>
+                                            </div>
+                                            
+                                            <!-- 기온 상세 -->
+                                            <div>
+                                                <h4 class="text-lg font-semibold mb-3">기온 분포</h4>
+                                                <div class="chart-container h-[250px]"><canvas id="modalTemperatureChart"></canvas></div>
+                                                <div id="temperatureStats" class="mt-3 space-y-2 text-sm"></div>
+                                            </div>
+                                            
+                                            <!-- 파고 상세 -->
+                                            <div>
+                                                <h4 class="text-lg font-semibold mb-3">파고 분포</h4>
+                                                <div class="chart-container h-[250px]"><canvas id="modalWaveChart"></canvas></div>
+                                                <div id="waveStats" class="mt-3 space-y-2 text-sm"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -1589,34 +1631,193 @@
                 }
             }
             
-            // Long-term Forecast Charts (1month, 3month, 6month)
+            // Long-term Forecast Charts (3month only)
             if (document.getElementById('longterm-content')?.offsetParent !== null) {
-                // 1 Month Forecast Chart
-                if (document.getElementById('longterm-1month-content')?.offsetParent !== null) {
-                    charts.oneMonthWeeklyChart = createChart(document.getElementById('oneMonthWeeklyChart')?.getContext('2d'), 'bar',
-                        ['1주차', '2주차', '3주차', '4주차'],
-                        [{ label: '주간 총 발전량 (GWh)', data: [7.5, 8.0, 7.2, 8.5], backgroundColor: 'rgba(79, 70, 229, 0.6)'}]
-                    );
-                }
-                
                 // 3 Month Forecast Charts
                 if (document.getElementById('longterm-3month-content')?.offsetParent !== null) {
+                    // 발전량 예측 차트들
                     charts.threeMonthMonthlyChart = createChart(document.getElementById('threeMonthMonthlyChart')?.getContext('2d'), 'bar',
                         ['1개월차', '2개월차', '3개월차'],
                         [{ label: '월간 총 발전량 (GWh)', data: [30, 32, 28], backgroundColor: 'rgba(134, 25, 143, 0.6)'}]
                     );
+                    
                     charts.threeMonthWeeklyChart = createChart(document.getElementById('threeMonthWeeklyChart')?.getContext('2d'), 'line',
                         Array.from({length: 12}, (_, i) => `${i+1}주차`),
                         [{ label: '주간 예상 발전량 (GWh)', data: generateRandomData(12, 6, 9, 1), borderColor: 'rgb(14, 116, 144)', tension: 0.1, fill: false }]
                     );
-                }
-                
-                // 6 Month Forecast Chart
-                if (document.getElementById('longterm-6month-content')?.offsetParent !== null) {
-                    charts.sixMonthMonthlyChart = createChart(document.getElementById('sixMonthMonthlyChart')?.getContext('2d'), 'bar',
-                        Array.from({length: 6}, (_, i) => `${i+1}개월차`),
-                        [{ label: '월간 총 발전량 (GWh)', data: generateRandomData(6, 25, 35), backgroundColor: 'rgba(21, 128, 61, 0.6)'}]
-                    );
+                    
+                    // 기상 예측 박스플롯 차트들
+                    const weekLabels = Array.from({length: 12}, (_, i) => `${i+1}주차`);
+                    
+                    // Box plot 데이터 생성 함수
+                    const generateBoxplotData = (min, max) => {
+                        const range = max - min;
+                        const q1 = min + range * 0.25;
+                        const median = min + range * 0.5;
+                        const q3 = min + range * 0.75;
+                        return {
+                            min: min + Math.random() * range * 0.1,
+                            q1: q1 + (Math.random() - 0.5) * range * 0.1,
+                            median: median + (Math.random() - 0.5) * range * 0.1,
+                            q3: q3 + (Math.random() - 0.5) * range * 0.1,
+                            max: max - Math.random() * range * 0.1
+                        };
+                    };
+                    
+                    // 풍속 박스플롯 (다양한 케이스)
+                    const windspeedPattern = [
+                        { type: 'optimal', range: [6, 12], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍
+                        { type: 'weak', range: [3, 6], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 약풍
+                        { type: 'optimal', range: [6, 12], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍
+                        { type: 'strong', range: [12, 18], color: 'rgba(59, 130, 246, 0.6)', borderColor: 'rgb(59, 130, 246)' }, // 강풍
+                        { type: 'optimal', range: [6, 12], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍
+                        { type: 'weak', range: [3, 6], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 약풍
+                        { type: 'optimal', range: [6, 12], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍
+                        { type: 'very_strong', range: [15, 22], color: 'rgba(139, 92, 246, 0.6)', borderColor: 'rgb(139, 92, 246)' }, // 매우 강풍
+                        { type: 'optimal', range: [6, 12], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍
+                        { type: 'strong', range: [12, 18], color: 'rgba(59, 130, 246, 0.6)', borderColor: 'rgb(59, 130, 246)' }, // 강풍
+                        { type: 'calm', range: [0, 3], color: 'rgba(239, 68, 68, 0.6)', borderColor: 'rgb(239, 68, 68)' }, // 매우 약풍
+                        { type: 'optimal', range: [6, 12], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' } // 중간풍
+                    ];
+                    
+                    const windspeedBoxData = windspeedPattern.map(caseType => {
+                        return generateBoxplotData(caseType.range[0], caseType.range[1]);
+                    });
+                    
+                    const windspeedColors = windspeedPattern.map(caseType => caseType.color);
+                    const windspeedBorderColors = windspeedPattern.map(caseType => caseType.borderColor);
+                    
+                    charts.windspeedBoxplotChart = new Chart(document.getElementById('windspeedBoxplotChart')?.getContext('2d'), {
+                        type: 'boxplot',
+                        data: {
+                            labels: weekLabels,
+                            datasets: [{
+                                label: '풍속 분포',
+                                data: windspeedBoxData,
+                                backgroundColor: windspeedColors,
+                                borderColor: windspeedBorderColors,
+                                borderWidth: 2,
+                                outlierColor: windspeedBorderColors,
+                                outlierRadius: 3
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            onClick: (event, elements) => {
+                                if (elements.length > 0) {
+                                    const weekIndex = elements[0].index;
+                                    showWeatherDetail(weekIndex + 1);
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    title: { display: true, text: '풍속 (m/s)' },
+                                    beginAtZero: true
+                                }
+                            },
+                            plugins: {
+                                legend: { display: false }
+                            }
+                        }
+                    });
+                    
+                    // 기온 박스플롯 (적정 기온이 70%로 최고 확률 → 녹색)
+                    const temperatureBoxData = weekLabels.map(() => generateBoxplotData(-5, 30));
+                    charts.temperatureBoxplotChart = new Chart(document.getElementById('temperatureBoxplotChart')?.getContext('2d'), {
+                        type: 'boxplot',
+                        data: {
+                            labels: weekLabels,
+                            datasets: [{
+                                label: '기온 분포',
+                                data: temperatureBoxData,
+                                backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                                borderColor: 'rgb(16, 185, 129)',
+                                borderWidth: 2,
+                                outlierColor: 'rgb(16, 185, 129)',
+                                outlierRadius: 3
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            onClick: (event, elements) => {
+                                if (elements.length > 0) {
+                                    const weekIndex = elements[0].index;
+                                    showWeatherDetail(weekIndex + 1);
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    title: { display: true, text: '기온 (℃)' }
+                                }
+                            },
+                            plugins: {
+                                legend: { display: false }
+                            }
+                        }
+                    });
+                    
+                    // 파고 박스플롯 (다양한 케이스)
+                    const wavePattern = [
+                        { type: 'normal', range: [0.8, 1.3], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 보통
+                        { type: 'low', range: [0.3, 0.7], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 낮음
+                        { type: 'normal', range: [0.8, 1.3], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 보통
+                        { type: 'high', range: [1.4, 2.2], color: 'rgba(239, 68, 68, 0.6)', borderColor: 'rgb(239, 68, 68)' }, // 높음
+                        { type: 'normal', range: [0.8, 1.3], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 보통
+                        { type: 'low', range: [0.3, 0.7], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 낮음
+                        { type: 'normal', range: [0.8, 1.3], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 보통
+                        { type: 'very_high', range: [2.0, 3.2], color: 'rgba(220, 38, 127, 0.6)', borderColor: 'rgb(220, 38, 127)' }, // 매우 높음
+                        { type: 'normal', range: [0.8, 1.3], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 보통
+                        { type: 'high', range: [1.4, 2.2], color: 'rgba(239, 68, 68, 0.6)', borderColor: 'rgb(239, 68, 68)' }, // 높음
+                        { type: 'calm', range: [0.1, 0.4], color: 'rgba(34, 197, 94, 0.6)', borderColor: 'rgb(34, 197, 94)' }, // 매우 낮음
+                        { type: 'normal', range: [0.8, 1.3], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' } // 보통
+                    ];
+                    
+                    const waveBoxData = wavePattern.map(caseType => {
+                        return generateBoxplotData(caseType.range[0], caseType.range[1]);
+                    });
+                    
+                    const waveColors = wavePattern.map(caseType => caseType.color);
+                    const waveBorderColors = wavePattern.map(caseType => caseType.borderColor);
+                    
+                    charts.waveBoxplotChart = new Chart(document.getElementById('waveBoxplotChart')?.getContext('2d'), {
+                        type: 'boxplot',
+                        data: {
+                            labels: weekLabels,
+                            datasets: [{
+                                label: '파고 분포',
+                                data: waveBoxData,
+                                backgroundColor: waveColors,
+                                borderColor: waveBorderColors,
+                                borderWidth: 2,
+                                outlierColor: waveBorderColors,
+                                outlierRadius: 3
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            onClick: (event, elements) => {
+                                if (elements.length > 0) {
+                                    const weekIndex = elements[0].index;
+                                    showWeatherDetail(weekIndex + 1);
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    title: { display: true, text: '파고 (m)' },
+                                    beginAtZero: true
+                                }
+                            },
+                            plugins: {
+                                legend: { display: false }
+                            }
+                        }
+                    });
+
+
+
                 }
             }
 
@@ -1695,30 +1896,7 @@
                     }
                 }
                 
-                // 장기예측이면 1개월 예측 탭 활성화
-                if (targetId === 'longterm') {
-                    // 메인탭: 1개월 예측 탭(id="longterm-1month-tab") 클릭 효과
-                    const mainTabs = document.querySelectorAll('#longtermMainTabs .tab-button');
-                    mainTabs.forEach(tab => {
-                        tab.classList.remove('active');
-                        tab.setAttribute('aria-selected', 'false');
-                    });
-                    const monthTab = document.getElementById('longterm-1month-tab');
-                    if (monthTab) {
-                        monthTab.classList.add('active');
-                        monthTab.setAttribute('aria-selected', 'true');
-                    }
-        
-                    // 모든 main-tab-panel 숨김, 1개월 예측만 노출
-                    const mainTabPanels = document.querySelectorAll('#longterm-content .main-tab-panel');
-                    mainTabPanels.forEach(panel => {
-                        panel.classList.add('hidden');
-                    });
-                    const monthPanel = document.getElementById('longterm-1month-content');
-                    if (monthPanel) {
-                        monthPanel.classList.remove('hidden');
-                    }
-                }
+                // 장기예측은 3개월 예측만 있으므로 별도 처리 불필요
         
                 initChartsForCurrentView();
             };
@@ -1853,7 +2031,7 @@
             setupTabs('#twoWeekMainTabs', '#s_2week-content', 'main-tab-panel', 0); 
             setupTabs('#shorttermMainTabs', '#shortterm-content', 'main-tab-panel', 0);
             setupTabs('#shorttermSubTabsTurbine', '#shorttermSubTabsTurbineContent', 'sub-tab-panel-item', 0);
-            setupTabs('#longtermMainTabs', '#longterm-content', 'main-tab-panel', 0);
+            // 장기예측은 탭이 없으므로 setupTabs 불필요
             console.log('Tabs setup completed.');
 
             // 중기예측 탭 수동 이벤트 추가 (백업)
@@ -1958,9 +2136,110 @@
 
             // 정비 스케줄 최적화 기능
             initMaintenanceScheduler();
+            
+            // 기상 상세 모달 기능
+            window.showWeatherDetail = function(weekNumber) {
+                const modal = document.getElementById('weatherDetailModal');
+                const title = document.getElementById('modalTitle');
+                title.textContent = `${weekNumber}주차 상세 기상 정보`;
+                
+                createModalCharts(weekNumber);
+                modal.classList.remove('hidden');
+            };
+            
+            window.closeWeatherModal = function() {
+                const modal = document.getElementById('weatherDetailModal');
+                modal.classList.add('hidden');
+                
+                ['modalWindspeedChart', 'modalTemperatureChart', 'modalWaveChart'].forEach(chartId => {
+                    if (charts[chartId]) {
+                        charts[chartId].destroy();
+                        delete charts[chartId];
+                    }
+                });
+            };
+            
+            function createModalCharts(weekNumber) {
+                // 주차별 데이터 매핑 (박스플롯과 일치)
+                const weekData = {
+                    1: { windAvg: 9.2, windOptimal: 65, windLow: 5, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.0, waveSafe: 45, waveHigh: 15 },
+                    2: { windAvg: 4.5, windOptimal: 25, windLow: 60, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 0.5, waveSafe: 70, waveHigh: 5 },
+                    3: { windAvg: 8.8, windOptimal: 60, windLow: 10, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.1, waveSafe: 40, waveHigh: 20 },
+                    4: { windAvg: 15.2, windOptimal: 30, windLow: 5, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.8, waveSafe: 20, waveHigh: 60 },
+                    5: { windAvg: 9.0, windOptimal: 55, windLow: 15, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.0, waveSafe: 45, waveHigh: 15 },
+                    6: { windAvg: 4.8, windOptimal: 30, windLow: 55, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 0.5, waveSafe: 65, waveHigh: 10 },
+                    7: { windAvg: 8.5, windOptimal: 50, windLow: 20, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.0, waveSafe: 45, waveHigh: 15 },
+                    8: { windAvg: 18.5, windOptimal: 20, windLow: 2, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 2.6, waveSafe: 10, waveHigh: 80 },
+                    9: { windAvg: 9.1, windOptimal: 60, windLow: 10, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.0, waveSafe: 45, waveHigh: 15 },
+                    10: { windAvg: 14.8, windOptimal: 35, windLow: 5, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.7, waveSafe: 25, waveHigh: 55 },
+                    11: { windAvg: 1.8, windOptimal: 5, windLow: 85, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 0.25, waveSafe: 90, waveHigh: 2 },
+                    12: { windAvg: 8.7, windOptimal: 55, windLow: 15, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.0, waveSafe: 45, waveHigh: 15 }
+                };
+                
+                const data = weekData[weekNumber] || weekData[1];
+                
+                charts.modalWindspeedChart = createChart(document.getElementById('modalWindspeedChart')?.getContext('2d'), 'doughnut',
+                    ['매우 약풍 (0~3 m/s)', '약풍 (3~6 m/s)', '중간풍 (6~12 m/s)', '강풍 (12~18 m/s)', '매우 강풍 (>18 m/s)'],
+                    [{
+                        data: [data.windLow, 25, data.windOptimal, 15, 5],
+                        backgroundColor: [
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(139, 92, 246, 0.8)'
+                        ]
+                    }],
+                    { plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } } }
+                );
+                
+                charts.modalTemperatureChart = createChart(document.getElementById('modalTemperatureChart')?.getContext('2d'), 'doughnut',
+                    ['저온 (< 5℃)', '적정 (5~25℃)', '고온 (> 30℃)'],
+                    [{
+                        data: [15, data.tempOptimal, data.tempHigh],
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(239, 68, 68, 0.8)'
+                        ]
+                    }],
+                    { plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } } }
+                );
+                
+                charts.modalWaveChart = createChart(document.getElementById('modalWaveChart')?.getContext('2d'), 'doughnut',
+                    ['낮음 (< 0.8m)', '보통 (0.8~1.3m)', '높음 (> 1.3m)'],
+                    [{
+                        data: [data.waveSafe, 45, data.waveHigh],
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(239, 68, 68, 0.8)'
+                        ]
+                    }],
+                    { plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } } }
+                );
+                
+                document.getElementById('windspeedStats').innerHTML = `
+                    <div class="text-blue-600"><strong>평균:</strong> ${data.windAvg} m/s</div>
+                    <div class="text-green-600"><strong>최적 발전:</strong> ${data.windOptimal}%</div>
+                    <div class="text-red-600"><strong>발전 불가:</strong> ${data.windLow}%</div>
+                `;
+                
+                document.getElementById('temperatureStats').innerHTML = `
+                    <div class="text-blue-600"><strong>평균:</strong> ${data.tempAvg}℃</div>
+                    <div class="text-green-600"><strong>최적 조건:</strong> ${data.tempOptimal}%</div>
+                    <div class="text-red-600"><strong>고온 주의:</strong> ${data.tempHigh}%</div>
+                `;
+                
+                document.getElementById('waveStats').innerHTML = `
+                    <div class="text-blue-600"><strong>평균:</strong> ${data.waveAvg}m</div>
+                    <div class="text-green-600"><strong>작업 안전:</strong> ${data.waveSafe}%</div>
+                    <div class="text-red-600"><strong>작업 제한:</strong> ${data.waveHigh}%</div>
+                `;
+            }
         });
 
-        // 정비 스케줄 최적화 관련 함수들
+
         function initMaintenanceScheduler() {
             let maintenancePlans = [];
             
@@ -2404,7 +2683,6 @@
                 clearResults();
             };
         }
-
     </script>
 </body>
 </html>

@@ -215,18 +215,18 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                                 <div class="p-4 bg-blue-50 rounded-lg">
                                     <p class="kpi-label">오늘 예상 발전량</p>
-                                    <p class="kpi-value text-3xl">0.46 <span class="text-base">GWh</span></p>
-                                    <p class="text-xs text-gray-500">(0.4 ~ 0.5 GWh 범위)</p>
+                                    <p class="kpi-value text-3xl">5.2 <span class="text-base">GWh</span></p>
+                                    <p class="text-xs text-gray-500">(4.8 ~ 5.6 GWh 범위)</p>
                                 </div>
                                 <div class="p-4 bg-blue-50 rounded-lg">
                                     <p class="kpi-label">내일 예상 발전량</p>
-                                    <p class="kpi-value text-3xl">0.38 <span class="text-base">GWh</span></p>
-                                    <p class="text-xs text-gray-500">(0.3 ~ 0.4 GWh 범위)</p>
+                                    <p class="kpi-value text-3xl">4.8 <span class="text-base">GWh</span></p>
+                                    <p class="text-xs text-gray-500">(4.2 ~ 5.4 GWh 범위)</p>
                                 </div>
                                 <div class="p-4 bg-blue-50 rounded-lg">
                                     <p class="kpi-label">모레 예상 발전량</p>
-                                    <p class="kpi-value text-3xl">0.42 <span class="text-base">GWh</span></p>
-                                    <p class="text-xs text-gray-500">(0.35 ~ 0.45 GWh 범위)</p>
+                                    <p class="kpi-value text-3xl">5.5 <span class="text-base">GWh</span></p>
+                                    <p class="text-xs text-gray-500">(5.0 ~ 6.0 GWh 범위)</p>
                                 </div>
                             </div>
                             <div class="chart-container"><canvas id="shorttermDailyTotalChart"></canvas></div>
@@ -238,13 +238,13 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                                 <div class="p-4 bg-green-50 rounded-lg">
                                     <p class="kpi-label">현재 시간 발전량</p>
-                                    <p class="kpi-value text-3xl">19.2 <span class="text-base">MW</span></p>
+                                    <p class="kpi-value text-3xl">132 <span class="text-base">MW</span></p>
                                     <p class="text-xs text-gray-500">실시간 측정값</p>
                                 </div>
                                 <div class="p-4 bg-green-50 rounded-lg">
                                     <p class="kpi-label">다음 시간 예상</p>
-                                    <p class="kpi-value text-3xl">16.5 <span class="text-base">MW</span></p>
-                                    <p class="text-xs text-gray-500">풍속 감소 예상</p>
+                                    <p class="kpi-value text-3xl">145 <span class="text-base">MW</span></p>
+                                    <p class="text-xs text-gray-500">풍속 증가 예상</p>
                                 </div>
                             </div>
                             <div class="chart-container h-[400px]"><canvas id="shorttermHourlyTotalChart"></canvas></div>
@@ -421,24 +421,17 @@
                                         </div>
                                         <div class="p-4 border rounded-lg">
                                             <h5 class="font-semibold text-green-600 mb-2">
-                                                <i class="fas fa-check-circle mr-2"></i>최적 풍속 (6-10m/s)
+                                                <i class="fas fa-check-circle mr-2"></i>최적 풍속 (6-12m/s)
                                             </h5>
-                                            <p class="text-2xl font-bold text-green-600">28시간 <span class="text-sm font-normal">(58.3%)</span></p>
+                                            <p class="text-2xl font-bold text-green-600">32시간 <span class="text-sm font-normal">(66.7%)</span></p>
                                             <p class="text-xs text-gray-500">최적 발전 구간</p>
                                         </div>
                                         <div class="p-4 border rounded-lg">
                                             <h5 class="font-semibold text-blue-600 mb-2">
-                                                <i class="fas fa-wind mr-2"></i>강풍 (10-15m/s)
+                                                <i class="fas fa-wind mr-2"></i>정격 풍속 (> 12m/s)
                                             </h5>
                                             <p class="text-2xl font-bold text-blue-600">12시간 <span class="text-sm font-normal">(25.0%)</span></p>
                                             <p class="text-xs text-gray-500">정격 출력 구간</p>
-                                        </div>
-                                        <div class="p-4 border rounded-lg">
-                                            <h5 class="font-semibold text-purple-600 mb-2">
-                                                <i class="fas fa-exclamation-triangle mr-2"></i>매우 강풍 (≥ 15m/s)
-                                            </h5>
-                                            <p class="text-2xl font-bold text-purple-600">4시간 <span class="text-sm font-normal">(8.3%)</span></p>
-                                            <p class="text-xs text-gray-500">고출력/위험 구간</p>
                                         </div>
                                     </div>
                                 </div>
@@ -665,13 +658,13 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                                 <div class="p-4 bg-blue-50 rounded-lg">
                                     <p class="kpi-label">1주차 예상 발전량</p>
-                                    <p class="kpi-value text-3xl">7.2 <span class="text-base">GWh</span></p>
-                                    <p class="text-xs text-gray-500">(6.5 ~ 7.9 GWh 범위)</p>
+                                    <p class="kpi-value text-3xl">7.0 <span class="text-base">GWh</span></p>
+                                    <p class="text-xs text-gray-500">(6.3 ~ 7.7 GWh 범위)</p>
                                 </div>
                                 <div class="p-4 bg-blue-50 rounded-lg">
                                     <p class="kpi-label">2주차 예상 발전량</p>
-                                    <p class="kpi-value text-3xl">8.1 <span class="text-base">GWh</span></p>
-                                    <p class="text-xs text-gray-500">(7.0 ~ 9.2 GWh 범위)</p>
+                                    <p class="kpi-value text-3xl">7.5 <span class="text-base">GWh</span></p>
+                                    <p class="text-xs text-gray-500">(6.8 ~ 8.2 GWh 범위)</p>
                                 </div>
                             </div>
                             <div class="chart-container"><canvas id="twoWeekWeeklyTotalChart"></canvas></div>
@@ -694,8 +687,8 @@
                             <div class="card" id="wtg1Card">
                                 <h4 class="font-semibold text-lg mb-2">WTG #1</h4>
                                 <div class="grid grid-cols-2 gap-2 mb-3">
-                                    <div><p class="kpi-label">주평균 (1주차)</p><p class="kpi-turbine-value text-blue-700">1.4 <span class="text-xs">GWh</span></p></div>
-                                    <div><p class="kpi-label">주평균 (2주차)</p><p class="kpi-turbine-value text-blue-700">1.6 <span class="text-xs">GWh</span></p></div>
+                                    <div><p class="kpi-label">주평균 (1주차)</p><p class="kpi-turbine-value text-blue-700">350 <span class="text-xs">MWh</span></p></div>
+                                    <div><p class="kpi-label">주평균 (2주차)</p><p class="kpi-turbine-value text-blue-700">375 <span class="text-xs">MWh</span></p></div>
                                 </div>
                                 <div class="small-chart-container"><canvas id="wtg1WeeklyChart"></canvas></div>
                                 <h5 class="font-semibold text-md mt-4 mb-2">일평균 예상 발전량 (14일)</h5>
@@ -704,8 +697,8 @@
                             <div class="card" id="wtg2Card">
                                 <h4 class="font-semibold text-lg mb-2">WTG #2</h4>
                                <div class="grid grid-cols-2 gap-2 mb-3">
-                                    <div><p class="kpi-label">주평균 (1주차)</p><p class="kpi-turbine-value text-blue-700">1.5 <span class="text-xs">GWh</span></p></div>
-                                    <div><p class="kpi-label">주평균 (2주차)</p><p class="kpi-turbine-value text-blue-700">1.7 <span class="text-xs">GWh</span></p></div>
+                                    <div><p class="kpi-label">주평균 (1주차)</p><p class="kpi-turbine-value text-blue-700">355 <span class="text-xs">MWh</span></p></div>
+                                    <div><p class="kpi-label">주평균 (2주차)</p><p class="kpi-turbine-value text-blue-700">380 <span class="text-xs">MWh</span></p></div>
                                 </div>
                                 <div class="small-chart-container"><canvas id="wtg2WeeklyChart"></canvas></div>
                                 <h5 class="font-semibold text-md mt-4 mb-2">일평균 예상 발전량 (14일)</h5>
@@ -714,8 +707,8 @@
                             <div class="card" id="wtg3Card">
                                 <h4 class="font-semibold text-lg mb-2">WTG #3</h4>
                                 <div class="grid grid-cols-2 gap-2 mb-3">
-                                    <div><p class="kpi-label">주평균 (1주차)</p><p class="kpi-turbine-value text-blue-700">1.3 <span class="text-xs">GWh</span></p></div>
-                                    <div><p class="kpi-label">주평균 (2주차)</p><p class="kpi-turbine-value text-blue-700">1.5 <span class="text-xs">GWh</span></p></div>
+                                    <div><p class="kpi-label">주평균 (1주차)</p><p class="kpi-turbine-value text-blue-700">345 <span class="text-xs">MWh</span></p></div>
+                                    <div><p class="kpi-label">주평균 (2주차)</p><p class="kpi-turbine-value text-blue-700">370 <span class="text-xs">MWh</span></p></div>
                                 </div>
                                 <div class="small-chart-container"><canvas id="wtg3WeeklyChart"></canvas></div>
                                 <h5 class="font-semibold text-md mt-4 mb-2">일평균 예상 발전량 (14일)</h5>
@@ -724,8 +717,8 @@
                             <div class="card" id="wtg4Card">
                                 <h4 class="font-semibold text-lg mb-2">WTG #4</h4>
                                 <div class="grid grid-cols-2 gap-2 mb-3">
-                                    <div><p class="kpi-label">주평균 (1주차)</p><p class="kpi-turbine-value text-blue-700">1.6 <span class="text-xs">GWh</span></p></div>
-                                    <div><p class="kpi-label">주평균 (2주차)</p><p class="kpi-turbine-value text-blue-700">1.8 <span class="text-xs">GWh</span></p></div>
+                                    <div><p class="kpi-label">주평균 (1주차)</p><p class="kpi-turbine-value text-blue-700">360 <span class="text-xs">MWh</span></p></div>
+                                    <div><p class="kpi-label">주평균 (2주차)</p><p class="kpi-turbine-value text-blue-700">385 <span class="text-xs">MWh</span></p></div>
                                 </div>
                                 <div class="small-chart-container"><canvas id="wtg4WeeklyChart"></canvas></div>
                                 <h5 class="font-semibold text-md mt-4 mb-2">일평균 예상 발전량 (14일)</h5>
@@ -734,8 +727,8 @@
                             <div class="card" id="wtg5Card">
                                 <h4 class="font-semibold text-lg mb-2">WTG #5</h4>
                                 <div class="grid grid-cols-2 gap-2 mb-3">
-                                    <div><p class="kpi-label">주평균 (1주차)</p><p class="kpi-turbine-value text-blue-700">1.4 <span class="text-xs">GWh</span></p></div>
-                                    <div><p class="kpi-label">주평균 (2주차)</p><p class="kpi-turbine-value text-blue-700">1.5 <span class="text-xs">GWh</span></p></div>
+                                    <div><p class="kpi-label">주평균 (1주차)</p><p class="kpi-turbine-value text-blue-700">340 <span class="text-xs">MWh</span></p></div>
+                                    <div><p class="kpi-label">주평균 (2주차)</p><p class="kpi-turbine-value text-blue-700">365 <span class="text-xs">MWh</span></p></div>
                                 </div>
                                 <div class="small-chart-container"><canvas id="wtg5WeeklyChart"></canvas></div>
                                 <h5 class="font-semibold text-md mt-4 mb-2">일평균 예상 발전량 (14일)</h5>
@@ -1034,7 +1027,7 @@
                     // 일평균 차트
                     charts.shorttermDailyTotalChart = createChart(document.getElementById('shorttermDailyTotalChart')?.getContext('2d'), 'bar',
                         ['오늘', '내일', '모레'], 
-                        [{ label: '일평균 발전량 (GWh)', data: [0.46, 0.38, 0.42], backgroundColor: 'rgba(59, 130, 246, 0.8)'}]
+                        [{ label: '일평균 발전량 (GWh)', data: [5.2, 4.8, 5.5], backgroundColor: 'rgba(59, 130, 246, 0.8)'}]
                     );
                     
                     // 시간별 차트
@@ -1046,27 +1039,18 @@
                     }
                     charts.shorttermHourlyTotalChart = createChart(document.getElementById('shorttermHourlyTotalChart')?.getContext('2d'), 'line',
                         hourlyLabels,
-                        [{ label: '시간별 발전량 (MW)', data: generateRandomData(72, 2, 19.2), borderColor: 'rgb(16, 185, 129)', tension: 0.1, fill: false}]
+                        [{ label: '시간별 발전량 (MW)', data: generateRandomData(72, 80, 180), borderColor: 'rgb(16, 185, 129)', tension: 0.1, fill: false}]
                     );
                 }
                 // Per Turbine - Daily
                 if (document.getElementById('shortterm-turbine-content')?.offsetParent !== null) {
                     // 터빈별 고정 데이터 (HTML의 KPI 값과 정확히 일치)
                     const turbineData = {
-                        1: [18, 15, 17], // WTG #1: 오늘, 내일, 모레
-                        2: [16, 19, 16], // WTG #2
-                        3: [20, 14, 18], // WTG #3
-                        4: [17, 16, 18], // WTG #4
-                        5: [19, 15, 17]  // WTG #5
-                    };
-                    
-                    // HTML KPI 값들도 업데이트
-                    const kpiUpdates = {
-                        1: [18, 15, 17],
-                        2: [16, 19, 16], 
-                        3: [20, 14, 18],
-                        4: [17, 16, 18],
-                        5: [19, 15, 17]
+                        1: [1.1, 0.9, 1.2], // WTG #1: 오늘, 내일, 모레
+                        2: [1.0, 1.1, 1.0], // WTG #2
+                        3: [1.2, 0.8, 1.3], // WTG #3
+                        4: [0.9, 1.0, 1.0], // WTG #4
+                        5: [1.0, 1.0, 1.0]  // WTG #5
                     };
                     
                     // 일평균 차트들
@@ -1076,7 +1060,7 @@
                             charts[`shorttermWtg${i}DailyChart`] = createChart(chartElement.getContext('2d'), 'bar',
                                 ['오늘', '내일', '모레'],
                                 [{ 
-                                    label: `WTG #${i} 일평균 (MWh)`, 
+                                    label: `WTG #${i} 일평균 (GWh)`, 
                                     data: turbineData[i], 
                                     backgroundColor: `rgba(${59 + i * 20}, ${130 + i * 10}, 246, 0.8)`
                                 }],
@@ -1087,7 +1071,7 @@
                                     scales: {
                                         y: {
                                             beginAtZero: true,
-                                            max: 25,
+                                            max: 1.5,
                                             ticks: {
                                                 font: { size: 10 }
                                             }
@@ -1108,12 +1092,12 @@
                         }
                     }
                     
-                    // 각 터빈별 72시간 데이터 생성 (최대 3MW)
-                    const wtg1Data = generateRandomData(72, 0.5, 3.0, 1);
-                    const wtg2Data = generateRandomData(72, 0.5, 3.0, 1);
-                    const wtg3Data = generateRandomData(72, 0.5, 3.0, 1);
-                    const wtg4Data = generateRandomData(72, 0.5, 3.0, 1);
-                    const wtg5Data = generateRandomData(72, 0.5, 3.0, 1);
+                    // 각 터빈별 72시간 데이터 생성
+                    const wtg1Data = generateRandomData(72, 15, 35);
+                    const wtg2Data = generateRandomData(72, 15, 35);
+                    const wtg3Data = generateRandomData(72, 15, 35);
+                    const wtg4Data = generateRandomData(72, 15, 35);
+                    const wtg5Data = generateRandomData(72, 15, 35);
                     
                     // 전체 합계 데이터 계산
                     const totalData = wtg1Data.map((val, idx) => 
@@ -1173,11 +1157,10 @@
                     
                     // 풍속 구간별 색상 설정
                     const windspeedColors = windspeedData.map(speed => {
-                        if (speed < 3) return 'rgba(239, 68, 68, 0.8)';      // 빨간색 (매우 약풍)
-                        else if (speed >= 3 && speed < 6) return 'rgba(245, 158, 11, 0.8)'; // 주황색 (약풍)
-                        else if (speed >= 6 && speed < 10) return 'rgba(16, 185, 129, 0.8)'; // 녹색 (중간풍)
-                        else if (speed >= 10 && speed < 15) return 'rgba(59, 130, 246, 0.8)'; // 파란색 (강풍)
-                        else return 'rgba(139, 92, 246, 0.8)';               // 보라색 (매우 강풍)
+                        if (speed < 3) return 'rgba(239, 68, 68, 0.8)';      // 빨간색 (컷인 미달)
+                        else if (speed >= 3 && speed < 6) return 'rgba(245, 158, 11, 0.8)'; // 주황색 (저풍속)
+                        else if (speed >= 6 && speed <= 12) return 'rgba(16, 185, 129, 0.8)'; // 녹색 (최적)
+                        else return 'rgba(59, 130, 246, 0.8)';               // 파란색 (정격)
                     });
                     
                     // 시간별 풍속 예측 차트
@@ -1202,11 +1185,10 @@
                                     callbacks: {
                                         afterLabel: function(context) {
                                             const speed = context.parsed.y;
-                                            if (speed < 3) return '발전 불가 (매우 약풍)';
-                                            else if (speed >= 3 && speed < 6) return '약풍 구간';
-                                            else if (speed >= 6 && speed < 10) return '최적 발전 구간 (중간풍)';
-                                            else if (speed >= 10 && speed < 15) return '정격 출력 구간 (강풍)';
-                                            else return '고출력/위험 구간 (매우 강풍)';
+                                            if (speed < 3) return '발전 불가 (컷인 미달)';
+                                            else if (speed >= 3 && speed < 6) return '저풍속 구간';
+                                            else if (speed >= 6 && speed <= 12) return '최적 발전 구간';
+                                            else return '정격 출력 구간';
                                         }
                                     }
                                 }
@@ -1223,8 +1205,7 @@
                                         color: function(context) {
                                             if (context.tick.value === 3) return 'rgba(239, 68, 68, 0.5)';
                                             if (context.tick.value === 6) return 'rgba(245, 158, 11, 0.5)';
-                                            if (context.tick.value === 10) return 'rgba(16, 185, 129, 0.5)';
-                                            if (context.tick.value === 15) return 'rgba(59, 130, 246, 0.5)';
+                                            if (context.tick.value === 12) return 'rgba(16, 185, 129, 0.5)';
                                             return 'rgba(0, 0, 0, 0.1)';
                                         }
                                     }
@@ -1239,20 +1220,18 @@
                     const sampleWindspeedData = generateRandomData(48, 3, 15);
                     const cutInBelow = sampleWindspeedData.filter(speed => speed < 3).length;
                     const lowWind = sampleWindspeedData.filter(speed => speed >= 3 && speed < 6).length;
-                    const optimal = sampleWindspeedData.filter(speed => speed >= 6 && speed < 10).length;
-                    const rated = sampleWindspeedData.filter(speed => speed >= 10 && speed < 15).length;
-                    const veryStrong = sampleWindspeedData.filter(speed => speed >= 15).length;
+                    const optimal = sampleWindspeedData.filter(speed => speed >= 6 && speed <= 12).length;
+                    const rated = sampleWindspeedData.filter(speed => speed > 12).length;
                     
                     charts.windspeedDistributionChart = createChart(distributionChartElement.getContext('2d'), 'doughnut',
-                        ['매우 약풍 (0-3m/s)', '약풍 (3-6m/s)', '중간풍 (6-10m/s)', '강풍 (10-15m/s)', '매우 강풍 (≥15m/s)'],
+                        ['컷인 미달 (< 3m/s)', '저풍속 (3-6m/s)', '최적 풍속 (6-12m/s)', '정격 풍속 (> 12m/s)'],
                         [{
-                            data: [cutInBelow, lowWind, optimal, rated, veryStrong],
+                            data: [cutInBelow, lowWind, optimal, rated],
                             backgroundColor: [
                                 'rgba(239, 68, 68, 0.8)',   // 빨간색
                                 'rgba(245, 158, 11, 0.8)',  // 주황색
                                 'rgba(16, 185, 129, 0.8)',  // 녹색
-                                'rgba(59, 130, 246, 0.8)',  // 파란색
-                                'rgba(139, 92, 246, 0.8)'   // 보라색
+                                'rgba(59, 130, 246, 0.8)'   // 파란색
                             ],
                             borderWidth: 2,
                             borderColor: '#ffffff'
@@ -1554,30 +1533,30 @@
                     // 주평균 차트
                     charts.twoWeekWeeklyTotalChart = createChart(document.getElementById('twoWeekWeeklyTotalChart')?.getContext('2d'), 'bar',
                         ['1주차', '2주차'], 
-                        [{ label: '주간 총 발전량 (GWh)', data: [7.2, 8.1], backgroundColor: 'rgba(59, 130, 246, 0.6)'}]
+                        [{ label: '주간 총 발전량 (GWh)', data: [7.0, 7.5], backgroundColor: 'rgba(59, 130, 246, 0.6)'}]
                     );
                     
                     // 일평균 차트
                     charts.twoWeekDailyTotalChart = createChart(document.getElementById('twoWeekDailyTotalChart')?.getContext('2d'), 'line',
                         Array.from({length: 14}, (_, i) => `D+${i+1}`), 
-                        [{ label: '일일 예상 발전량 (MWh)', data: generateRandomData(14, 800, 1600), borderColor: 'rgb(245, 158, 11)', tension: 0.1, fill: false }]
+                        [{ label: '일일 예상 발전량 (MWh)', data: generateRandomData(14, 720, 1440), borderColor: 'rgb(245, 158, 11)', tension: 0.1, fill: false }]
                     );
                 }
                 // Per Turbine (WTG #1 to #5)
                 if (document.getElementById('s_2week-content')?.offsetParent !== null) {
                     // 터빈별 고정 데이터 (HTML KPI 값과 정확히 일치)
                     const turbineWeeklyData = {
-                        1: [1.4, 1.6], // WTG #1: 1주차, 2주차 (GWh)
-                        2: [1.5, 1.7], // WTG #2
-                        3: [1.3, 1.5], // WTG #3
-                        4: [1.6, 1.8], // WTG #4
-                        5: [1.4, 1.5]  // WTG #5
+                        1: [350, 375], // WTG #1: 1주차, 2주차 (MWh)
+                        2: [355, 380], // WTG #2
+                        3: [345, 370], // WTG #3
+                        4: [360, 385], // WTG #4
+                        5: [340, 365]  // WTG #5
                     };
                     
                     // 주간 데이터를 기반으로 일간 데이터 생성 (주평균을 7로 나누고 약간의 변동 추가)
                     const turbineDailyData = {};
                     for (let i = 1; i <= 5; i++) {
-                        const week1Avg = turbineWeeklyData[i][0] / 7; // GWh를 일평균으로 변환
+                        const week1Avg = turbineWeeklyData[i][0] / 7; // MWh를 일평균으로 변환
                         const week2Avg = turbineWeeklyData[i][1] / 7;
                         
                         // 14일간 데이터 생성 (주평균 기준으로 ±20% 변동)
@@ -1585,8 +1564,8 @@
                         for (let day = 0; day < 14; day++) {
                             const baseValue = day < 7 ? week1Avg : week2Avg;
                             const variation = (Math.random() - 0.5) * 0.4; // ±20% 변동
-                            const dailyValue = Math.max(0.05, baseValue * (1 + variation)); // 최소값 보장
-                            dailyData.push(Math.round(dailyValue * 1000)); // MWh로 변환 (GWh * 1000)
+                            const dailyValue = Math.max(20, baseValue * (1 + variation)); // 최소값 보장 (20MWh)
+                            dailyData.push(Math.round(dailyValue)); // MWh 단위 유지
                         }
                         turbineDailyData[i] = dailyData;
                     }
@@ -1601,7 +1580,7 @@
                             charts[`wtg${i}WeeklyChart`] = createChart(weeklyChartElement.getContext('2d'), 'bar',
                                 ['1주차', '2주차'],
                                 [{ 
-                                    label: `WTG #${i} 주간 (GWh)`, 
+                                    label: `WTG #${i} 주간 (MWh)`, 
                                     data: turbineWeeklyData[i], 
                                     backgroundColor: `rgba(${50 + i*30}, ${100 + i*15}, ${150 - i*20}, 0.6)` 
                                 }],
@@ -1610,7 +1589,7 @@
                                     scales: { 
                                         y: { 
                                             beginAtZero: true,
-                                            max: 2.0,
+                                            max: 400,
                                             ticks: { font: { size: 10 }}
                                         }
                                     }
@@ -1687,18 +1666,18 @@
                     
                     // 풍속 박스플롯 (다양한 케이스)
                     const windspeedPattern = [
-                        { type: 'optimal', range: [6, 10], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍
+                        { type: 'optimal', range: [6, 12], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍
                         { type: 'weak', range: [3, 6], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 약풍
-                        { type: 'optimal', range: [6, 10], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍
-                        { type: 'strong', range: [10, 15], color: 'rgba(59, 130, 246, 0.6)', borderColor: 'rgb(59, 130, 246)' }, // 강풍
-                        { type: 'optimal', range: [6, 10], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍
+                        { type: 'optimal', range: [6, 12], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍
+                        { type: 'strong', range: [12, 18], color: 'rgba(59, 130, 246, 0.6)', borderColor: 'rgb(59, 130, 246)' }, // 강풍
+                        { type: 'optimal', range: [6, 12], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍
                         { type: 'weak', range: [3, 6], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 약풍
-                        { type: 'optimal', range: [6, 10], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍
+                        { type: 'optimal', range: [6, 12], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍
                         { type: 'very_strong', range: [15, 22], color: 'rgba(139, 92, 246, 0.6)', borderColor: 'rgb(139, 92, 246)' }, // 매우 강풍
-                        { type: 'optimal', range: [6, 10], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍
-                        { type: 'strong', range: [10, 15], color: 'rgba(59, 130, 246, 0.6)', borderColor: 'rgb(59, 130, 246)' }, // 강풍
+                        { type: 'optimal', range: [6, 12], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍
+                        { type: 'strong', range: [12, 18], color: 'rgba(59, 130, 246, 0.6)', borderColor: 'rgb(59, 130, 246)' }, // 강풍
                         { type: 'calm', range: [0, 3], color: 'rgba(239, 68, 68, 0.6)', borderColor: 'rgb(239, 68, 68)' }, // 매우 약풍
-                        { type: 'optimal', range: [6, 10], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' } // 중간풍
+                        { type: 'optimal', range: [6, 12], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' } // 중간풍
                     ];
                     
                     const windspeedBoxData = windspeedPattern.map(caseType => {
@@ -2181,43 +2160,28 @@
             };
             
             function createModalCharts(weekNumber) {
-                // 주차별 데이터 매핑 (박스플롯 패턴과 정확히 일치)
-                const windspeedPatternData = [
-                    { type: 'optimal', range: [6, 10], avg: 8.0, veryWeak: 5, weak: 20, optimal: 60, strong: 12, veryStrong: 3 },    // 1주차: 중간풍
-                    { type: 'weak', range: [3, 6], avg: 4.5, veryWeak: 15, weak: 65, optimal: 18, strong: 2, veryStrong: 0 },       // 2주차: 약풍
-                    { type: 'optimal', range: [6, 10], avg: 8.2, veryWeak: 3, weak: 22, optimal: 58, strong: 15, veryStrong: 2 },   // 3주차: 중간풍
-                    { type: 'strong', range: [10, 15], avg: 12.5, veryWeak: 2, weak: 8, optimal: 35, strong: 50, veryStrong: 5 },   // 4주차: 강풍
-                    { type: 'optimal', range: [6, 10], avg: 7.8, veryWeak: 8, weak: 25, optimal: 55, strong: 10, veryStrong: 2 },   // 5주차: 중간풍
-                    { type: 'weak', range: [3, 6], avg: 4.8, veryWeak: 12, weak: 68, optimal: 18, strong: 2, veryStrong: 0 },       // 6주차: 약풍
-                    { type: 'optimal', range: [6, 10], avg: 8.5, veryWeak: 5, weak: 18, optimal: 62, strong: 13, veryStrong: 2 },   // 7주차: 중간풍
-                    { type: 'very_strong', range: [15, 22], avg: 18.5, veryWeak: 0, weak: 2, optimal: 15, strong: 35, veryStrong: 48 }, // 8주차: 매우 강풍
-                    { type: 'optimal', range: [6, 10], avg: 8.1, veryWeak: 4, weak: 20, optimal: 60, strong: 14, veryStrong: 2 },   // 9주차: 중간풍
-                    { type: 'strong', range: [10, 15], avg: 12.8, veryWeak: 1, weak: 5, optimal: 30, strong: 55, veryStrong: 9 },   // 10주차: 강풍
-                    { type: 'calm', range: [0, 3], avg: 1.8, veryWeak: 85, weak: 13, optimal: 2, strong: 0, veryStrong: 0 },        // 11주차: 매우 약풍
-                    { type: 'optimal', range: [6, 10], avg: 8.7, veryWeak: 3, weak: 15, optimal: 65, strong: 15, veryStrong: 2 }    // 12주차: 중간풍
-                ];
-                
+                // 주차별 데이터 매핑 (박스플롯과 일치)
                 const weekData = {
-                    1: { windAvg: 8.0, veryWeak: 5, weak: 20, optimal: 60, strong: 12, veryStrong: 3, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.0, waveSafe: 45, waveHigh: 15 },
-                    2: { windAvg: 4.5, veryWeak: 15, weak: 65, optimal: 18, strong: 2, veryStrong: 0, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 0.5, waveSafe: 70, waveHigh: 5 },
-                    3: { windAvg: 8.2, veryWeak: 3, weak: 22, optimal: 58, strong: 15, veryStrong: 2, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.1, waveSafe: 40, waveHigh: 20 },
-                    4: { windAvg: 12.5, veryWeak: 2, weak: 8, optimal: 35, strong: 50, veryStrong: 5, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.8, waveSafe: 20, waveHigh: 60 },
-                    5: { windAvg: 7.8, veryWeak: 8, weak: 25, optimal: 55, strong: 10, veryStrong: 2, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.0, waveSafe: 45, waveHigh: 15 },
-                    6: { windAvg: 4.8, veryWeak: 12, weak: 68, optimal: 18, strong: 2, veryStrong: 0, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 0.5, waveSafe: 65, waveHigh: 10 },
-                    7: { windAvg: 8.5, veryWeak: 5, weak: 18, optimal: 62, strong: 13, veryStrong: 2, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.0, waveSafe: 45, waveHigh: 15 },
-                    8: { windAvg: 18.5, veryWeak: 0, weak: 2, optimal: 15, strong: 35, veryStrong: 48, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 2.6, waveSafe: 10, waveHigh: 80 },
-                    9: { windAvg: 8.1, veryWeak: 4, weak: 20, optimal: 60, strong: 14, veryStrong: 2, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.0, waveSafe: 45, waveHigh: 15 },
-                    10: { windAvg: 12.8, veryWeak: 1, weak: 5, optimal: 30, strong: 55, veryStrong: 9, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.7, waveSafe: 25, waveHigh: 55 },
-                    11: { windAvg: 1.8, veryWeak: 85, weak: 13, optimal: 2, strong: 0, veryStrong: 0, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 0.25, waveSafe: 90, waveHigh: 2 },
-                    12: { windAvg: 8.7, veryWeak: 3, weak: 15, optimal: 65, strong: 15, veryStrong: 2, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.0, waveSafe: 45, waveHigh: 15 }
+                    1: { windAvg: 9.2, windOptimal: 65, windLow: 5, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.0, waveSafe: 45, waveHigh: 15 },
+                    2: { windAvg: 4.5, windOptimal: 25, windLow: 60, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 0.5, waveSafe: 70, waveHigh: 5 },
+                    3: { windAvg: 8.8, windOptimal: 60, windLow: 10, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.1, waveSafe: 40, waveHigh: 20 },
+                    4: { windAvg: 15.2, windOptimal: 30, windLow: 5, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.8, waveSafe: 20, waveHigh: 60 },
+                    5: { windAvg: 9.0, windOptimal: 55, windLow: 15, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.0, waveSafe: 45, waveHigh: 15 },
+                    6: { windAvg: 4.8, windOptimal: 30, windLow: 55, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 0.5, waveSafe: 65, waveHigh: 10 },
+                    7: { windAvg: 8.5, windOptimal: 50, windLow: 20, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.0, waveSafe: 45, waveHigh: 15 },
+                    8: { windAvg: 18.5, windOptimal: 20, windLow: 2, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 2.6, waveSafe: 10, waveHigh: 80 },
+                    9: { windAvg: 9.1, windOptimal: 60, windLow: 10, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.0, waveSafe: 45, waveHigh: 15 },
+                    10: { windAvg: 14.8, windOptimal: 35, windLow: 5, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.7, waveSafe: 25, waveHigh: 55 },
+                    11: { windAvg: 1.8, windOptimal: 5, windLow: 85, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 0.25, waveSafe: 90, waveHigh: 2 },
+                    12: { windAvg: 8.7, windOptimal: 55, windLow: 15, tempAvg: 18.5, tempOptimal: 70, tempHigh: 15, waveAvg: 1.0, waveSafe: 45, waveHigh: 15 }
                 };
                 
                 const data = weekData[weekNumber] || weekData[1];
                 
                 charts.modalWindspeedChart = createChart(document.getElementById('modalWindspeedChart')?.getContext('2d'), 'doughnut',
-                    ['매우 약풍 (0-3 m/s)', '약풍 (3-6 m/s)', '중간풍 (6-10 m/s)', '강풍 (10-15 m/s)', '매우 강풍 (≥15 m/s)'],
+                    ['매우 약풍 (0~3 m/s)', '약풍 (3~6 m/s)', '중간풍 (6~12 m/s)', '강풍 (12~18 m/s)', '매우 강풍 (>18 m/s)'],
                     [{
-                        data: [data.veryWeak, data.weak, data.optimal, data.strong, data.veryStrong],
+                        data: [data.windLow, 25, data.windOptimal, 15, 5],
                         backgroundColor: [
                             'rgba(239, 68, 68, 0.8)',
                             'rgba(245, 158, 11, 0.8)',
@@ -2257,9 +2221,8 @@
                 
                 document.getElementById('windspeedStats').innerHTML = `
                     <div class="text-blue-600"><strong>평균:</strong> ${data.windAvg} m/s</div>
-                    <div class="text-green-600"><strong>최적 발전:</strong> ${data.optimal}%</div>
-                    <div class="text-red-600"><strong>발전 불가:</strong> ${data.veryWeak}%</div>
-                    <div class="text-purple-600"><strong>고출력/위험:</strong> ${data.veryStrong}%</div>
+                    <div class="text-green-600"><strong>최적 발전:</strong> ${data.windOptimal}%</div>
+                    <div class="text-red-600"><strong>발전 불가:</strong> ${data.windLow}%</div>
                 `;
                 
                 document.getElementById('temperatureStats').innerHTML = `
@@ -2282,11 +2245,11 @@
             
             // 터빈별 2주 예측 데이터 (실제로는 2주 예측 페이지에서 가져와야 함)
             const turbineData = {
-                wtg1: [1.2, 0.8, 1.5, 1.1, 0.9, 1.3, 1.0, 1.4, 0.7, 1.2, 1.1, 0.8, 1.3, 1.0],
-                wtg2: [1.1, 0.9, 1.4, 1.0, 1.2, 1.1, 0.8, 1.3, 1.0, 1.1, 0.9, 1.2, 1.0, 1.1],
-                wtg3: [1.3, 1.0, 1.2, 1.4, 0.8, 1.1, 1.2, 1.0, 1.3, 0.9, 1.1, 1.0, 1.2, 1.3],
-                wtg4: [1.0, 1.2, 1.1, 0.9, 1.3, 1.0, 1.1, 1.2, 0.8, 1.4, 1.0, 1.1, 0.9, 1.2],
-                wtg5: [1.2, 1.1, 1.0, 1.3, 1.0, 1.2, 1.4, 0.8, 1.1, 1.0, 1.2, 1.3, 1.1, 1.0]
+                wtg1: [52, 48, 55, 51, 49, 53, 50, 54, 47, 52, 51, 48, 53, 50],
+                wtg2: [51, 49, 54, 50, 52, 51, 48, 53, 50, 51, 49, 52, 50, 51],
+                wtg3: [53, 50, 52, 54, 48, 51, 52, 50, 53, 49, 51, 50, 52, 53],
+                wtg4: [50, 52, 51, 49, 53, 50, 51, 52, 48, 54, 50, 51, 49, 52],
+                wtg5: [52, 51, 50, 53, 50, 52, 54, 48, 51, 50, 52, 53, 51, 50]
             };
 
             // 정비 계획 추가
@@ -2417,7 +2380,7 @@
                             <h4 class="font-semibold text-red-800 mb-2">
                                 <i class="fas fa-exclamation-triangle mr-2"></i>예상 발전량 손실
                             </h4>
-                            <p class="text-2xl font-bold text-red-600">${totalLoss.toFixed(2)} GWh</p>
+                            <p class="text-2xl font-bold text-red-600">${totalLoss.toFixed(0)} MWh</p>
                             <p class="text-sm text-red-600">전체 발전량의 ${lossPercentage}%</p>
                         </div>
                         <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
@@ -2456,7 +2419,7 @@
                                 <i class="fas fa-clock mr-2"></i>소요 시간: ${plan.durationText}
                             </p>
                             <p class="text-sm">
-                                <i class="fas fa-chart-line mr-2"></i>예상 손실: ${(plan.estimatedLoss || 0).toFixed(2)} GWh
+                                <i class="fas fa-chart-line mr-2"></i>예상 손실: ${(plan.estimatedLoss || 0).toFixed(0)} MWh
                             </p>
                         </div>
                     `;
@@ -2590,7 +2553,7 @@
                                         const loss = maintenanceImpact[dayIndex];
                                         if (loss > 0) {
                                             const lossPercentage = ((loss / totalDailyGeneration[dayIndex]) * 100).toFixed(1);
-                                            return [`발전량 손실: ${loss.toFixed(2)} GWh (${lossPercentage}%)`];
+                                            return [`발전량 손실: ${loss.toFixed(0)} MWh (${lossPercentage}%)`];
                                         }
                                         return [];
                                     }
@@ -2618,7 +2581,7 @@
                             y: {
                                 title: {
                                     display: true,
-                                    text: '발전량 (GWh)',
+                                    text: '발전량 (MWh)',
                                     font: {
                                         size: 14,
                                         weight: 'bold'
@@ -2631,7 +2594,7 @@
                                 },
                                 ticks: {
                                     callback: function(value) {
-                                        return value.toFixed(1) + ' GWh';
+                                        return value.toFixed(0) + ' MWh';
                                     }
                                 }
                             }
@@ -2659,7 +2622,7 @@
                             <h4 class="font-semibold text-blue-800 mb-2">
                                 <i class="fas fa-chart-bar mr-2"></i>총 발전량 영향
                             </h4>
-                            <p class="text-lg font-bold text-blue-600">${totalImpact.toFixed(2)} GWh 손실</p>
+                            <p class="text-lg font-bold text-blue-600">${totalImpact.toFixed(0)} MWh 손실</p>
                             <p class="text-sm text-blue-600">전체 발전량의 ${impactPercentage}% 감소</p>
                         </div>
                         <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -2667,7 +2630,7 @@
                                 <i class="fas fa-exclamation-triangle mr-2"></i>최대 일일 영향
                             </h4>
                             <p class="text-lg font-bold text-red-600">${maxLossDay}일차</p>
-                            <p class="text-sm text-red-600">${maxDailyLoss.toFixed(2)} GWh 손실 (${maxLossPercentage}%)</p>
+                            <p class="text-sm text-red-600">${maxDailyLoss.toFixed(0)} MWh 손실 (${maxLossPercentage}%)</p>
                         </div>
                         <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
                             <h4 class="font-semibold text-green-800 mb-2">

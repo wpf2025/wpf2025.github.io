@@ -1857,7 +1857,6 @@
                     { key: 'humidity', label: '상대습도 (%)', icon: 'fa-droplet', color: 'teal' },
                     { key: 'waveHeight', label: '파고 (m)', icon: 'fa-water', color: 'indigo' },
                     { key: 'lightning', label: '낙뢰확률 (%)', icon: 'fa-bolt', color: 'yellow' },
-                    { key: 'confidence', label: '신뢰도 (%)', icon: 'fa-chart-line', color: 'green' }
                 ];
                 
                 variables.forEach(variable => {
@@ -2149,7 +2148,7 @@
                 dailyData.push(dataPoint);
 
                 calendarHtml += `
-                    <div class="weather-calendar-day weather-status-${dataPoint.status}">
+                    <div class="weather-calendar-day flex flex-col items-center justify-center weather-status-${dataPoint.status}">
                         <div class="text-white">${date.getDate()}</div>
                         <div class="text-xs text-white mt-1">${dataPoint.windSpeed} m/s</div>
                     </div>
@@ -2177,13 +2176,6 @@
             });
             detailedHtml += '</tr>';
 
-            // Confidence Row
-            detailedHtml += '<tr><td class="sticky-col bg-white font-semibold text-gray-700 p-2">신뢰도 (%)</td>';
-            dailyData.forEach(data => {
-                const confidence = Math.floor(data.confidence / 10) * 10;
-                detailedHtml += `<td class="text-center p-2"><div class="w-full bg-gray-200 rounded h-4"><div class="bg-blue-600 h-4 rounded" style="width: ${confidence}%"></div></div><span class="text-xs">${confidence}%</span></td>`;
-            });
-            detailedHtml += '</tr>';
 
             const variables = [
                 { key: 'windSpeed', label: '평균풍속', criteria: '< 15m/s', goodRange: [0, 14.9] },
@@ -2273,7 +2265,7 @@
                 }
 
                 month.days.forEach(day => {
-                    calendarHtml += `<div class="weather-calendar-day weather-status-${day.status} aspect-square flex items-center justify-center"><div class="text-white text-sm font-semibold">${day.date}</div></div>`;
+                    calendarHtml += `<div class="weather-calendar-day flex flex-col items-center justify-center weather-status-${day.status} aspect-square flex items-center justify-center"><div class="text-white text-sm font-semibold">${day.date}</div></div>`;
                 });
 
                 calendarHtml += '</div></div>';

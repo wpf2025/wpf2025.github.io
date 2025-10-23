@@ -290,7 +290,7 @@
             background: linear-gradient(to right, #f9fafb, #f3f4f6);
         }
         .weather-timeline-bar {
-            height: 40px;
+            height: 20px;
             display: flex;
             border-radius: 0.5rem;
             overflow: hidden;

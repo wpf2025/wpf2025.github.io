@@ -1,0 +1,362 @@
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .sidebar-item {
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+        .sidebar-item.active, .sidebar-item:hover {
+            background-color: #2563eb; /* blue-600 */
+            color: white;
+        }
+        .tab-button.active, .sub-tab-button.active {
+            border-bottom-color: #2563eb; /* blue-600 */
+            color: #2563eb;
+            font-weight: 600;
+        }
+        .sub-tab-button.active { /* More specific for sub-tabs if needed */
+             background-color: #eff6ff; /* blue-50 */
+             border-bottom-color: #2563eb;
+        }
+        .tab-button, .sub-tab-button {
+            border-bottom: 2px solid transparent;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+            padding: 1.5rem; /* p-6 */
+            margin-bottom: 1.5rem; /* mb-6 */
+        }
+        .kpi-value {
+            font-size: 2rem; 
+            font-weight: bold;
+            color: #1e40af; /* blue-800 */
+        }
+        .kpi-sub-value {
+            font-size: 1.5rem;
+        }
+        .kpi-turbine-value {
+            font-size: 1.25rem;
+        }
+        .kpi-label {
+            font-size: 0.875rem; 
+            color: #6b7280; /* gray-500 */
+        }
+        .section-title {
+            font-size: 1.5rem; 
+            font-weight: 600;
+            margin-bottom: 1rem; 
+            color: #1f2937; /* gray-800 */
+        }
+        .sample-badge {
+            display: inline-block;
+            background-color: #ef4444; /* red-500 */
+            color: white;
+            font-size: 0.75rem; /* text-xs */
+            font-weight: 700; /* font-bold */
+            padding: 0.25rem 0.5rem; /* px-2 py-1 */
+            border-radius: 0.25rem; /* rounded */
+            margin-left: 0.75rem; /* ml-3 */
+            vertical-align: middle;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .alert-warning {
+            background-color: #fffbeb; 
+            border-color: #fef3c7; 
+            color: #92400e; 
+        }
+        .chart-container {
+            position: relative;
+            height: 300px; 
+            width: 100%;
+        }
+        .small-chart-container {
+            position: relative;
+            height: 200px;
+            width: 100%;
+        }
+        .turbine-daily-chart-container {
+        /* 기상예측 스타일 */
+        .weather-accordion-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            background: white;
+        }
+        .weather-accordion-header {
+            padding: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .weather-accordion-header:hover {
+            background-color: #f9fafb;
+        }
+        .weather-timeline-bar {
+            height: 20px;
+            display: flex;
+            border-radius: 0.25rem;
+            overflow: hidden;
+        }
+        .weather-timeline-segment {
+            flex: 1;
+            transition: opacity 0.2s;
+        }
+        .weather-timeline-segment:hover {
+            opacity: 0.8;
+        }
+        .weather-status-good { background-color: #10b981; }
+        .weather-status-warning { background-color: #f59e0b; }
+        .weather-status-danger { background-color: #ef4444; }
+        .weather-accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .weather-accordion-content.active {
+            max-height: 5000px !important;
+        }
+        .weather-table {
+            width: 100%;
+            font-size: 0.875rem;
+        }
+        .weather-table th {
+            background-color: #f3f4f6;
+            padding: 0.5rem;
+            text-align: left;
+            font-weight: 600;
+        }
+        .weather-table td {
+            padding: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .weather-calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .weather-calendar-day:hover {
+            transform: scale(1.05);
+        }
+        .weather-indicator {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+        .weather-confidence-bar {
+            height: 20px;
+            background: linear-gradient(to right, #ef4444, #f59e0b, #10b981);
+            border-radius: 0.25rem;
+            position: relative;
+        }
+        .weather-confidence-marker {
+            position: absolute;
+            width: 3px;
+            height: 100%;
+        /* 최신형 기상예측 스타일 */
+        .weather-accordion-item-modern {
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .weather-accordion-item-modern:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+        .weather-accordion-header-modern {
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: linear-gradient(to right, #ffffff, #f9fafb);
+        }
+        .weather-accordion-header-modern:hover {
+            background: linear-gradient(to right, #f9fafb, #f3f4f6);
+        }
+        .weather-timeline-bar {
+            height: 20px;
+            display: flex;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .weather-timeline-segment {
+            flex: 1;
+            transition: all 0.2s;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .weather-timeline-segment:hover {
+            opacity: 0.8;
+            transform: scaleY(1.1);
+        }
+        .weather-status-good { 
+            background: linear-gradient(to bottom, #10b981, #059669);
+        }
+        .weather-status-warning { 
+            background: linear-gradient(to bottom, #f59e0b, #d97706);
+        }
+        .weather-status-danger { 
+            background: linear-gradient(to bottom, #ef4444, #dc2626);
+        }
+        .weather-accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .weather-accordion-content.active {
+            max-height: 5000px !important;
+        }
+        .weather-table-modern {
+            width: 100%;
+            font-size: 0.875rem;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        .weather-table-modern thead th {
+            background: linear-gradient(to bottom, #f9fafb, #f3f4f6);
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .weather-table-modern tbody td {
+            padding: 0.75rem 0.5rem;
+            border-bottom: 1px solid #f3f4f6;
+            transition: all 0.2s;
+        }
+        .weather-table-modern tbody tr:hover td {
+            background-color: #f9fafb;
+        }
+        .weather-table-modern .sticky-col {
+            position: sticky;
+            left: 0;
+            background: white;
+            z-index: 5;
+            font-weight: 600;
+            border-right: 2px solid #e5e7eb;
+            min-width: 150px;
+        }
+        .weather-table-modern tbody tr:hover .sticky-col {
+            background-color: #f9fafb;
+        }
+            background-color: #1f2937;
+        }
+            position: relative;
+            height: 220px; /* Slightly taller for daily line chart */
+            width: 100%;
+            margin-top: 1rem; /* Add some space above daily chart */
+        }
+        /* 최신형 기상예측 스타일 */
+        .weather-accordion-item-modern {
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .weather-accordion-item-modern:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+        .weather-accordion-header-modern {
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: linear-gradient(to right, #ffffff, #f9fafb);
+        }
+        .weather-accordion-header-modern:hover {
+            background: linear-gradient(to right, #f9fafb, #f3f4f6);
+        }
+        .weather-timeline-bar {
+            height: 40px;
+            display: flex;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .weather-timeline-segment {
+            flex: 1;
+            transition: all 0.2s;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .weather-timeline-segment:hover {
+            opacity: 0.8;
+            transform: scaleY(1.1);
+        }
+        .weather-status-good { 
+            background: linear-gradient(to bottom, #10b981, #059669);
+        }
+        .weather-status-warning { 
+            background: linear-gradient(to bottom, #f59e0b, #d97706);
+        }
+        .weather-status-danger { 
+            background: linear-gradient(to bottom, #ef4444, #dc2626);
+        }
+        .weather-accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .weather-accordion-content.active {
+            max-height: 5000px !important;
+        }
+        .weather-table-modern {
+            width: 100%;
+            font-size: 0.875rem;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        .weather-table-modern thead th {
+            background: linear-gradient(to bottom, #f9fafb, #f3f4f6);
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .weather-table-modern tbody td {
+            padding: 0.75rem 0.5rem;
+            border-bottom: 1px solid #f3f4f6;
+            transition: all 0.2s;
+        }
+        .weather-table-modern tbody tr:hover td {
+            background-color: #f9fafb;
+        }
+        .weather-table-modern .sticky-col {
+            position: sticky;
+            left: 0;
+            background: white;
+            z-index: 5;
+            font-weight: 600;
+            border-right: 2px solid #e5e7eb;
+            min-width: 150px;
+        }
+        .weather-table-modern tbody tr:hover .sticky-col {
+            background-color: #f9fafb;
+        }

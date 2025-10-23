@@ -2451,7 +2451,7 @@
             }
         };
 
-        let currentLang = 'ko';
+        let currentLang = 'en';
 
         function switchLanguage() {
             currentLang = currentLang === 'ko' ? 'en' : 'ko';

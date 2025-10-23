@@ -23,6 +23,9 @@
                 <a href="#" class="sidebar-item active block py-3 px-6" data-target="overview">
                     <i class="fas fa-tachometer-alt mr-3 w-5 text-center"></i><span data-i18n="sidebar.overview">개요</span>
                 </a>
+                <a href="#" class="sidebar-item block py-3 px-6" data-target="weather">
+                    <i class="fas fa-cloud-sun mr-3 w-5 text-center"></i><span data-i18n="sidebar.weather">기상예측</span>
+                </a>
                 <a href="#" class="sidebar-item block py-3 px-6" data-target="shortterm">
                     <i class="fas fa-clock mr-3 w-5 text-center"></i><span data-i18n="sidebar.shortterm">단기예측</span>
                 </a>
@@ -31,9 +34,6 @@
                 </a>
                 <a href="#" class="sidebar-item block py-3 px-6" data-target="longterm">
                     <i class="fas fa-calendar-alt mr-3 w-5 text-center"></i><span data-i18n="sidebar.longterm">장기예측</span>
-                </a>
-                <a href="#" class="sidebar-item block py-3 px-6" data-target="weather">
-                    <i class="fas fa-cloud-sun mr-3 w-5 text-center"></i><span data-i18n="sidebar.weather">기상예측</span>
                 </a>
                 <a href="#" class="sidebar-item block py-3 px-6" data-target="details">
                     <i class="fas fa-info-circle mr-3 w-5 text-center"></i><span data-i18n="sidebar.details">상세 정보</span>
@@ -48,14 +48,6 @@
             <header class="bg-white shadow-md p-4 flex justify-between items-center">
                 <h1 id="main-title" class="text-xl font-semibold text-gray-700">개요</h1>
                 <div class="flex items-center space-x-4">
-                    <div class="relative">
-                        <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                            <option selected>운영 계획</option>
-                            <option value="maintenance">유지보수</option>
-                            <option value="bidding">시장 입찰</option>
-                            <option value="finance">재정 계획</option>
-                        </select>
-                    </div>
                     <button class="text-gray-500 hover:text-blue-600 relative">
                         <i class="fas fa-bell fa-lg"></i>
                         <span class="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">2</span>

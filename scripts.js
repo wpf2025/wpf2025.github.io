@@ -2213,11 +2213,11 @@
             const calendarContainer = document.getElementById('weather90daysCalendarGrid');
             const detailedContainer = document.getElementById('weather90daysDetailedView');
             const today = new Date();
-            let calendarHtml = '';
 
             const months = {};
             const dailyData = [];
 
+            // 90일 데이터 생성
             for (let day = 0; day < 90; day++) {
                 const date = new Date(today);
                 date.setDate(date.getDate() + day);
@@ -2233,7 +2233,7 @@
                 }
                 
                 const dataPoint = {
-                    date: date,
+                    date: new Date(date),
                     windSpeed: (5 + Math.random() * 15).toFixed(1),
                     maxTemp: (15 + Math.random() * 20).toFixed(1),
                     minTemp: (5 + Math.random() * 10).toFixed(1),
@@ -2250,71 +2250,78 @@
                 });
             }
             
-            calendarHtml += '<div class="grid grid-cols-1 md:grid-cols-2 gap-8">';
+            // 상단: 월별 캘린더 그리드 (4열)
+            let calendarHtml = '<div class="grid grid-cols-4 gap-6">';
 
             Object.values(months).forEach(month => {
-                html += '<div>'; // Start of a grid item for a month
-                html += `<h4 class="font-semibold text-lg mb-2">${month.name}</h4>`;
-                html += '<div class="grid grid-cols-7 gap-1 text-center">';
+                calendarHtml += '<div class="bg-white rounded-lg p-4 shadow-sm">';
+                calendarHtml += `<h4 class="font-semibold text-lg mb-3 text-gray-800">${month.name}</h4>`;
+                calendarHtml += '<div class="grid grid-cols-7 gap-1 text-center">';
                 
                 const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
                 weekdays.forEach(weekday => {
-                    html += `<div class="font-semibold text-xs text-gray-500">${weekday}</div>`;
+                    calendarHtml += `<div class="font-semibold text-xs text-gray-500 py-1">${weekday}</div>`;
                 });
 
-                const firstDayOfMonth = new Date(month.year, month.month, 1).getDay();
-                for (let i = 0; i < firstDayOfMonth; i++) {
-                    html += `<div></div>`;
+                // 해당 월의 첫 번째 날짜의 요일 계산
+                const firstDateInMonth = month.days[0].date;
+                const firstDayOfWeek = new Date(month.year, month.month, firstDateInMonth).getDay();
+                
+                // 빈 칸 추가
+                for (let i = 0; i < firstDayOfWeek; i++) {
+                    calendarHtml += `<div class="aspect-square"></div>`;
                 }
 
                 month.days.forEach(day => {
-                    html += `<div class="weather-calendar-day weather-status-${day.status}"><div class="text-white text-sm">${day.date}</div></div>`;
+                    calendarHtml += `<div class="weather-calendar-day weather-status-${day.status} aspect-square flex items-center justify-center"><div class="text-white text-sm font-semibold">${day.date}</div></div>`;
                 });
 
-                html += '</div></div>'; // End of a grid item for a month
+                calendarHtml += '</div></div>';
             });
             
             calendarHtml += '</div>';
             calendarContainer.innerHTML = calendarHtml;
 
-            // Detailed Calendar View
-            let detailedHtml = '<table class="w-full text-sm">';
-            // Header
-            detailedHtml += '<thead><tr><th class="sticky-col bg-white w-1/4"></th>';
+            // 하단: 상세 캘린더 뷰
+            let detailedHtml = '<div class="overflow-x-auto"><table class="weather-table-modern">';
+            
+            // Header: 날짜
+            detailedHtml += '<thead><tr><th class="sticky-col">날짜</th>';
             dailyData.forEach(data => {
-                detailedHtml += `<th class="text-center font-medium text-gray-600 p-2">${data.date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}</th>`;
+                detailedHtml += `<th class="text-center">${data.date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}</th>`;
             });
             detailedHtml += '</tr></thead>';
 
             // Body
             detailedHtml += '<tbody>';
 
-            // Comprehensive Row
-            detailedHtml += '<tr class="bg-gray-50"><td class="sticky-col bg-gray-50 font-semibold text-purple-700 p-2"><i class="fas fa-check-circle mr-2"></i>종합</td>';
+            // 종합 행
+            detailedHtml += '<tr><td class="sticky-col font-semibold text-purple-700"><i class="fas fa-check-circle mr-2"></i>종합</td>';
             dailyData.forEach(data => {
                 const statusColors = { good: 'bg-green-500', warning: 'bg-yellow-500', danger: 'bg-red-500' };
                 detailedHtml += `<td class="text-center p-2"><div class="w-full h-4 rounded ${statusColors[data.status]}"></div></td>`;
             });
             detailedHtml += '</tr>';
 
-            // Confidence Row
-            detailedHtml += '<tr><td class="sticky-col bg-white font-semibold text-gray-700 p-2">신뢰도 (%)</td>';
+            // 신뢰도 행
+            detailedHtml += '<tr><td class="sticky-col font-semibold text-gray-700"><i class="fas fa-chart-line mr-2"></i>신뢰도 (%)</td>';
             dailyData.forEach(data => {
-                const confidence = Math.floor(data.confidence / 10) * 10;
-                detailedHtml += `<td class="text-center p-2"><div class="w-full bg-gray-200 rounded h-4"><div class="bg-blue-600 h-4 rounded" style="width: ${confidence}%"></div></div><span class="text-xs">${confidence}%</span></td>`;
+                const confidence = Math.floor(parseFloat(data.confidence) / 10) * 10;
+                detailedHtml += `<td class="text-center font-semibold">${confidence}%</td>`;
             });
             detailedHtml += '</tr>';
 
+            // 기상 변수 행
             const variables = [
-                { key: 'windSpeed', label: '평균풍속', criteria: '< 15m/s', goodRange: [0, 14.9] },
-                { key: 'maxTemp', label: '최고기온', criteria: '< 30°C', goodRange: [-Infinity, 29.9] },
-                { key: 'minTemp', label: '최저기온', criteria: '> 10°C', goodRange: [10.1, Infinity] },
-                { key: 'precip', label: '강수량', criteria: '< 10mm', goodRange: [0, 9.9] },
-                { key: 'waveHeight', label: '평균파고', criteria: '< 1m', goodRange: [0, 0.9] },
+                { key: 'windSpeed', label: '평균풍속', criteria: '< 15m/s', icon: 'fa-wind', goodRange: [0, 14.9] },
+                { key: 'maxTemp', label: '최고기온', criteria: '< 30°C', icon: 'fa-temperature-high', goodRange: [-Infinity, 29.9] },
+                { key: 'minTemp', label: '최저기온', criteria: '> 10°C', icon: 'fa-temperature-low', goodRange: [10.1, Infinity] },
+                { key: 'precip', label: '강수량', criteria: '< 10mm', icon: 'fa-cloud-rain', goodRange: [0, 9.9] },
+                { key: 'waveHeight', label: '평균파고', criteria: '< 1m', icon: 'fa-water', goodRange: [0, 0.9] },
             ];
 
             variables.forEach(variable => {
-                detailedHtml += `<tr><td class="sticky-col bg-white font-semibold text-gray-700 p-2">${variable.label} <span class="text-xs text-gray-500">(${variable.criteria})</span></td>`;
+                detailedHtml += `<tr><td class="sticky-col font-semibold text-gray-700"><i class="fas ${variable.icon} mr-2"></i>${variable.label} <span class="text-xs text-gray-500">(${variable.criteria})</span></td>`;
                 dailyData.forEach(data => {
                     const value = parseFloat(data[variable.key]);
                     const isGood = value >= variable.goodRange[0] && value <= variable.goodRange[1];
@@ -2324,6 +2331,6 @@
                 detailedHtml += '</tr>';
             });
 
-            detailedHtml += '</tbody></table>';
+            detailedHtml += '</tbody></table></div>';
             detailedContainer.innerHTML = detailedHtml;
         }

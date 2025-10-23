@@ -38,19 +38,22 @@
             
             // 24시간 타임라인 생성
             const timeline = document.getElementById('todayWeatherTimeline');
-            timeline.innerHTML = '';
-            windSpeeds.forEach(speed => {
-                const segment = document.createElement('div');
-                segment.style.flex = '1';
-                if (speed < 10) {
-                    segment.style.backgroundColor = '#86efac'; // 녹색
-                } else if (speed < 13) {
-                    segment.style.backgroundColor = '#fcd34d'; // 주황
-                } else {
-                    segment.style.backgroundColor = '#fca5a5'; // 빨강
-                }
-                timeline.appendChild(segment);
-            });
+            if (timeline) {
+                timeline.innerHTML = '';
+                windSpeeds.forEach(speed => {
+                    const segment = document.createElement('div');
+                    segment.style.flex = '1';
+                    segment.style.height = '100%';
+                    if (speed < 10) {
+                        segment.style.backgroundColor = '#86efac'; // 녹색
+                    } else if (speed < 13) {
+                        segment.style.backgroundColor = '#fcd34d'; // 주황
+                    } else {
+                        segment.style.backgroundColor = '#fca5a5'; // 빨강
+                    }
+                    timeline.appendChild(segment);
+                });
+            }
         };
 
         const defaultChartOptions = {

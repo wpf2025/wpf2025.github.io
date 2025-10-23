@@ -105,9 +105,9 @@
         .weather-timeline-segment:hover {
             opacity: 0.8;
         }
-        .weather-status-good { background-color: #10b981; }
-        .weather-status-warning { background-color: #f59e0b; }
-        .weather-status-danger { background-color: #ef4444; }
+        .weather-status-good { background-color: #86efac; }
+        .weather-status-warning { background-color: #fcd34d; }
+        .weather-status-danger { background-color: #fca5a5; }
         .weather-accordion-content {
             max-height: 0;
             overflow: hidden;
@@ -206,13 +206,13 @@
             transform: scaleY(1.1);
         }
         .weather-status-good { 
-            background: linear-gradient(to bottom, #10b981, #059669);
+            background: linear-gradient(to bottom, #86efac, #6ee7b7);
         }
         .weather-status-warning { 
-            background: linear-gradient(to bottom, #f59e0b, #d97706);
+            background: linear-gradient(to bottom, #fcd34d, #fbbf24);
         }
         .weather-status-danger { 
-            background: linear-gradient(to bottom, #ef4444, #dc2626);
+            background: linear-gradient(to bottom, #fca5a5, #f87171);
         }
         .weather-accordion-content {
             max-height: 0;
@@ -306,13 +306,13 @@
             transform: scaleY(1.1);
         }
         .weather-status-good { 
-            background: linear-gradient(to bottom, #10b981, #059669);
+            background: linear-gradient(to bottom, #86efac, #6ee7b7);
         }
         .weather-status-warning { 
-            background: linear-gradient(to bottom, #f59e0b, #d97706);
+            background: linear-gradient(to bottom, #fcd34d, #fbbf24);
         }
         .weather-status-danger { 
-            background: linear-gradient(to bottom, #ef4444, #dc2626);
+            background: linear-gradient(to bottom, #fca5a5, #f87171);
         }
         .weather-accordion-content {
             max-height: 0;
@@ -359,4 +359,17 @@
         }
         .weather-table-modern tbody tr:hover .sticky-col {
             background-color: #f9fafb;
+        }
+        /* 파스텔 배경용 진한 텍스트 색상 */
+        .weather-status-good .text-white,
+        .weather-status-good div {
+            color: #065f46 !important;
+        }
+        .weather-status-warning .text-white,
+        .weather-status-warning div {
+            color: #92400e !important;
+        }
+        .weather-status-danger .text-white,
+        .weather-status-danger div {
+            color: #991b1b !important;
         }

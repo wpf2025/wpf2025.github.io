@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 언어 전환 버튼 분리
 - **기상예측 테이블 가독성 개선**: sticky-col 열 너비 증가 (150px → 180px)
   - "평균풍속 (<15m/s)" 텍스트 줄바꿈 방지
+- **타임라인 바 렌더링 개선**: GitHub Pages 배포 환경에서 정상 표시
+  - 타임라인 요소 존재 확인 추가
+  - 세그먼트에 명시적 높이(100%) 설정
+  - 타임라인 컨테이너에 배경색 추가
 
 ### Changed
 - **데이터 범위 최적화**:
@@ -27,8 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 강수량 범위: 0-5mm → 0-2mm (총 강수량 감소)
 
 ### Technical Details
-- `index.html`: 개요 페이지 기상 카드 구조 변경, 알림 버튼 HTML 수정
-- `scripts.js`: `initTodayWeather()` 함수 추가, 데이터 생성 범위 조정
+- `index.html`: 개요 페이지 기상 카드 구조 변경, 알림 버튼 HTML 수정, 타임라인 배경색 추가
+- `scripts.js`: `initTodayWeather()` 함수 추가, 데이터 생성 범위 조정, 타임라인 렌더링 개선
 - `styles.css`: `.weather-table-modern .sticky-col` 너비 조정 (2곳)
 
 ---

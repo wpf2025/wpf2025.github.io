@@ -7,6 +7,52 @@
             return data;
         };
 
+        // 오늘 기상예보 데이터 생성 및 표시
+        const initTodayWeather = () => {
+            const today = new Date();
+            const dateNum = today.getDate();
+            const monthNames = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
+            const dayNames = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+            
+            // 24시간 기상 데이터 생성
+            const windSpeeds = generateRandomData(24, 5, 15, 1);
+            const temps = generateRandomData(24, 15, 22, 1);
+            const rainfalls = generateRandomData(24, 0, 2, 1);
+            const waves = generateRandomData(24, 0.6, 2.5, 1);
+            const lightnings = generateRandomData(24, 0, 20, 0);
+            
+            // 평균 풍속
+            const avgWindSpeed = (windSpeeds.reduce((a, b) => a + b, 0) / 24).toFixed(1);
+            
+            // 날짜 정보 업데이트
+            document.getElementById('todayWeatherDate').textContent = dateNum;
+            document.getElementById('todayWeatherDay').textContent = `${monthNames[today.getMonth()]} ${dateNum}일 ${dayNames[today.getDay()]}`;
+            document.getElementById('todayAvgWindSpeed').textContent = `${avgWindSpeed} m/s`;
+            
+            // 범위 정보 업데이트
+            document.getElementById('todayWindRange').textContent = `${Math.min(...windSpeeds).toFixed(1)} ~ ${Math.max(...windSpeeds).toFixed(1)} m/s`;
+            document.getElementById('todayTempRange').textContent = `${Math.min(...temps).toFixed(1)} ~ ${Math.max(...temps).toFixed(1)}°C`;
+            document.getElementById('todayRainfall').textContent = `${rainfalls.reduce((a, b) => a + b, 0).toFixed(1)} mm`;
+            document.getElementById('todayWaveRange').textContent = `${Math.min(...waves).toFixed(1)} ~ ${Math.max(...waves).toFixed(1)} m`;
+            document.getElementById('todayLightning').textContent = `${Math.max(...lightnings)}%`;
+            
+            // 24시간 타임라인 생성
+            const timeline = document.getElementById('todayWeatherTimeline');
+            timeline.innerHTML = '';
+            windSpeeds.forEach(speed => {
+                const segment = document.createElement('div');
+                segment.style.flex = '1';
+                if (speed < 10) {
+                    segment.style.backgroundColor = '#86efac'; // 녹색
+                } else if (speed < 13) {
+                    segment.style.backgroundColor = '#fcd34d'; // 주황
+                } else {
+                    segment.style.backgroundColor = '#fca5a5'; // 빨강
+                }
+                timeline.appendChild(segment);
+            });
+        };
+
         const defaultChartOptions = {
             responsive: true,
             maintainAspectRatio: false,
@@ -1136,6 +1182,9 @@
             const initialTarget = 'overview';
             document.querySelector(`.sidebar-item[data-target="${initialTarget}"]`).classList.add('active');
             setActiveSection(initialTarget);
+            
+            // 오늘 기상예보 초기화
+            initTodayWeather();
             
             // 기상예측 초기화
             initWeatherForecast();

@@ -58,11 +58,11 @@
                     </div>
                     <button class="text-gray-500 hover:text-blue-600 relative">
                         <i class="fas fa-bell fa-lg"></i>
+                        <span class="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">2</span>
+                    </button>
                     <button id="langToggle" class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
                         <i class="fas fa-language mr-1"></i>
                         <span id="langText">EN</span>
-                    </button>
-                        <span class="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">2</span>
                     </button>
                     <div class="flex items-center">
                         <span class="text-sm text-gray-700">사용자명</span>
@@ -96,12 +96,44 @@
                         </div>
                         <div class="lg:col-span-1 space-y-6">
                             <div class="card">
-                                <h2 class="section-title">기상 정보<span class="sample-badge">SAMPLE</span></h2>
-                                <div class="space-y-3">
-                                    <div><p class="kpi-label">평균 풍속 (현재)</p><p class="kpi-sub-value text-blue-600">7.5 <span class="text-sm">m/s</span></p></div>
-                                    <div><p class="kpi-label">주요 풍향</p><p class="kpi-sub-value text-blue-600">북서풍 <i class="fas fa-location-arrow transform -rotate-45"></i></p></div>
-                                    <div><p class="kpi-label">기온 / 체감온도</p><p class="kpi-sub-value text-blue-600">15°C / 13°C</p></div>
-                                    <div><p class="kpi-label">기상 특보</p><p class="text-sm text-orange-600 font-semibold"><i class="fas fa-exclamation-triangle mr-1"></i>강풍 주의보 (해안 지역)</p></div>
+                                <h2 class="section-title">오늘 기상예보<span class="sample-badge">SAMPLE</span></h2>
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center">
+                                            <div class="w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-lg mr-3" id="todayWeatherDate">23</div>
+                                            <div>
+                                                <p class="font-semibold text-gray-800" id="todayWeatherDay">10월 23일 목요일</p>
+                                                <p class="text-xs text-gray-500">24시간 예보</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-xs text-gray-500">평균 풍속</p>
+                                            <p class="text-2xl font-bold text-blue-600" id="todayAvgWindSpeed">9.6 m/s</p>
+                                        </div>
+                                    </div>
+                                    <div class="h-5 rounded-full overflow-hidden flex mb-3" id="todayWeatherTimeline"></div>
+                                </div>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between items-center py-1 border-b border-gray-100">
+                                        <span class="text-gray-600"><i class="fas fa-wind text-blue-500 w-5"></i> 풍속 범위</span>
+                                        <span class="font-semibold" id="todayWindRange">5.0 ~ 14.9 m/s</span>
+                                    </div>
+                                    <div class="flex justify-between items-center py-1 border-b border-gray-100">
+                                        <span class="text-gray-600"><i class="fas fa-thermometer-half text-red-500 w-5"></i> 기온 범위</span>
+                                        <span class="font-semibold" id="todayTempRange">10.0 ~ 24.2°C</span>
+                                    </div>
+                                    <div class="flex justify-between items-center py-1 border-b border-gray-100">
+                                        <span class="text-gray-600"><i class="fas fa-tint text-blue-400 w-5"></i> 총 강수량</span>
+                                        <span class="font-semibold" id="todayRainfall">48.5 mm</span>
+                                    </div>
+                                    <div class="flex justify-between items-center py-1 border-b border-gray-100">
+                                        <span class="text-gray-600"><i class="fas fa-water text-cyan-500 w-5"></i> 파고 범위</span>
+                                        <span class="font-semibold" id="todayWaveRange">0.6 ~ 2.5 m</span>
+                                    </div>
+                                    <div class="flex justify-between items-center py-1">
+                                        <span class="text-gray-600"><i class="fas fa-bolt text-yellow-500 w-5"></i> 낙뢰 최대</span>
+                                        <span class="font-semibold" id="todayLightning">20%</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card">

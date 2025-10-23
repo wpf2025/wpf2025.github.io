@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.2] - 2025-10-23
+
+### Added
+- **개요 페이지 오늘 기상예보**: 10일 기상예측 데이터를 활용한 24시간 상세 예보
+  - 날짜 및 평균 풍속 표시
+  - 24시간 타임라인 색상 바 (풍속 기반: 녹색/주황/빨강)
+  - 풍속, 기온, 강수량, 파고, 낙뢰 범위 정보
+  - `initTodayWeather()` 함수로 자동 초기화
+
+### Fixed
+- **알림 배지 위치 수정**: 종 아이콘 우측 상단에 정확히 배치
+  - 버튼 구조 수정 (배지를 버튼 내부로 이동)
+  - 언어 전환 버튼 분리
+- **기상예측 테이블 가독성 개선**: sticky-col 열 너비 증가 (150px → 180px)
+  - "평균풍속 (<15m/s)" 텍스트 줄바꿈 방지
+
+### Changed
+- **데이터 범위 최적화**:
+  - 기온 범위: 10-25°C → 15-22°C (더 현실적인 범위)
+  - 강수량 범위: 0-5mm → 0-2mm (총 강수량 감소)
+
+### Technical Details
+- `index.html`: 개요 페이지 기상 카드 구조 변경, 알림 버튼 HTML 수정
+- `scripts.js`: `initTodayWeather()` 함수 추가, 데이터 생성 범위 조정
+- `styles.css`: `.weather-table-modern .sticky-col` 너비 조정 (2곳)
+
+---
+
 ## [1.3.1] - 2025-10-23
 
 ### Changed

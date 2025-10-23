@@ -258,7 +258,7 @@
             z-index: 5;
             font-weight: 600;
             border-right: 2px solid #e5e7eb;
-            min-width: 150px;
+            min-width: 180px;
         }
         .weather-table-modern tbody tr:hover .sticky-col {
             background-color: #f9fafb;
@@ -358,7 +358,7 @@
             z-index: 5;
             font-weight: 600;
             border-right: 2px solid #e5e7eb;
-            min-width: 150px;
+            min-width: 180px;
         }
         .weather-table-modern tbody tr:hover .sticky-col {
             background-color: #f9fafb;

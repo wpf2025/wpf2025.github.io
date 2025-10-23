@@ -21,26 +21,26 @@
             </div>
             <nav class="flex-1 mt-4">
                 <a href="#" class="sidebar-item active block py-3 px-6" data-target="overview">
-                    <i class="fas fa-tachometer-alt mr-3 w-5 text-center"></i>개요
+                    <i class="fas fa-tachometer-alt mr-3 w-5 text-center"></i><span data-i18n="sidebar.overview">개요</span>
                 </a>
                 <a href="#" class="sidebar-item block py-3 px-6" data-target="shortterm">
-                    <i class="fas fa-clock mr-3 w-5 text-center"></i>단기예측
+                    <i class="fas fa-clock mr-3 w-5 text-center"></i><span data-i18n="sidebar.shortterm">단기예측</span>
                 </a>
                 <a href="#" class="sidebar-item block py-3 px-6" data-target="2week">
-                    <i class="fas fa-calendar-week mr-3 w-5 text-center"></i>중기예측
+                    <i class="fas fa-calendar-week mr-3 w-5 text-center"></i><span data-i18n="sidebar.midterm">중기예측</span>
                 </a>
                 <a href="#" class="sidebar-item block py-3 px-6" data-target="longterm">
-                    <i class="fas fa-calendar-alt mr-3 w-5 text-center"></i>장기예측
+                    <i class="fas fa-calendar-alt mr-3 w-5 text-center"></i><span data-i18n="sidebar.longterm">장기예측</span>
                 </a>
                 <a href="#" class="sidebar-item block py-3 px-6" data-target="weather">
-                    <i class="fas fa-cloud-sun mr-3 w-5 text-center"></i>기상예측
+                    <i class="fas fa-cloud-sun mr-3 w-5 text-center"></i><span data-i18n="sidebar.weather">기상예측</span>
                 </a>
                 <a href="#" class="sidebar-item block py-3 px-6" data-target="details">
-                    <i class="fas fa-info-circle mr-3 w-5 text-center"></i>상세 정보
+                    <i class="fas fa-info-circle mr-3 w-5 text-center"></i><span data-i18n="sidebar.details">상세 정보</span>
                 </a>
             </nav>
             <div class="p-4 border-t border-gray-700">
-                <p class="text-xs text-gray-400">버전 1.2.0</p>
+                <p class="text-xs text-gray-400">버전 1.3.0</p>
             </div>
         </aside>
 
@@ -58,6 +58,10 @@
                     </div>
                     <button class="text-gray-500 hover:text-blue-600 relative">
                         <i class="fas fa-bell fa-lg"></i>
+                    <button id="langToggle" class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-language mr-1"></i>
+                        <span id="langText">EN</span>
+                    </button>
                         <span class="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">2</span>
                     </button>
                     <div class="flex items-center">
@@ -854,26 +858,26 @@
 
 
                 <section id="weather-content" class="content-section hidden">
-                    <h2 class="section-title">기상예측<span class="sample-badge">SAMPLE</span></h2>
+                    <h2 class="section-title"><span data-i18n="weather.title">기상예측</span><span class="sample-badge" data-i18n="common.sample">SAMPLE</span></h2>
                     
                     <!-- 상단 컨트롤 -->
                     <div class="card">
                         <div class="flex flex-wrap items-center gap-4 mb-4">
                             <div class="flex items-center gap-2">
-                                <span class="text-sm font-medium text-gray-700">예측 기간:</span>
+                                <span class="text-sm font-medium text-gray-700" data-i18n="weather.period">예측 기간:</span>
                                 <label class="inline-flex items-center">
                                     <input type="radio" name="weatherPeriod" value="10days" checked class="form-radio text-blue-600">
-                                    <span class="ml-2 text-sm">10일 (1시간)</span>
+                                    <span class="ml-2 text-sm" data-i18n="weather.10days">10일 (1시간)</span>
                                 </label>
                                 <label class="inline-flex items-center ml-4">
                                     <input type="radio" name="weatherPeriod" value="90days" class="form-radio text-blue-600">
-                                    <span class="ml-2 text-sm">90일 (1일)</span>
+                                    <span class="ml-2 text-sm" data-i18n="weather.90days">90일 (1일)</span>
                                 </label>
                             </div>
                             <div class="flex items-center gap-2 ml-auto">
-                                <span class="text-sm font-medium text-gray-700">표시 모드:</span>
-                                <button id="weatherListBtn" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-l-lg hover:bg-blue-700">List</button>
-                                <button id="weatherChartsBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-r-lg hover:bg-gray-300">Charts</button>
+                                <span class="text-sm font-medium text-gray-700" data-i18n="weather.mode">표시 모드:</span>
+                                <button id="weatherListBtn" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-l-lg hover:bg-blue-700" data-i18n="weather.list">List</button>
+                                <button id="weatherChartsBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-r-lg hover:bg-gray-300" data-i18n="weather.charts">Charts</button>
                             </div>
                         </div>
                         <p class="text-xs text-gray-500">마지막 업데이트: <span id="weatherLastUpdate">2025-10-23 08:30 UTC</span></p>

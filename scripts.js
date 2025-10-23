@@ -2326,3 +2326,121 @@
             detailedHtml += '</tbody></table></div>';
             detailedContainer.innerHTML = detailedHtml;
         }
+
+        // ==================== 다국어 지원 시스템 ====================
+        const translations = {
+            ko: {
+                'sidebar.overview': '개요',
+                'sidebar.shortterm': '단기예측',
+                'sidebar.midterm': '중기예측',
+                'sidebar.longterm': '장기예측',
+                'sidebar.weather': '기상예측',
+                'sidebar.details': '상세 정보',
+                'weather.title': '기상예측',
+                'weather.period': '예측 기간',
+                'weather.10days': '10일 (1시간)',
+                'weather.90days': '90일 (1일)',
+                'weather.mode': '표시 모드',
+                'weather.list': 'List',
+                'weather.charts': 'Charts',
+                'weather.overview': 'Weather Overview',
+                'weather.detailed': 'Detailed Calendar View',
+                'weather.comprehensive': 'Overall',
+                'weather.confidence': 'Confidence',
+                'weather.windspeed': 'Avg Wind Speed',
+                'weather.maxtemp': 'Max Temp',
+                'weather.mintemp': 'Min Temp',
+                'weather.precip': 'Precipitation',
+                'weather.humidity': 'Humidity',
+                'weather.waveheight': 'Wave Height',
+                'weather.lightning': 'Lightning',
+                'weather.temp': 'Temperature',
+                'weather.avgwindspeed': 'Avg Wind Speed',
+                'weather.date': 'Date',
+                'weather.time': 'Time',
+                'weather.hour': 'Hour',
+                'weather.day': 'Day',
+                'common.sample': 'SAMPLE',
+                'common.update': 'Last Update',
+            },
+            en: {
+                'sidebar.overview': 'Overview',
+                'sidebar.shortterm': 'Short-term',
+                'sidebar.midterm': 'Mid-term',
+                'sidebar.longterm': 'Long-term',
+                'sidebar.weather': 'Weather',
+                'sidebar.details': 'Details',
+                'weather.title': 'Weather Forecast',
+                'weather.period': 'Forecast Period',
+                'weather.10days': '10 Days (Hourly)',
+                'weather.90days': '90 Days (Daily)',
+                'weather.mode': 'Display Mode',
+                'weather.list': 'List',
+                'weather.charts': 'Charts',
+                'weather.overview': 'Weather Overview',
+                'weather.detailed': 'Detailed Calendar View',
+                'weather.comprehensive': 'Overall',
+                'weather.confidence': 'Confidence',
+                'weather.windspeed': 'Avg Wind Speed',
+                'weather.maxtemp': 'Max Temp',
+                'weather.mintemp': 'Min Temp',
+                'weather.precip': 'Precipitation',
+                'weather.humidity': 'Humidity',
+                'weather.waveheight': 'Wave Height',
+                'weather.lightning': 'Lightning',
+                'weather.temp': 'Temperature',
+                'weather.avgwindspeed': 'Avg Wind Speed',
+                'weather.date': 'Date',
+                'weather.time': 'Time',
+                'weather.hour': 'Hour',
+                'weather.day': 'Day',
+                'common.sample': 'SAMPLE',
+                'common.update': 'Last Update',
+            }
+        };
+
+        let currentLang = 'ko';
+
+        function switchLanguage() {
+            currentLang = currentLang === 'ko' ? 'en' : 'ko';
+            localStorage.setItem('language', currentLang);
+            
+            document.getElementById('langText').textContent = currentLang === 'ko' ? 'EN' : 'KO';
+            
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[currentLang][key]) {
+                    element.textContent = translations[currentLang][key];
+                }
+            });
+            
+            const mainTitle = document.getElementById('main-title');
+            if (mainTitle) {
+                const activeSection = document.querySelector('.sidebar-item.active');
+                if (activeSection) {
+                    const target = activeSection.getAttribute('data-target');
+                    const key = 'sidebar.' + target;
+                    if (translations[currentLang][key]) {
+                        mainTitle.textContent = translations[currentLang][key];
+                    }
+                }
+            }
+        }
+
+        function initLanguage() {
+            const savedLang = localStorage.getItem('language');
+            if (savedLang && savedLang !== 'ko') {
+                currentLang = savedLang;
+                switchLanguage();
+            }
+            
+            const langToggle = document.getElementById('langToggle');
+            if (langToggle) {
+                langToggle.addEventListener('click', switchLanguage);
+            }
+        }
+
+        // DOMContentLoaded에 initLanguage 추가
+        document.addEventListener('DOMContentLoaded', function() {
+            initLanguage();
+        });

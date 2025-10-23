@@ -88,10 +88,288 @@
             width: 100%;
         }
         .turbine-daily-chart-container {
+        /* 기상예측 스타일 */
+        .weather-accordion-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            background: white;
+        }
+        .weather-accordion-header {
+            padding: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .weather-accordion-header:hover {
+            background-color: #f9fafb;
+        }
+        .weather-timeline-bar {
+            height: 20px;
+            display: flex;
+            border-radius: 0.25rem;
+            overflow: hidden;
+        }
+        .weather-timeline-segment {
+            flex: 1;
+            transition: opacity 0.2s;
+        }
+        .weather-timeline-segment:hover {
+            opacity: 0.8;
+        }
+        .weather-status-good { background-color: #10b981; }
+        .weather-status-warning { background-color: #f59e0b; }
+        .weather-status-danger { background-color: #ef4444; }
+        .weather-accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .weather-accordion-content.active {
+            max-height: 5000px !important;
+        }
+        .weather-table {
+            width: 100%;
+            font-size: 0.875rem;
+        }
+        .weather-table th {
+            background-color: #f3f4f6;
+            padding: 0.5rem;
+            text-align: left;
+            font-weight: 600;
+        }
+        .weather-table td {
+            padding: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .weather-calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .weather-calendar-day:hover {
+            transform: scale(1.05);
+        }
+        .weather-indicator {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+        .weather-confidence-bar {
+            height: 20px;
+            background: linear-gradient(to right, #ef4444, #f59e0b, #10b981);
+            border-radius: 0.25rem;
+            position: relative;
+        }
+        .weather-confidence-marker {
+            position: absolute;
+            width: 3px;
+            height: 100%;
+        /* 최신형 기상예측 스타일 */
+        .weather-accordion-item-modern {
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .weather-accordion-item-modern:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+        .weather-accordion-header-modern {
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: linear-gradient(to right, #ffffff, #f9fafb);
+        }
+        .weather-accordion-header-modern:hover {
+            background: linear-gradient(to right, #f9fafb, #f3f4f6);
+        }
+        .weather-timeline-bar {
+            height: 20px;
+            display: flex;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .weather-timeline-segment {
+            flex: 1;
+            transition: all 0.2s;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .weather-timeline-segment:hover {
+            opacity: 0.8;
+            transform: scaleY(1.1);
+        }
+        .weather-status-good { 
+            background: linear-gradient(to bottom, #10b981, #059669);
+        }
+        .weather-status-warning { 
+            background: linear-gradient(to bottom, #f59e0b, #d97706);
+        }
+        .weather-status-danger { 
+            background: linear-gradient(to bottom, #ef4444, #dc2626);
+        }
+        .weather-accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .weather-accordion-content.active {
+            max-height: 5000px !important;
+        }
+        .weather-table-modern {
+            width: 100%;
+            font-size: 0.875rem;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        .weather-table-modern thead th {
+            background: linear-gradient(to bottom, #f9fafb, #f3f4f6);
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .weather-table-modern tbody td {
+            padding: 0.75rem 0.5rem;
+            border-bottom: 1px solid #f3f4f6;
+            transition: all 0.2s;
+        }
+        .weather-table-modern tbody tr:hover td {
+            background-color: #f9fafb;
+        }
+        .weather-table-modern .sticky-col {
+            position: sticky;
+            left: 0;
+            background: white;
+            z-index: 5;
+            font-weight: 600;
+            border-right: 2px solid #e5e7eb;
+            min-width: 150px;
+        }
+        .weather-table-modern tbody tr:hover .sticky-col {
+            background-color: #f9fafb;
+        }
+            background-color: #1f2937;
+        }
             position: relative;
             height: 220px; /* Slightly taller for daily line chart */
             width: 100%;
             margin-top: 1rem; /* Add some space above daily chart */
+        }
+        /* 최신형 기상예측 스타일 */
+        .weather-accordion-item-modern {
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .weather-accordion-item-modern:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+        .weather-accordion-header-modern {
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: linear-gradient(to right, #ffffff, #f9fafb);
+        }
+        .weather-accordion-header-modern:hover {
+            background: linear-gradient(to right, #f9fafb, #f3f4f6);
+        }
+        .weather-timeline-bar {
+            height: 40px;
+            display: flex;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .weather-timeline-segment {
+            flex: 1;
+            transition: all 0.2s;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .weather-timeline-segment:hover {
+            opacity: 0.8;
+            transform: scaleY(1.1);
+        }
+        .weather-status-good { 
+            background: linear-gradient(to bottom, #10b981, #059669);
+        }
+        .weather-status-warning { 
+            background: linear-gradient(to bottom, #f59e0b, #d97706);
+        }
+        .weather-status-danger { 
+            background: linear-gradient(to bottom, #ef4444, #dc2626);
+        }
+        .weather-accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .weather-accordion-content.active {
+            max-height: 5000px !important;
+        }
+        .weather-table-modern {
+            width: 100%;
+            font-size: 0.875rem;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        .weather-table-modern thead th {
+            background: linear-gradient(to bottom, #f9fafb, #f3f4f6);
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .weather-table-modern tbody td {
+            padding: 0.75rem 0.5rem;
+            border-bottom: 1px solid #f3f4f6;
+            transition: all 0.2s;
+        }
+        .weather-table-modern tbody tr:hover td {
+            background-color: #f9fafb;
+        }
+        .weather-table-modern .sticky-col {
+            position: sticky;
+            left: 0;
+            background: white;
+            z-index: 5;
+            font-weight: 600;
+            border-right: 2px solid #e5e7eb;
+            min-width: 150px;
+        }
+        .weather-table-modern tbody tr:hover .sticky-col {
+            background-color: #f9fafb;
         }
     </style>
 </head>
@@ -117,12 +395,15 @@
                 <a href="#" class="sidebar-item block py-3 px-6" data-target="longterm">
                     <i class="fas fa-calendar-alt mr-3 w-5 text-center"></i>장기예측
                 </a>
+                <a href="#" class="sidebar-item block py-3 px-6" data-target="weather">
+                    <i class="fas fa-cloud-sun mr-3 w-5 text-center"></i>기상예측
+                </a>
                 <a href="#" class="sidebar-item block py-3 px-6" data-target="details">
                     <i class="fas fa-info-circle mr-3 w-5 text-center"></i>상세 정보
                 </a>
             </nav>
             <div class="p-4 border-t border-gray-700">
-                <p class="text-xs text-gray-400">버전 1.0.7</p>
+                <p class="text-xs text-gray-400">버전 1.2.0</p>
             </div>
         </aside>
 
@@ -934,6 +1215,82 @@
                     </div>
                 </section>
 
+
+                <section id="weather-content" class="content-section hidden">
+                    <h2 class="section-title">기상예측<span class="sample-badge">SAMPLE</span></h2>
+                    
+                    <!-- 상단 컨트롤 -->
+                    <div class="card">
+                        <div class="flex flex-wrap items-center gap-4 mb-4">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-gray-700">예측 기간:</span>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="weatherPeriod" value="10days" checked class="form-radio text-blue-600">
+                                    <span class="ml-2 text-sm">10일 (1시간)</span>
+                                </label>
+                                <label class="inline-flex items-center ml-4">
+                                    <input type="radio" name="weatherPeriod" value="90days" class="form-radio text-blue-600">
+                                    <span class="ml-2 text-sm">90일 (1일)</span>
+                                </label>
+                            </div>
+                            <div class="flex items-center gap-2 ml-auto">
+                                <span class="text-sm font-medium text-gray-700">표시 모드:</span>
+                                <button id="weatherListBtn" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-l-lg hover:bg-blue-700">List</button>
+                                <button id="weatherChartsBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-r-lg hover:bg-gray-300">Charts</button>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500">마지막 업데이트: <span id="weatherLastUpdate">2025-10-23 08:30 UTC</span></p>
+                    </div>
+
+                    <!-- List 모드 -->
+                    <div id="weatherListMode">
+                        <!-- 10일 예측 List -->
+                        <div id="weather10daysList" class="space-y-2">
+                            <!-- JavaScript로 동적 생성 -->
+                        </div>
+                        
+                        <!-- 90일 예측 List -->
+                        <div id="weather90daysList" class="space-y-2 hidden">
+                            <!-- JavaScript로 동적 생성 -->
+                        </div>
+                    </div>
+
+                    <!-- Charts 모드 -->
+                    <div id="weatherChartsMode" class="hidden">
+                        <!-- 10일 예측 Charts -->
+                        <div id="weather10daysCharts">
+                            <!-- 캘린더 그리드 -->
+                            <div class="card">
+                                <h3 class="text-lg font-semibold mb-4">10일 기상 개요</h3>
+                                <div id="weather10daysCalendarGrid" class="grid grid-cols-5 md:grid-cols-10 gap-2 mb-6">
+                                    <!-- JavaScript로 동적 생성 -->
+                                </div>
+                            </div>
+                            
+                            <!-- 상세 캘린더 뷰 -->
+                            <div class="card">
+                                <h3 class="text-lg font-semibold mb-4">상세 캘린더 뷰</h3>
+                                <p class="text-sm text-gray-600 mb-4">기간: <span id="weather10daysDateRange"></span></p>
+                                <div id="weather10daysDetailedView" class="overflow-x-auto">
+                                    <!-- JavaScript로 동적 생성 -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 90일 예측 Charts -->
+                        <div id="weather90daysCharts" class="hidden">
+                            <div class="card">
+                                <h3 class="text-lg font-semibold mb-4">3개월 기상 캘린더</h3>
+                                <div id="weather90daysCalendarGrid">
+                                    <!-- JavaScript로 동적 생성 -->
+                                </div>
+                                <div id="weather90daysDetailedView" class="overflow-x-auto mt-6">
+                                    <!-- JavaScript로 동적 생성 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
                 <section id="details-content" class="content-section hidden">
                     <h2 class="section-title">상세 정보 및 신뢰도<span class="sample-badge">SAMPLE</span></h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -2097,6 +2454,9 @@
             const initialTarget = 'overview';
             document.querySelector(`.sidebar-item[data-target="${initialTarget}"]`).classList.add('active');
             setActiveSection(initialTarget);
+            
+            // 기상예측 초기화
+            initWeatherForecast();
 
             // 풍속 구간별 분포 토글 함수
             window.toggleWindspeedDistribution = function() {
@@ -2682,6 +3042,608 @@
                 updateMaintenanceList();
                 clearResults();
             };
+        }
+
+        // ==================== 기상예측 기능 ====================
+        function initWeatherForecast() {
+            const periodRadios = document.querySelectorAll('input[name="weatherPeriod"]');
+            const listBtn = document.getElementById('weatherListBtn');
+            const chartsBtn = document.getElementById('weatherChartsBtn');
+            
+            // 기간 변경 이벤트
+            periodRadios.forEach(radio => {
+                radio.addEventListener('change', updateWeatherView);
+            });
+            
+            // 모드 변경 이벤트
+            listBtn.addEventListener('click', () => switchWeatherMode('list'));
+            chartsBtn.addEventListener('click', () => switchWeatherMode('charts'));
+            
+            // 초기 렌더링
+            updateWeatherView();
+        }
+        
+        function switchWeatherMode(mode) {
+            const listBtn = document.getElementById('weatherListBtn');
+            const chartsBtn = document.getElementById('weatherChartsBtn');
+            const listMode = document.getElementById('weatherListMode');
+            const chartsMode = document.getElementById('weatherChartsMode');
+            
+            if (mode === 'list') {
+                listBtn.classList.add('bg-blue-600', 'text-white');
+                listBtn.classList.remove('bg-gray-200', 'text-gray-700');
+                chartsBtn.classList.add('bg-gray-200', 'text-gray-700');
+                chartsBtn.classList.remove('bg-blue-600', 'text-white');
+                listMode.classList.remove('hidden');
+                chartsMode.classList.add('hidden');
+            } else {
+                chartsBtn.classList.add('bg-blue-600', 'text-white');
+                chartsBtn.classList.remove('bg-gray-200', 'text-gray-700');
+                listBtn.classList.add('bg-gray-200', 'text-gray-700');
+                listBtn.classList.remove('bg-blue-600', 'text-white');
+                chartsMode.classList.remove('hidden');
+                listMode.classList.add('hidden');
+            }
+            
+            updateWeatherView();
+        }
+        
+        function updateWeatherView() {
+            const period = document.querySelector('input[name="weatherPeriod"]:checked').value;
+            const mode = document.getElementById('weatherListBtn').classList.contains('bg-blue-600') ? 'list' : 'charts';
+            
+            if (mode === 'list') {
+                if (period === '10days') {
+                    document.getElementById('weather10daysList').classList.remove('hidden');
+                    document.getElementById('weather90daysList').classList.add('hidden');
+                    render10DaysList();
+                } else {
+                    document.getElementById('weather10daysList').classList.add('hidden');
+                    document.getElementById('weather90daysList').classList.remove('hidden');
+                    render90DaysList();
+                }
+            } else {
+                if (period === '10days') {
+                    document.getElementById('weather10daysCharts').classList.remove('hidden');
+                    document.getElementById('weather90daysCharts').classList.add('hidden');
+                    render10DaysCharts();
+                } else {
+                    document.getElementById('weather10daysCharts').classList.add('hidden');
+                    document.getElementById('weather90daysCharts').classList.remove('hidden');
+                    render90DaysCharts();
+                }
+            }
+        }
+        
+        // 기상 상태 결정 함수
+        function getWeatherStatus(windSpeed) {
+            if (windSpeed < 3 || windSpeed > 20) return 'danger';
+            if (windSpeed < 6 || windSpeed > 15) return 'warning';
+            return 'good';
+        }
+        
+        // 10일 List 모드 렌더링 (개선된 UI)
+        function render10DaysList() {
+            const container = document.getElementById('weather10daysList');
+            const today = new Date();
+            let html = '';
+            
+            for (let day = 0; day < 10; day++) {
+                const date = new Date(today);
+                date.setDate(date.getDate() + day);
+                const dateStr = date.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'long' });
+                
+                // 24시간 데이터 생성
+                const hourlyData = [];
+                for (let hour = 0; hour < 24; hour++) {
+                    hourlyData.push({
+                        hour: hour,
+                        windSpeed: (5 + Math.random() * 10).toFixed(1),
+                        temp: (10 + Math.random() * 15).toFixed(1),
+                        precip: (Math.random() * 5).toFixed(1),
+                        humidity: (60 + Math.random() * 30).toFixed(0),
+                        waveHeight: (0.5 + Math.random() * 2).toFixed(1),
+                        lightning: (Math.random() * 20).toFixed(0),
+                        confidence: (70 + Math.random() * 25).toFixed(0)
+                    });
+                }
+                
+                // 24시간 타임라인 생성
+                let timelineHtml = '<div class="weather-timeline-bar shadow-sm">';
+                hourlyData.forEach(data => {
+                    const status = getWeatherStatus(parseFloat(data.windSpeed));
+                    timelineHtml += `<div class="weather-timeline-segment weather-status-${status}" title="${data.hour}시: ${data.windSpeed} m/s"></div>`;
+                });
+                timelineHtml += '</div>';
+                
+                // 시간을 가로로, 변수를 세로로 배치한 테이블 생성
+                let tableHtml = '<div class="weather-accordion-content"><div class="p-6 bg-gradient-to-br from-gray-50 to-white">';
+                tableHtml += '<div class="overflow-x-auto"><table class="weather-table-modern">';
+                
+                // 헤더: 시간 (가로)
+                tableHtml += '<thead><tr><th class="sticky-col">시간</th>';
+                hourlyData.forEach(data => {
+                    tableHtml += `<th class="text-center">${data.hour}:00</th>`;
+                });
+                tableHtml += '</tr></thead><tbody>';
+                
+                // 각 변수별 행
+                const variables = [
+                    { key: 'windSpeed', label: '풍속 (m/s)', icon: 'fa-wind', color: 'blue' },
+                    { key: 'temp', label: '기온 (°C)', icon: 'fa-temperature-high', color: 'orange' },
+                    { key: 'precip', label: '강수량 (mm)', icon: 'fa-cloud-rain', color: 'cyan' },
+                    { key: 'humidity', label: '상대습도 (%)', icon: 'fa-droplet', color: 'teal' },
+                    { key: 'waveHeight', label: '파고 (m)', icon: 'fa-water', color: 'indigo' },
+                    { key: 'lightning', label: '낙뢰확률 (%)', icon: 'fa-bolt', color: 'yellow' },
+                    { key: 'confidence', label: '신뢰도 (%)', icon: 'fa-chart-line', color: 'green' }
+                ];
+                
+                variables.forEach(variable => {
+                    tableHtml += `<tr><td class="sticky-col font-semibold text-${variable.color}-700"><i class="fas ${variable.icon} mr-2"></i>${variable.label}</td>`;
+                    hourlyData.forEach(data => {
+                        let cellClass = 'text-center';
+                        let value = data[variable.key];
+                        
+                        // 값에 따른 색상 코딩
+                        if (variable.key === 'windSpeed') {
+                            const ws = parseFloat(value);
+                            if (ws >= 6 && ws <= 12) cellClass += ' bg-green-50 text-green-700 font-semibold';
+                            else if (ws < 3 || ws > 18) cellClass += ' bg-red-50 text-red-700';
+                            else cellClass += ' bg-yellow-50 text-yellow-700';
+                        } else if (variable.key === 'confidence') {
+                            const conf = parseFloat(value);
+                            if (conf >= 80) cellClass += ' bg-green-50 text-green-700 font-semibold';
+                            else if (conf < 60) cellClass += ' bg-red-50 text-red-700';
+                        }
+                        
+                        tableHtml += `<td class="${cellClass}">${value}</td>`;
+                    });
+                    tableHtml += '</tr>';
+                });
+                
+                tableHtml += '</tbody></table></div></div></div>';
+                
+                html += `
+                    <div class="weather-accordion-item-modern mb-4">
+                        <div class="weather-accordion-header-modern" onclick="toggleWeatherAccordion(this)">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold shadow-lg">
+                                        ${date.getDate()}
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-800 text-lg">${dateStr}</h4>
+                                        <p class="text-sm text-gray-500">24시간 예보</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="text-right mr-4">
+                                        <p class="text-xs text-gray-500">평균 풍속</p>
+                                        <p class="text-lg font-bold text-blue-600">${(hourlyData.reduce((sum, d) => sum + parseFloat(d.windSpeed), 0) / 24).toFixed(1)} m/s</p>
+                                    </div>
+                                    <i class="fas fa-chevron-down transition-transform duration-300 text-gray-400 text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                ${timelineHtml}
+                            </div>
+                        </div>
+                        ${tableHtml}
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        function getOverallDailyStatus(dailyData) {
+            const windSpeed = parseFloat(dailyData.windSpeed);
+            const maxTemp = parseFloat(dailyData.maxTemp);
+            const minTemp = parseFloat(dailyData.minTemp);
+            const precip = parseFloat(dailyData.precip);
+            const waveHeight = parseFloat(dailyData.waveHeight);
+
+            let dangerCount = 0;
+            let warningCount = 0;
+
+            // Wind Speed: < 15m/s
+            if (windSpeed >= 15) {
+                dangerCount++;
+            }
+
+            // Max Temperature: < 30'c
+            if (maxTemp >= 30) {
+                warningCount++;
+            }
+
+            // Min Temperature: > 10'c
+            if (minTemp <= 10) {
+                warningCount++;
+            }
+
+            // Precipitation: < 10 mm
+            if (precip >= 10) {
+                warningCount++;
+            }
+
+            // Wave Height: < 1 m
+            if (waveHeight >= 1) {
+                dangerCount++;
+            }
+
+            if (dangerCount > 0) return 'danger';
+            if (warningCount > 1) return 'warning';
+            return 'good';
+        }
+
+        // 90일 List 모드 렌더링 (개선된 UI)
+        function render90DaysList() {
+            const container = document.getElementById('weather90daysList');
+            const today = new Date();
+            let html = '';
+            
+            for (let period = 0; period < 9; period++) {
+                const startDay = period * 10;
+                const endDay = startDay + 9;
+                const startDate = new Date(today);
+                startDate.setDate(startDate.getDate() + startDay);
+                const endDate = new Date(today);
+                endDate.setDate(endDate.getDate() + endDay);
+                
+                const periodStr = `${startDate.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })} - ${endDate.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}`;
+                
+                // 10일 데이터 생성
+                const dailyData = [];
+                for (let day = 0; day < 10; day++) {
+                    const date = new Date(today);
+                    date.setDate(date.getDate() + startDay + day);
+                    const dataPoint = {
+                        date: date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }),
+                        windSpeed: (5 + Math.random() * 15).toFixed(1),
+                        maxTemp: (15 + Math.random() * 20).toFixed(1),
+                        minTemp: (5 + Math.random() * 10).toFixed(1),
+                        precip: (Math.random() * 15).toFixed(1),
+                        waveHeight: (0.5 + Math.random() * 1).toFixed(1),
+                        confidence: (60 + Math.random() * 30).toFixed(0)
+                    };
+                    dataPoint.status = getOverallDailyStatus(dataPoint);
+                    dailyData.push(dataPoint);
+                }
+                
+                // 10일 타임라인 생성
+                let timelineHtml = '<div class="weather-timeline-bar shadow-sm">';
+                dailyData.forEach((data, idx) => {
+                    timelineHtml += `<div class="weather-timeline-segment weather-status-${data.status}" title="Day ${startDay + idx + 1}: ${data.windSpeed} m/s"></div>`;
+                });
+                timelineHtml += '</div>';
+                
+                // 날짜를 가로로, 변수를 세로로 배치한 테이블 생성
+                                let tableHtml = '<div class="weather-accordion-content"><div class="p-6 bg-gradient-to-br from-gray-50 to-white">';
+                                tableHtml += '<div class="overflow-x-auto"><table class="weather-table-modern">';
+                                
+                                tableHtml += '<tbody>';
+                
+                                // Date row
+                                tableHtml += '<tr><td class="sticky-col font-semibold text-gray-700">날짜</td>';
+                                dailyData.forEach(data => {
+                                    const statusColors = {
+                                        good: 'bg-green-100',
+                                        warning: 'bg-yellow-100',
+                                        danger: 'bg-red-100'
+                                    };
+                                    tableHtml += `<td class="text-center font-semibold ${statusColors[data.status]}">${data.date}</td>`;
+                                });
+                                tableHtml += '</tr>';
+                
+                                // Add "Comprehensive" (종합) row
+                                tableHtml += '<tr><td class="sticky-col font-semibold text-purple-700"><i class="fas fa-check-circle mr-2"></i>종합</td>';
+                                dailyData.forEach(data => {
+                                    const statusColors = {
+                                        good: 'bg-green-500',
+                                        warning: 'bg-yellow-500',
+                                        danger: 'bg-red-500'
+                                    };
+                                    tableHtml += `<td class="text-center p-2"><div class="w-full h-4 rounded ${statusColors[data.status]}"></div></td>`;
+                                });
+                                tableHtml += '</tr>';
+                
+                                // 각 변수별 행
+                const variables = [
+                    { key: 'windSpeed', label: '평균풍속', criteria: '< 15m/s', icon: 'fa-wind', color: 'blue', goodRange: [0, 14.9] },
+                    { key: 'maxTemp', label: '최고기온', criteria: '< 30°C', icon: 'fa-temperature-high', color: 'red', goodRange: [-Infinity, 29.9] },
+                    { key: 'minTemp', label: '최저기온', criteria: '> 10°C', icon: 'fa-temperature-low', color: 'blue', goodRange: [10.1, Infinity] },
+                    { key: 'precip', label: '강수량', criteria: '< 10mm', icon: 'fa-cloud-rain', color: 'cyan', goodRange: [0, 9.9] },
+                    { key: 'waveHeight', label: '평균파고', criteria: '< 1m', icon: 'fa-water', color: 'indigo', goodRange: [0, 0.9] },
+                    { key: 'confidence', label: '신뢰도', criteria: '10% 단위', icon: 'fa-chart-line', color: 'green' }
+                ];
+                
+                variables.forEach(variable => {
+                    let labelHtml = `<td class="sticky-col font-semibold text-${variable.color}-700"><i class="fas ${variable.icon} mr-2"></i>${variable.label}`;
+                    if (variable.criteria) {
+                        labelHtml += `<span class="text-xs text-gray-500 ml-1">(${variable.criteria})</span>`;
+                    }
+                    labelHtml += `</td>`;
+                    tableHtml += `<tr>${labelHtml}`;
+
+                    dailyData.forEach(data => {
+                        const value = parseFloat(data[variable.key]);
+                        if (variable.key === 'confidence') {
+                            const confidenceValue = Math.floor(value / 10) * 10;
+                            tableHtml += `<td class="text-center font-semibold">${confidenceValue}%</td>`;
+                        } else {
+                            const isGood = value >= variable.goodRange[0] && value <= variable.goodRange[1];
+                            const color = isGood ? 'bg-green-500' : 'bg-red-500';
+                            
+                            tableHtml += `<td class="text-center"><div class="w-4 h-4 mx-auto rounded-full ${color}" title="${value.toFixed(1)}"></div></td>`;
+                        }
+                    });
+                    tableHtml += '</tr>';
+                });
+                
+                tableHtml += '</tbody></table></div></div></div>';
+                
+                // 평균 풍속 계산
+                const avgWindSpeed = (dailyData.reduce((sum, d) => sum + parseFloat(d.windSpeed), 0) / 10).toFixed(1);
+                
+                html += `
+                    <div class="weather-accordion-item-modern mb-4">
+                        <div class="weather-accordion-header-modern" onclick="toggleWeatherAccordion(this)">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-lg">
+                                        ${period + 1}
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-800 text-lg">Day ${startDay + 1}-${endDay + 1}</h4>
+                                        <p class="text-sm text-gray-500">${periodStr}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="text-right mr-4">
+                                        <p class="text-xs text-gray-500">평균 풍속</p>
+                                        <p class="text-lg font-bold text-purple-600">${avgWindSpeed} m/s</p>
+                                    </div>
+                                    <i class="fas fa-chevron-down transition-transform duration-300 text-gray-400 text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 mx-4">
+                                ${timelineHtml}
+                            </div>
+                        </div>
+                        ${tableHtml}
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        window.toggleWeatherAccordion = function(header) {
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('i.fa-chevron-down, i.fa-chevron-up');
+            
+            if (!content || !icon) {
+                console.error('Accordion elements not found', { content, icon });
+                return;
+            }
+            
+            const isActive = content.classList.contains('active');
+            
+            if (isActive) {
+                content.classList.remove('active');
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                content.classList.add('active');
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        };
+        
+        // 10일 Charts 모드 렌더링
+        function render10DaysCharts() {
+            const today = new Date();
+            const calendarContainer = document.getElementById('weather10daysCalendarGrid');
+            const detailedContainer = document.getElementById('weather10daysDetailedView');
+            let calendarHtml = '';
+
+            const dailyData = [];
+            for (let day = 0; day < 10; day++) {
+                const date = new Date(today);
+                date.setDate(date.getDate() + day);
+                
+                const dataPoint = {
+                    date: date,
+                    windSpeed: (5 + Math.random() * 15).toFixed(1),
+                    maxTemp: (15 + Math.random() * 20).toFixed(1),
+                    minTemp: (5 + Math.random() * 10).toFixed(1),
+                    precip: (Math.random() * 15).toFixed(1),
+                    waveHeight: (0.5 + Math.random() * 1).toFixed(1),
+                    confidence: (60 + Math.random() * 30).toFixed(0)
+                };
+                dataPoint.status = getOverallDailyStatus(dataPoint);
+                dailyData.push(dataPoint);
+
+                calendarHtml += `
+                    <div class="weather-calendar-day weather-status-${dataPoint.status}">
+                        <div class="text-white">${date.getDate()}</div>
+                        <div class="text-xs text-white mt-1">${dataPoint.windSpeed} m/s</div>
+                    </div>
+                `;
+            }
+            calendarContainer.innerHTML = calendarHtml;
+
+            // Detailed Calendar View
+            let detailedHtml = '<table class="w-full text-sm">';
+            // Header
+            detailedHtml += '<thead><tr><th class="sticky-col bg-white w-1/4"></th>';
+            dailyData.forEach(data => {
+                detailedHtml += `<th class="text-center font-medium text-gray-600 p-2">${data.date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}</th>`;
+            });
+            detailedHtml += '</tr></thead>';
+
+            // Body
+            detailedHtml += '<tbody>';
+
+            // Comprehensive Row
+            detailedHtml += '<tr class="bg-gray-50"><td class="sticky-col bg-gray-50 font-semibold text-purple-700 p-2"><i class="fas fa-check-circle mr-2"></i>종합</td>';
+            dailyData.forEach(data => {
+                const statusColors = { good: 'bg-green-500', warning: 'bg-yellow-500', danger: 'bg-red-500' };
+                detailedHtml += `<td class="text-center p-2"><div class="w-full h-4 rounded ${statusColors[data.status]}"></div></td>`;
+            });
+            detailedHtml += '</tr>';
+
+            // Confidence Row
+            detailedHtml += '<tr><td class="sticky-col bg-white font-semibold text-gray-700 p-2">신뢰도 (%)</td>';
+            dailyData.forEach(data => {
+                const confidence = Math.floor(data.confidence / 10) * 10;
+                detailedHtml += `<td class="text-center p-2"><div class="w-full bg-gray-200 rounded h-4"><div class="bg-blue-600 h-4 rounded" style="width: ${confidence}%"></div></div><span class="text-xs">${confidence}%</span></td>`;
+            });
+            detailedHtml += '</tr>';
+
+            const variables = [
+                { key: 'windSpeed', label: '평균풍속', criteria: '< 15m/s', goodRange: [0, 14.9] },
+                { key: 'maxTemp', label: '최고기온', criteria: '< 30°C', goodRange: [-Infinity, 29.9] },
+                { key: 'minTemp', label: '최저기온', criteria: '> 10°C', goodRange: [10.1, Infinity] },
+                { key: 'precip', label: '강수량', criteria: '< 10mm', goodRange: [0, 9.9] },
+                { key: 'waveHeight', label: '평균파고', criteria: '< 1m', goodRange: [0, 0.9] },
+            ];
+
+            variables.forEach(variable => {
+                detailedHtml += `<tr><td class="sticky-col bg-white font-semibold text-gray-700 p-2">${variable.label} <span class="text-xs text-gray-500">(${variable.criteria})</span></td>`;
+                dailyData.forEach(data => {
+                    const value = parseFloat(data[variable.key]);
+                    const isGood = value >= variable.goodRange[0] && value <= variable.goodRange[1];
+                    const color = isGood ? 'bg-green-500' : 'bg-red-500';
+                    detailedHtml += `<td class="text-center p-2"><div class="w-4 h-4 mx-auto rounded-full ${color}" title="${value.toFixed(1)}"></div></td>`;
+                });
+                detailedHtml += '</tr>';
+            });
+
+            detailedHtml += '</tbody></table>';
+            detailedContainer.innerHTML = detailedHtml;
+        }
+        
+        // 90일 Charts 모드 렌더링
+        function render90DaysCharts() {
+            const calendarContainer = document.getElementById('weather90daysCalendarGrid');
+            const detailedContainer = document.getElementById('weather90daysDetailedView');
+            const today = new Date();
+            let calendarHtml = '';
+
+            const months = {};
+            const dailyData = [];
+
+            for (let day = 0; day < 90; day++) {
+                const date = new Date(today);
+                date.setDate(date.getDate() + day);
+                const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+                
+                if (!months[monthKey]) {
+                    months[monthKey] = {
+                        name: date.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long' }),
+                        year: date.getFullYear(),
+                        month: date.getMonth(),
+                        days: []
+                    };
+                }
+                
+                const dataPoint = {
+                    date: date,
+                    windSpeed: (5 + Math.random() * 15).toFixed(1),
+                    maxTemp: (15 + Math.random() * 20).toFixed(1),
+                    minTemp: (5 + Math.random() * 10).toFixed(1),
+                    precip: (Math.random() * 15).toFixed(1),
+                    waveHeight: (0.5 + Math.random() * 1).toFixed(1),
+                    confidence: (60 + Math.random() * 30).toFixed(0)
+                };
+                dataPoint.status = getOverallDailyStatus(dataPoint);
+                dailyData.push(dataPoint);
+
+                months[monthKey].days.push({
+                    date: date.getDate(),
+                    status: dataPoint.status,
+                });
+            }
+            
+            calendarHtml += '<div class="grid grid-cols-1 md:grid-cols-2 gap-8">';
+
+            Object.values(months).forEach(month => {
+                html += '<div>'; // Start of a grid item for a month
+                html += `<h4 class="font-semibold text-lg mb-2">${month.name}</h4>`;
+                html += '<div class="grid grid-cols-7 gap-1 text-center">';
+                
+                const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+                weekdays.forEach(weekday => {
+                    html += `<div class="font-semibold text-xs text-gray-500">${weekday}</div>`;
+                });
+
+                const firstDayOfMonth = new Date(month.year, month.month, 1).getDay();
+                for (let i = 0; i < firstDayOfMonth; i++) {
+                    html += `<div></div>`;
+                }
+
+                month.days.forEach(day => {
+                    html += `<div class="weather-calendar-day weather-status-${day.status}"><div class="text-white text-sm">${day.date}</div></div>`;
+                });
+
+                html += '</div></div>'; // End of a grid item for a month
+            });
+            
+            calendarHtml += '</div>';
+            calendarContainer.innerHTML = calendarHtml;
+
+            // Detailed Calendar View
+            let detailedHtml = '<table class="w-full text-sm">';
+            // Header
+            detailedHtml += '<thead><tr><th class="sticky-col bg-white w-1/4"></th>';
+            dailyData.forEach(data => {
+                detailedHtml += `<th class="text-center font-medium text-gray-600 p-2">${data.date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}</th>`;
+            });
+            detailedHtml += '</tr></thead>';
+
+            // Body
+            detailedHtml += '<tbody>';
+
+            // Comprehensive Row
+            detailedHtml += '<tr class="bg-gray-50"><td class="sticky-col bg-gray-50 font-semibold text-purple-700 p-2"><i class="fas fa-check-circle mr-2"></i>종합</td>';
+            dailyData.forEach(data => {
+                const statusColors = { good: 'bg-green-500', warning: 'bg-yellow-500', danger: 'bg-red-500' };
+                detailedHtml += `<td class="text-center p-2"><div class="w-full h-4 rounded ${statusColors[data.status]}"></div></td>`;
+            });
+            detailedHtml += '</tr>';
+
+            // Confidence Row
+            detailedHtml += '<tr><td class="sticky-col bg-white font-semibold text-gray-700 p-2">신뢰도 (%)</td>';
+            dailyData.forEach(data => {
+                const confidence = Math.floor(data.confidence / 10) * 10;
+                detailedHtml += `<td class="text-center p-2"><div class="w-full bg-gray-200 rounded h-4"><div class="bg-blue-600 h-4 rounded" style="width: ${confidence}%"></div></div><span class="text-xs">${confidence}%</span></td>`;
+            });
+            detailedHtml += '</tr>';
+
+            const variables = [
+                { key: 'windSpeed', label: '평균풍속', criteria: '< 15m/s', goodRange: [0, 14.9] },
+                { key: 'maxTemp', label: '최고기온', criteria: '< 30°C', goodRange: [-Infinity, 29.9] },
+                { key: 'minTemp', label: '최저기온', criteria: '> 10°C', goodRange: [10.1, Infinity] },
+                { key: 'precip', label: '강수량', criteria: '< 10mm', goodRange: [0, 9.9] },
+                { key: 'waveHeight', label: '평균파고', criteria: '< 1m', goodRange: [0, 0.9] },
+            ];
+
+            variables.forEach(variable => {
+                detailedHtml += `<tr><td class="sticky-col bg-white font-semibold text-gray-700 p-2">${variable.label} <span class="text-xs text-gray-500">(${variable.criteria})</span></td>`;
+                dailyData.forEach(data => {
+                    const value = parseFloat(data[variable.key]);
+                    const isGood = value >= variable.goodRange[0] && value <= variable.goodRange[1];
+                    const color = isGood ? 'bg-green-500' : 'bg-red-500';
+                    detailedHtml += `<td class="text-center p-2"><div class="w-4 h-4 mx-auto rounded-full ${color}" title="${value.toFixed(1)}"></div></td>`;
+                });
+                detailedHtml += '</tr>';
+            });
+
+            detailedHtml += '</tbody></table>';
+            detailedContainer.innerHTML = detailedHtml;
         }
     </script>
 </body>

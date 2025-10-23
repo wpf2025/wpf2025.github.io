@@ -8,17 +8,20 @@
             background-color: #2563eb; /* blue-600 */
             color: white;
         }
+                .tab-button, .sub-tab-button {
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease-in-out;
+            color: #6b7280; /* gray-500 */
+        }
+        .tab-button:hover, .sub-tab-button:hover {
+            color: #2563eb; /* blue-600 */
+            background-color: #f3f4f6; /* gray-100 */
+        }
         .tab-button.active, .sub-tab-button.active {
             border-bottom-color: #2563eb; /* blue-600 */
             color: #2563eb;
             font-weight: 600;
-        }
-        .sub-tab-button.active { /* More specific for sub-tabs if needed */
-             background-color: #eff6ff; /* blue-50 */
-             border-bottom-color: #2563eb;
-        }
-        .tab-button, .sub-tab-button {
-            border-bottom: 2px solid transparent;
+            background-color: #eff6ff; /* blue-50 */
         }
         .card {
             background-color: white;

@@ -248,7 +248,7 @@
             border-bottom: 1px solid #f3f4f6;
             transition: all 0.2s;
         }
-        .weather-table-modern tbody tr:hover td {
+        .weather-table-modern tbody tr:hover td:not(.bg-red-500) {
             background-color: #f9fafb;
         }
         .weather-table-modern .sticky-col {
@@ -348,7 +348,7 @@
             border-bottom: 1px solid #f3f4f6;
             transition: all 0.2s;
         }
-        .weather-table-modern tbody tr:hover td {
+        .weather-table-modern tbody tr:hover td:not(.bg-red-500) {
             background-color: #f9fafb;
         }
         .weather-table-modern .sticky-col {

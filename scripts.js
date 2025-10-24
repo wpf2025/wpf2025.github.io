@@ -1857,6 +1857,26 @@
         }
         
         // 10일 List 모드 렌더링 (개선된 UI)
+        // 시간별 종합 상태 평가 함수
+        function getHourlyOverallStatus(hourData) {
+            const windSpeed = parseFloat(hourData.windSpeed);
+            const temp = parseFloat(hourData.temp);
+            const precip = parseFloat(hourData.precip);
+            const waveHeight = parseFloat(hourData.waveHeight);
+
+            // 위험 기준: 풍속 >= 15m/s, 기온 <= 5°C or >= 30°C, 강수량 >= 10mm, 파고 >= 2m
+            if (windSpeed >= 15 || temp <= 5 || temp >= 30 || precip >= 10 || waveHeight >= 2) {
+                return 'danger';
+            }
+            
+            // 주의 기준: 풍속 >= 13m/s, 기온 <= 8°C or >= 28°C, 강수량 >= 7mm, 파고 >= 1.5m
+            if (windSpeed >= 13 || temp <= 8 || temp >= 28 || precip >= 7 || waveHeight >= 1.5) {
+                return 'warning';
+            }
+            
+            return 'good';
+        }
+
         function render10DaysList() {
             const container = document.getElementById('weather10daysList');
             const today = new Date();
@@ -1870,11 +1890,22 @@
                 // 24시간 데이터 생성
                 const hourlyData = [];
                 for (let hour = 0; hour < 24; hour++) {
+                    // 강수량: 80% 확률로 0-2mm, 15% 확률로 2-8mm, 5% 확률로 8-15mm
+                    let precip;
+                    const rand = Math.random();
+                    if (rand < 0.8) {
+                        precip = (Math.random() * 2).toFixed(1);
+                    } else if (rand < 0.95) {
+                        precip = (2 + Math.random() * 6).toFixed(1);
+                    } else {
+                        precip = (8 + Math.random() * 7).toFixed(1);
+                    }
+                    
                     hourlyData.push({
                         hour: hour,
                         windSpeed: (5 + Math.random() * 10).toFixed(1),
                         temp: (10 + Math.random() * 15).toFixed(1),
-                        precip: (Math.random() * 5).toFixed(1),
+                        precip: precip,
                         humidity: (60 + Math.random() * 30).toFixed(0),
                         waveHeight: (0.5 + Math.random() * 2).toFixed(1),
                         lightning: (Math.random() * 20).toFixed(0),
@@ -1882,11 +1913,13 @@
                     });
                 }
                 
-                // 24시간 타임라인 생성
+                // 각 시간별 종합 상태 계산
+                const hourlyStatuses = hourlyData.map(data => getHourlyOverallStatus(data));
+                
+                // 24시간 타임라인 생성 (종합 상태 기반)
                 let timelineHtml = '<div class="weather-timeline-bar shadow-sm">';
-                hourlyData.forEach(data => {
-                    const status = getWeatherStatus(parseFloat(data.windSpeed));
-                    timelineHtml += `<div class="weather-timeline-segment weather-status-${status}" title="${data.hour}시: ${data.windSpeed} m/s"></div>`;
+                hourlyStatuses.forEach((status, idx) => {
+                    timelineHtml += `<div class="weather-timeline-segment weather-status-${status}" title="${hourlyData[idx].hour}시: ${status === 'good' ? '양호' : status === 'warning' ? '주의' : '위험'}"></div>`;
                 });
                 timelineHtml += '</div>';
                 
@@ -1901,13 +1934,25 @@
                 });
                 tableHtml += '</tr></thead><tbody>';
                 
+                // 종합 상태 행 추가
+                tableHtml += '<tr><td class="sticky-col font-semibold text-purple-700"><i class="fas fa-check-circle mr-2"></i>종합</td>';
+                hourlyStatuses.forEach(status => {
+                    const statusColors = {
+                        good: 'bg-green-500',
+                        warning: 'bg-yellow-500',
+                        danger: 'bg-red-500'
+                    };
+                    tableHtml += `<td class="text-center p-2"><div class="w-full h-4 rounded ${statusColors[status]}"></div></td>`;
+                });
+                tableHtml += '</tr>';
+                
                 // 각 변수별 행
                 const variables = [
-                    { key: 'windSpeed', label: '풍속 (m/s)', icon: 'fa-wind', color: 'blue' },
-                    { key: 'temp', label: '기온 (°C)', icon: 'fa-temperature-high', color: 'orange' },
-                    { key: 'precip', label: '강수량 (mm)', icon: 'fa-cloud-rain', color: 'cyan' },
+                    { key: 'windSpeed', label: '풍속 (m/s)', icon: 'fa-wind', color: 'blue', dangerThreshold: 15 },
+                    { key: 'temp', label: '기온 (°C)', icon: 'fa-temperature-high', color: 'orange', dangerMin: 5, dangerMax: 30 },
+                    { key: 'precip', label: '강수량 (mm)', icon: 'fa-cloud-rain', color: 'cyan', dangerThreshold: 10 },
                     { key: 'humidity', label: '상대습도 (%)', icon: 'fa-droplet', color: 'teal' },
-                    { key: 'waveHeight', label: '파고 (m)', icon: 'fa-water', color: 'indigo' },
+                    { key: 'waveHeight', label: '파고 (m)', icon: 'fa-water', color: 'indigo', dangerThreshold: 2 },
                     { key: 'lightning', label: '낙뢰확률 (%)', icon: 'fa-bolt', color: 'yellow' },
                 ];
                 
@@ -1916,17 +1961,22 @@
                     hourlyData.forEach(data => {
                         let cellClass = 'text-center';
                         let value = data[variable.key];
+                        const numValue = parseFloat(value);
                         
-                        // 값에 따른 색상 코딩
-                        if (variable.key === 'windSpeed') {
-                            const ws = parseFloat(value);
-                            if (ws >= 6 && ws <= 12) cellClass += ' bg-green-50 text-green-700 font-semibold';
-                            else if (ws < 3 || ws > 18) cellClass += ' bg-red-50 text-red-700';
-                            else cellClass += ' bg-yellow-50 text-yellow-700';
-                        } else if (variable.key === 'confidence') {
-                            const conf = parseFloat(value);
-                            if (conf >= 80) cellClass += ' bg-green-50 text-green-700 font-semibold';
-                            else if (conf < 60) cellClass += ' bg-red-50 text-red-700';
+                        // 위험 기준에 따른 빨간 배경 표시
+                        let isDanger = false;
+                        if (variable.key === 'windSpeed' && numValue >= variable.dangerThreshold) {
+                            isDanger = true;
+                        } else if (variable.key === 'temp' && (numValue <= variable.dangerMin || numValue >= variable.dangerMax)) {
+                            isDanger = true;
+                        } else if (variable.key === 'precip' && numValue >= variable.dangerThreshold) {
+                            isDanger = true;
+                        } else if (variable.key === 'waveHeight' && numValue >= variable.dangerThreshold) {
+                            isDanger = true;
+                        }
+                        
+                        if (isDanger) {
+                            cellClass += ' bg-red-500 text-white font-bold';
                         }
                         
                         tableHtml += `<td class="${cellClass}">${value}</td>`;
@@ -1999,8 +2049,8 @@
                 warningCount++;
             }
 
-            // Wave Height: < 1 m
-            if (waveHeight >= 1) {
+            // Wave Height: < 2 m
+            if (waveHeight >= 2) {
                 dangerCount++;
             }
 
@@ -2086,7 +2136,7 @@
                     { key: 'maxTemp', label: '최고기온', criteria: '< 30°C', icon: 'fa-temperature-high', color: 'red', goodRange: [-Infinity, 29.9] },
                     { key: 'minTemp', label: '최저기온', criteria: '> 10°C', icon: 'fa-temperature-low', color: 'blue', goodRange: [10.1, Infinity] },
                     { key: 'precip', label: '강수량', criteria: '< 10mm', icon: 'fa-cloud-rain', color: 'cyan', goodRange: [0, 9.9] },
-                    { key: 'waveHeight', label: '평균파고', criteria: '< 1m', icon: 'fa-water', color: 'indigo', goodRange: [0, 0.9] },
+                    { key: 'waveHeight', label: '평균파고', criteria: '< 2m', icon: 'fa-water', color: 'indigo', goodRange: [0, 1.9] },
                     { key: 'confidence', label: '신뢰도', criteria: '10% 단위', icon: 'fa-chart-line', color: 'green' }
                 ];
                 

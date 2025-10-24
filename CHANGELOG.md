@@ -5,6 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.3] - 2025-10-24
+
+### Added
+- **10일 기상예측 종합 상태 평가 시스템**:
+  - 테이블 맨 위에 시간별 종합 상태 행 추가 (색상 바: 녹색/주황/빨강)
+  - 모든 기상 변수를 종합 평가하여 타임라인과 일치
+  - `getHourlyOverallStatus()` 함수로 시간별 위험도 평가
+
+### Changed
+- **파고 위험 기준 상향**: 1m → 2m
+  - 10일 예측: 위험 2m 이상, 주의 1.5m 이상
+  - 90일 예측: 양호 기준 < 2m
+  - 더 현실적인 해상 작업 기준 반영
+- **강수량 데이터 현실화**:
+  - 80% 확률: 0-2mm (맑음/약한 비)
+  - 15% 확률: 2-8mm (보통 비)
+  - 5% 확률: 8-15mm (강한 비)
+  - 기존 균등 분포(0-5mm)에서 확률 기반 분포로 변경
+
+### Fixed
+- **위험 셀 호버 효과 개선**:
+  - 빨간 배경(`.bg-red-500`) 셀은 호버 시에도 배경 유지
+  - 흰색 텍스트 가독성 보장
+  - CSS 선택자 수정: `tr:hover td:not(.bg-red-500)`
+
+### Technical Details
+- **위험 평가 기준**:
+  - 풍속 ≥ 15m/s
+  - 기온 ≤ 5°C or ≥ 30°C
+  - 강수량 ≥ 10mm
+  - 파고 ≥ 2m
+- `scripts.js`: `getHourlyOverallStatus()` 추가, 파고 기준 2m 적용, 강수량 확률 분포 구현
+- `styles.css`: 호버 효과 선택자 수정 (2곳)
+
+---
+
 ## [1.3.2] - 2025-10-23
 
 ### Added

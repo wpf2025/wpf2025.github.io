@@ -1,3 +1,35 @@
+        // ==================== 풍력 발전량 예측 시스템 v1.3.4 ====================
+        // 기상 기준 상수
+        const WEATHER_THRESHOLDS = {
+            windSpeed: { 
+                danger: 15,    // >= 15m/s
+                warning: 13    // >= 13m/s
+            },
+            temperature: { 
+                dangerMin: 5,      // <= 5°C
+                dangerMax: 30,     // >= 30°C
+                warningMin: 8,     // <= 8°C
+                warningMax: 28,    // >= 28°C
+                dailyMin: 10       // <= 10°C (90일 예측용)
+            },
+            precipitation: { 
+                danger: 10,    // >= 10mm
+                warning: 7     // >= 7mm
+            },
+            waveHeight: { 
+                danger: 2,     // >= 2m
+                warning: 1.5,  // >= 1.5m
+                daily: 2       // >= 2m (90일 예측용)
+            }
+        };
+
+        const STATUS_COLORS = {
+            good: 'bg-green-500',
+            warning: 'bg-yellow-500',
+            danger: 'bg-red-500'
+        };
+
+        // ==================== 유틸리티 함수 ====================
         const generateRandomData = (count, min, max, decimals = 0) => {
             const data = [];
             for (let i = 0; i < count; i++) {
@@ -1849,12 +1881,43 @@
             }
         }
         
-        // 기상 상태 결정 함수
-        function getWeatherStatus(windSpeed) {
-            if (windSpeed < 3 || windSpeed > 20) return 'danger';
-            if (windSpeed < 6 || windSpeed > 15) return 'warning';
-            return 'good';
-        }
+        // ==================== 날씨 데이터 생성 함수 ====================
+        
+        // 현실적인 강수량 생성 (확률 기반)
+        const generateRealisticPrecipitation = () => {
+            const rand = Math.random();
+            if (rand < 0.8) return (Math.random() * 2).toFixed(1);      // 80%: 0-2mm
+            if (rand < 0.95) return (2 + Math.random() * 6).toFixed(1); // 15%: 2-8mm
+            return (8 + Math.random() * 7).toFixed(1);                  // 5%: 8-15mm
+        };
+        
+        // 시간별 날씨 데이터 생성
+        const generateHourlyWeatherData = (hour) => {
+            return {
+                hour: hour,
+                windSpeed: (5 + Math.random() * 10).toFixed(1),
+                temp: (10 + Math.random() * 15).toFixed(1),
+                precip: generateRealisticPrecipitation(),
+                humidity: (60 + Math.random() * 30).toFixed(0),
+                waveHeight: (0.5 + Math.random() * 2).toFixed(1),
+                lightning: (Math.random() * 20).toFixed(0),
+                confidence: (70 + Math.random() * 25).toFixed(0)
+            };
+        };
+        
+        // 일별 날씨 데이터 생성
+        const generateDailyWeatherData = () => {
+            return {
+                windSpeed: (5 + Math.random() * 15).toFixed(1),
+                maxTemp: (15 + Math.random() * 20).toFixed(1),
+                minTemp: (5 + Math.random() * 10).toFixed(1),
+                precip: (Math.random() * 15).toFixed(1),
+                waveHeight: (0.5 + Math.random() * 1).toFixed(1),
+                confidence: (60 + Math.random() * 30).toFixed(0)
+            };
+        };
+        
+        // ==================== 상태 평가 함수 ====================
         
         // 10일 List 모드 렌더링 (개선된 UI)
         // 시간별 종합 상태 평가 함수
@@ -1864,13 +1927,21 @@
             const precip = parseFloat(hourData.precip);
             const waveHeight = parseFloat(hourData.waveHeight);
 
-            // 위험 기준: 풍속 >= 15m/s, 기온 <= 5°C or >= 30°C, 강수량 >= 10mm, 파고 >= 2m
-            if (windSpeed >= 15 || temp <= 5 || temp >= 30 || precip >= 10 || waveHeight >= 2) {
+            // 위험 기준
+            if (windSpeed >= WEATHER_THRESHOLDS.windSpeed.danger || 
+                temp <= WEATHER_THRESHOLDS.temperature.dangerMin || 
+                temp >= WEATHER_THRESHOLDS.temperature.dangerMax || 
+                precip >= WEATHER_THRESHOLDS.precipitation.danger || 
+                waveHeight >= WEATHER_THRESHOLDS.waveHeight.danger) {
                 return 'danger';
             }
             
-            // 주의 기준: 풍속 >= 13m/s, 기온 <= 8°C or >= 28°C, 강수량 >= 7mm, 파고 >= 1.5m
-            if (windSpeed >= 13 || temp <= 8 || temp >= 28 || precip >= 7 || waveHeight >= 1.5) {
+            // 주의 기준
+            if (windSpeed >= WEATHER_THRESHOLDS.windSpeed.warning || 
+                temp <= WEATHER_THRESHOLDS.temperature.warningMin || 
+                temp >= WEATHER_THRESHOLDS.temperature.warningMax || 
+                precip >= WEATHER_THRESHOLDS.precipitation.warning || 
+                waveHeight >= WEATHER_THRESHOLDS.waveHeight.warning) {
                 return 'warning';
             }
             
@@ -1890,27 +1961,7 @@
                 // 24시간 데이터 생성
                 const hourlyData = [];
                 for (let hour = 0; hour < 24; hour++) {
-                    // 강수량: 80% 확률로 0-2mm, 15% 확률로 2-8mm, 5% 확률로 8-15mm
-                    let precip;
-                    const rand = Math.random();
-                    if (rand < 0.8) {
-                        precip = (Math.random() * 2).toFixed(1);
-                    } else if (rand < 0.95) {
-                        precip = (2 + Math.random() * 6).toFixed(1);
-                    } else {
-                        precip = (8 + Math.random() * 7).toFixed(1);
-                    }
-                    
-                    hourlyData.push({
-                        hour: hour,
-                        windSpeed: (5 + Math.random() * 10).toFixed(1),
-                        temp: (10 + Math.random() * 15).toFixed(1),
-                        precip: precip,
-                        humidity: (60 + Math.random() * 30).toFixed(0),
-                        waveHeight: (0.5 + Math.random() * 2).toFixed(1),
-                        lightning: (Math.random() * 20).toFixed(0),
-                        confidence: (70 + Math.random() * 25).toFixed(0)
-                    });
+                    hourlyData.push(generateHourlyWeatherData(hour));
                 }
                 
                 // 각 시간별 종합 상태 계산
@@ -1937,22 +1988,17 @@
                 // 종합 상태 행 추가
                 tableHtml += '<tr><td class="sticky-col font-semibold text-purple-700"><i class="fas fa-check-circle mr-2"></i>종합</td>';
                 hourlyStatuses.forEach(status => {
-                    const statusColors = {
-                        good: 'bg-green-500',
-                        warning: 'bg-yellow-500',
-                        danger: 'bg-red-500'
-                    };
-                    tableHtml += `<td class="text-center p-2"><div class="w-full h-4 rounded ${statusColors[status]}"></div></td>`;
+                    tableHtml += `<td class="text-center p-2"><div class="w-full h-4 rounded ${STATUS_COLORS[status]}"></div></td>`;
                 });
                 tableHtml += '</tr>';
                 
                 // 각 변수별 행
                 const variables = [
-                    { key: 'windSpeed', label: '풍속 (m/s)', icon: 'fa-wind', color: 'blue', dangerThreshold: 15 },
-                    { key: 'temp', label: '기온 (°C)', icon: 'fa-temperature-high', color: 'orange', dangerMin: 5, dangerMax: 30 },
-                    { key: 'precip', label: '강수량 (mm)', icon: 'fa-cloud-rain', color: 'cyan', dangerThreshold: 10 },
+                    { key: 'windSpeed', label: '풍속 (m/s)', icon: 'fa-wind', color: 'blue', dangerThreshold: WEATHER_THRESHOLDS.windSpeed.danger },
+                    { key: 'temp', label: '기온 (°C)', icon: 'fa-temperature-high', color: 'orange', dangerMin: WEATHER_THRESHOLDS.temperature.dangerMin, dangerMax: WEATHER_THRESHOLDS.temperature.dangerMax },
+                    { key: 'precip', label: '강수량 (mm)', icon: 'fa-cloud-rain', color: 'cyan', dangerThreshold: WEATHER_THRESHOLDS.precipitation.danger },
                     { key: 'humidity', label: '상대습도 (%)', icon: 'fa-droplet', color: 'teal' },
-                    { key: 'waveHeight', label: '파고 (m)', icon: 'fa-water', color: 'indigo', dangerThreshold: 2 },
+                    { key: 'waveHeight', label: '파고 (m)', icon: 'fa-water', color: 'indigo', dangerThreshold: WEATHER_THRESHOLDS.waveHeight.danger },
                     { key: 'lightning', label: '낙뢰확률 (%)', icon: 'fa-bolt', color: 'yellow' },
                 ];
                 
@@ -2029,28 +2075,28 @@
             let dangerCount = 0;
             let warningCount = 0;
 
-            // Wind Speed: < 15m/s
-            if (windSpeed >= 15) {
+            // Wind Speed
+            if (windSpeed >= WEATHER_THRESHOLDS.windSpeed.danger) {
                 dangerCount++;
             }
 
-            // Max Temperature: < 30'c
-            if (maxTemp >= 30) {
+            // Max Temperature
+            if (maxTemp >= WEATHER_THRESHOLDS.temperature.dangerMax) {
                 warningCount++;
             }
 
-            // Min Temperature: > 10'c
-            if (minTemp <= 10) {
+            // Min Temperature
+            if (minTemp <= WEATHER_THRESHOLDS.temperature.dailyMin) {
                 warningCount++;
             }
 
-            // Precipitation: < 10 mm
-            if (precip >= 10) {
+            // Precipitation
+            if (precip >= WEATHER_THRESHOLDS.precipitation.danger) {
                 warningCount++;
             }
 
-            // Wave Height: < 2 m
-            if (waveHeight >= 2) {
+            // Wave Height
+            if (waveHeight >= WEATHER_THRESHOLDS.waveHeight.daily) {
                 dangerCount++;
             }
 
@@ -2082,12 +2128,7 @@
                     date.setDate(date.getDate() + startDay + day);
                     const dataPoint = {
                         date: date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }),
-                        windSpeed: (5 + Math.random() * 15).toFixed(1),
-                        maxTemp: (15 + Math.random() * 20).toFixed(1),
-                        minTemp: (5 + Math.random() * 10).toFixed(1),
-                        precip: (Math.random() * 15).toFixed(1),
-                        waveHeight: (0.5 + Math.random() * 1).toFixed(1),
-                        confidence: (60 + Math.random() * 30).toFixed(0)
+                        ...generateDailyWeatherData()
                     };
                     dataPoint.status = getOverallDailyStatus(dataPoint);
                     dailyData.push(dataPoint);
@@ -2121,22 +2162,17 @@
                                 // Add "Comprehensive" (종합) row
                                 tableHtml += '<tr><td class="sticky-col font-semibold text-purple-700"><i class="fas fa-check-circle mr-2"></i>종합</td>';
                                 dailyData.forEach(data => {
-                                    const statusColors = {
-                                        good: 'bg-green-500',
-                                        warning: 'bg-yellow-500',
-                                        danger: 'bg-red-500'
-                                    };
-                                    tableHtml += `<td class="text-center p-2"><div class="w-full h-4 rounded ${statusColors[data.status]}"></div></td>`;
+                                    tableHtml += `<td class="text-center p-2"><div class="w-full h-4 rounded ${STATUS_COLORS[data.status]}"></div></td>`;
                                 });
                                 tableHtml += '</tr>';
                 
                                 // 각 변수별 행
                 const variables = [
-                    { key: 'windSpeed', label: '평균풍속', criteria: '< 15m/s', icon: 'fa-wind', color: 'blue', goodRange: [0, 14.9] },
-                    { key: 'maxTemp', label: '최고기온', criteria: '< 30°C', icon: 'fa-temperature-high', color: 'red', goodRange: [-Infinity, 29.9] },
-                    { key: 'minTemp', label: '최저기온', criteria: '> 10°C', icon: 'fa-temperature-low', color: 'blue', goodRange: [10.1, Infinity] },
-                    { key: 'precip', label: '강수량', criteria: '< 10mm', icon: 'fa-cloud-rain', color: 'cyan', goodRange: [0, 9.9] },
-                    { key: 'waveHeight', label: '평균파고', criteria: '< 2m', icon: 'fa-water', color: 'indigo', goodRange: [0, 1.9] },
+                    { key: 'windSpeed', label: '평균풍속', criteria: `< ${WEATHER_THRESHOLDS.windSpeed.danger}m/s`, icon: 'fa-wind', color: 'blue', goodRange: [0, WEATHER_THRESHOLDS.windSpeed.danger - 0.1] },
+                    { key: 'maxTemp', label: '최고기온', criteria: `< ${WEATHER_THRESHOLDS.temperature.dangerMax}°C`, icon: 'fa-temperature-high', color: 'red', goodRange: [-Infinity, WEATHER_THRESHOLDS.temperature.dangerMax - 0.1] },
+                    { key: 'minTemp', label: '최저기온', criteria: `> ${WEATHER_THRESHOLDS.temperature.dailyMin}°C`, icon: 'fa-temperature-low', color: 'blue', goodRange: [WEATHER_THRESHOLDS.temperature.dailyMin + 0.1, Infinity] },
+                    { key: 'precip', label: '강수량', criteria: `< ${WEATHER_THRESHOLDS.precipitation.danger}mm`, icon: 'fa-cloud-rain', color: 'cyan', goodRange: [0, WEATHER_THRESHOLDS.precipitation.danger - 0.1] },
+                    { key: 'waveHeight', label: '평균파고', criteria: `< ${WEATHER_THRESHOLDS.waveHeight.daily}m`, icon: 'fa-water', color: 'indigo', goodRange: [0, WEATHER_THRESHOLDS.waveHeight.daily - 0.1] },
                     { key: 'confidence', label: '신뢰도', criteria: '10% 단위', icon: 'fa-chart-line', color: 'green' }
                 ];
                 
@@ -2239,12 +2275,7 @@
                 
                 const dataPoint = {
                     date: date,
-                    windSpeed: (5 + Math.random() * 15).toFixed(1),
-                    maxTemp: (15 + Math.random() * 20).toFixed(1),
-                    minTemp: (5 + Math.random() * 10).toFixed(1),
-                    precip: (Math.random() * 15).toFixed(1),
-                    waveHeight: (0.5 + Math.random() * 1).toFixed(1),
-                    confidence: (60 + Math.random() * 30).toFixed(0)
+                    ...generateDailyWeatherData()
                 };
                 dataPoint.status = getOverallDailyStatus(dataPoint);
                 dailyData.push(dataPoint);
@@ -2273,18 +2304,17 @@
             // Comprehensive Row
             detailedHtml += '<tr class="bg-gray-50"><td class="sticky-col bg-gray-50 font-semibold text-purple-700 p-2"><i class="fas fa-check-circle mr-2"></i>종합</td>';
             dailyData.forEach(data => {
-                const statusColors = { good: 'bg-green-500', warning: 'bg-yellow-500', danger: 'bg-red-500' };
-                detailedHtml += `<td class="text-center p-2"><div class="w-full h-4 rounded ${statusColors[data.status]}"></div></td>`;
+                detailedHtml += `<td class="text-center p-2"><div class="w-full h-4 rounded ${STATUS_COLORS[data.status]}"></div></td>`;
             });
             detailedHtml += '</tr>';
 
 
             const variables = [
-                { key: 'windSpeed', label: '평균풍속', criteria: '< 15m/s', goodRange: [0, 14.9] },
-                { key: 'maxTemp', label: '최고기온', criteria: '< 30°C', goodRange: [-Infinity, 29.9] },
-                { key: 'minTemp', label: '최저기온', criteria: '> 10°C', goodRange: [10.1, Infinity] },
-                { key: 'precip', label: '강수량', criteria: '< 10mm', goodRange: [0, 9.9] },
-                { key: 'waveHeight', label: '평균파고', criteria: '< 1m', goodRange: [0, 0.9] },
+                { key: 'windSpeed', label: '평균풍속', criteria: `< ${WEATHER_THRESHOLDS.windSpeed.danger}m/s`, goodRange: [0, WEATHER_THRESHOLDS.windSpeed.danger - 0.1] },
+                { key: 'maxTemp', label: '최고기온', criteria: `< ${WEATHER_THRESHOLDS.temperature.dangerMax}°C`, goodRange: [-Infinity, WEATHER_THRESHOLDS.temperature.dangerMax - 0.1] },
+                { key: 'minTemp', label: '최저기온', criteria: `> ${WEATHER_THRESHOLDS.temperature.dailyMin}°C`, goodRange: [WEATHER_THRESHOLDS.temperature.dailyMin + 0.1, Infinity] },
+                { key: 'precip', label: '강수량', criteria: `< ${WEATHER_THRESHOLDS.precipitation.danger}mm`, goodRange: [0, WEATHER_THRESHOLDS.precipitation.danger - 0.1] },
+                { key: 'waveHeight', label: '평균파고', criteria: `< ${WEATHER_THRESHOLDS.waveHeight.daily}m`, goodRange: [0, WEATHER_THRESHOLDS.waveHeight.daily - 0.1] },
             ];
 
             variables.forEach(variable => {
@@ -2328,12 +2358,7 @@
                 
                 const dataPoint = {
                     date: new Date(date),
-                    windSpeed: (5 + Math.random() * 15).toFixed(1),
-                    maxTemp: (15 + Math.random() * 20).toFixed(1),
-                    minTemp: (5 + Math.random() * 10).toFixed(1),
-                    precip: (Math.random() * 15).toFixed(1),
-                    waveHeight: (0.5 + Math.random() * 1).toFixed(1),
-                    confidence: (60 + Math.random() * 30).toFixed(0)
+                    ...generateDailyWeatherData()
                 };
                 dataPoint.status = getOverallDailyStatus(dataPoint);
                 dailyData.push(dataPoint);
@@ -2392,8 +2417,7 @@
             // 종합 행
             detailedHtml += '<tr><td class="sticky-col font-semibold text-purple-700"><i class="fas fa-check-circle mr-2"></i>종합</td>';
             dailyData.forEach(data => {
-                const statusColors = { good: 'bg-green-500', warning: 'bg-yellow-500', danger: 'bg-red-500' };
-                detailedHtml += `<td class="text-center p-2"><div class="w-full h-4 rounded ${statusColors[data.status]}"></div></td>`;
+                detailedHtml += `<td class="text-center p-2"><div class="w-full h-4 rounded ${STATUS_COLORS[data.status]}"></div></td>`;
             });
             detailedHtml += '</tr>';
 
@@ -2407,11 +2431,11 @@
 
             // 기상 변수 행
             const variables = [
-                { key: 'windSpeed', label: '평균풍속', criteria: '< 15m/s', icon: 'fa-wind', goodRange: [0, 14.9] },
-                { key: 'maxTemp', label: '최고기온', criteria: '< 30°C', icon: 'fa-temperature-high', goodRange: [-Infinity, 29.9] },
-                { key: 'minTemp', label: '최저기온', criteria: '> 10°C', icon: 'fa-temperature-low', goodRange: [10.1, Infinity] },
-                { key: 'precip', label: '강수량', criteria: '< 10mm', icon: 'fa-cloud-rain', goodRange: [0, 9.9] },
-                { key: 'waveHeight', label: '평균파고', criteria: '< 1m', icon: 'fa-water', goodRange: [0, 0.9] },
+                { key: 'windSpeed', label: '평균풍속', criteria: `< ${WEATHER_THRESHOLDS.windSpeed.danger}m/s`, icon: 'fa-wind', goodRange: [0, WEATHER_THRESHOLDS.windSpeed.danger - 0.1] },
+                { key: 'maxTemp', label: '최고기온', criteria: `< ${WEATHER_THRESHOLDS.temperature.dangerMax}°C`, icon: 'fa-temperature-high', goodRange: [-Infinity, WEATHER_THRESHOLDS.temperature.dangerMax - 0.1] },
+                { key: 'minTemp', label: '최저기온', criteria: `> ${WEATHER_THRESHOLDS.temperature.dailyMin}°C`, icon: 'fa-temperature-low', goodRange: [WEATHER_THRESHOLDS.temperature.dailyMin + 0.1, Infinity] },
+                { key: 'precip', label: '강수량', criteria: `< ${WEATHER_THRESHOLDS.precipitation.danger}mm`, icon: 'fa-cloud-rain', goodRange: [0, WEATHER_THRESHOLDS.precipitation.danger - 0.1] },
+                { key: 'waveHeight', label: '평균파고', criteria: `< ${WEATHER_THRESHOLDS.waveHeight.daily}m`, icon: 'fa-water', goodRange: [0, WEATHER_THRESHOLDS.waveHeight.daily - 0.1] },
             ];
 
             variables.forEach(variable => {

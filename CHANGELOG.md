@@ -5,6 +5,48 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.4] - 2025-10-24
+
+### Added
+- **기상 기준값 상수화**:
+  - `WEATHER_THRESHOLDS` 객체로 모든 위험 기준값 중앙 관리
+  - `STATUS_COLORS` 객체로 상태별 색상 클래스 통합
+- **날씨 데이터 생성 함수 모듈화**:
+  - `generateRealisticPrecipitation()`: 확률 기반 강수량 생성
+  - `generateHourlyWeatherData()`: 시간별 날씨 데이터 생성
+  - `generateDailyWeatherData()`: 일별 날씨 데이터 생성
+
+### Changed
+- **90일 예측 차트 모드**: 파고 기준 1m → 2m 적용
+- **모든 예측 모드**: 동일한 데이터 생성 로직 사용으로 일관성 확보
+- **코드 구조 개선**:
+  - 하드코딩된 기준값 → 상수 참조
+  - 중복된 데이터 생성 로직 → 공통 함수 호출
+  - 인라인 `statusColors` 객체 → `STATUS_COLORS` 상수
+
+### Removed
+- **사용하지 않는 함수 제거**: `getWeatherStatus()` 함수 삭제
+
+### Fixed
+- **10일 차트 모드**: variables 배열 상수화 누락 수정
+- **90일 차트 모드**: 상세 테이블 파고 기준 표시 수정 (< 1m → < 2m)
+
+### Technical Details
+- **상수 정의 위치**: scripts.js 최상단
+- **영향받은 함수**:
+  - `getHourlyOverallStatus()`: 상수 참조로 변경
+  - `getOverallDailyStatus()`: 상수 참조로 변경
+  - `render10DaysList()`: 데이터 생성 함수 사용
+  - `render90DaysList()`: 데이터 생성 함수 사용
+  - `render10DaysCharts()`: 데이터 생성 함수 + 상수화
+  - `render90DaysCharts()`: 데이터 생성 함수 + 상수화
+- **코드 품질 향상**:
+  - 기준값 변경 시 한 곳만 수정
+  - 데이터 생성 로직 일관성 보장
+  - 유지보수성 대폭 향상
+
+---
+
 ## [1.3.3] - 2025-10-24
 
 ### Added

@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-03-17
+
+### Added
+- **장기예측 모달 주간 상세 테이블**:
+  - 박스플롯 클릭 시 해당 주차 7일간 일별 상세 기상 테이블 표시
+  - 종합 상태 색상 바, 신뢰도, 풍속/최고기온/최저기온/강수량/파고 원형 인디케이터
+  - 각 변수별 평가 기준 표시 (< 15m/s, < 30°C, > 10°C, < 10mm, < 2m)
+  - 90일 기상예측 Charts 모드와 동일한 UI 패턴 적용
+- **모달 타이틀 날짜 범위 표시**: `N주차 상세 기상 정보 (M월 D일 ~ M월 D일)` 형식
+
+### Changed
+- **모달 크기 확대**: `max-w-4xl` → `max-w-6xl`로 변경하여 상세 테이블 수용
+- **도넛 차트 범례 방식 변경**: Chart.js 내장 범례 → HTML 범례로 대체
+  - 범례 줄 수 차이로 인한 도넛 크기 불일치 문제 해결
+  - 3개 도넛 차트 크기 동일하게 통일
+- **도넛 차트 Y축 스케일 제거**: `scales: {}` 옵션 적용으로 불필요한 축 비활성화
+- **도넛 차트 컨테이너 높이 조정**: `h-[250px]` → `h-[200px]` (범례 분리로 도넛 자체는 더 크게 표시)
+
 ## [1.3.4] - 2025-10-24
 
 ### Added

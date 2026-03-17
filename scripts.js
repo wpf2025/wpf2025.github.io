@@ -1267,7 +1267,13 @@
             window.showWeatherDetail = function(weekNumber) {
                 const modal = document.getElementById('weatherDetailModal');
                 const title = document.getElementById('modalTitle');
-                title.textContent = `${weekNumber}주차 상세 기상 정보`;
+                const today = new Date();
+                const weekStart = new Date(today);
+                weekStart.setDate(weekStart.getDate() + (weekNumber - 1) * 7);
+                const weekEnd = new Date(weekStart);
+                weekEnd.setDate(weekEnd.getDate() + 6);
+                const fmt = d => d.toLocaleDateString('ko-KR', {month:'short', day:'numeric'});
+                title.textContent = `${weekNumber}주차 상세 기상 정보 (${fmt(weekStart)} ~ ${fmt(weekEnd)})`;
                 
                 createModalCharts(weekNumber);
                 modal.classList.remove('hidden');
@@ -1304,46 +1310,40 @@
                 
                 const data = weekData[weekNumber] || weekData[1];
                 
+                const doughnutOpts = { scales: {}, plugins: { legend: { display: false } } };
+
+                const windLabels = ['매우 약풍 (0~3 m/s)', '약풍 (3~6 m/s)', '중간풍 (6~12 m/s)', '강풍 (12~18 m/s)', '매우 강풍 (>18 m/s)'];
+                const windColors = ['rgba(239, 68, 68, 0.8)', 'rgba(245, 158, 11, 0.8)', 'rgba(16, 185, 129, 0.8)', 'rgba(59, 130, 246, 0.8)', 'rgba(139, 92, 246, 0.8)'];
                 charts.modalWindspeedChart = createChart(document.getElementById('modalWindspeedChart')?.getContext('2d'), 'doughnut',
-                    ['매우 약풍 (0~3 m/s)', '약풍 (3~6 m/s)', '중간풍 (6~12 m/s)', '강풍 (12~18 m/s)', '매우 강풍 (>18 m/s)'],
-                    [{
-                        data: [data.windLow, 25, data.windOptimal, 15, 5],
-                        backgroundColor: [
-                            'rgba(239, 68, 68, 0.8)',
-                            'rgba(245, 158, 11, 0.8)',
-                            'rgba(16, 185, 129, 0.8)',
-                            'rgba(59, 130, 246, 0.8)',
-                            'rgba(139, 92, 246, 0.8)'
-                        ]
-                    }],
-                    { plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } } }
+                    windLabels,
+                    [{ data: [data.windLow, 25, data.windOptimal, 15, 5], backgroundColor: windColors }],
+                    doughnutOpts
                 );
                 
+                const tempLabels = ['저온 (< 5℃)', '적정 (5~25℃)', '고온 (> 30℃)'];
+                const tempColors = ['rgba(59, 130, 246, 0.8)', 'rgba(16, 185, 129, 0.8)', 'rgba(239, 68, 68, 0.8)'];
                 charts.modalTemperatureChart = createChart(document.getElementById('modalTemperatureChart')?.getContext('2d'), 'doughnut',
-                    ['저온 (< 5℃)', '적정 (5~25℃)', '고온 (> 30℃)'],
-                    [{
-                        data: [15, data.tempOptimal, data.tempHigh],
-                        backgroundColor: [
-                            'rgba(59, 130, 246, 0.8)',
-                            'rgba(16, 185, 129, 0.8)',
-                            'rgba(239, 68, 68, 0.8)'
-                        ]
-                    }],
-                    { plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } } }
+                    tempLabels,
+                    [{ data: [15, data.tempOptimal, data.tempHigh], backgroundColor: tempColors }],
+                    doughnutOpts
                 );
                 
+                const waveLabels = ['낮음 (< 0.8m)', '보통 (0.8~1.3m)', '높음 (> 1.3m)'];
+                const waveColors = ['rgba(16, 185, 129, 0.8)', 'rgba(245, 158, 11, 0.8)', 'rgba(239, 68, 68, 0.8)'];
                 charts.modalWaveChart = createChart(document.getElementById('modalWaveChart')?.getContext('2d'), 'doughnut',
-                    ['낮음 (< 0.8m)', '보통 (0.8~1.3m)', '높음 (> 1.3m)'],
-                    [{
-                        data: [data.waveSafe, 45, data.waveHigh],
-                        backgroundColor: [
-                            'rgba(16, 185, 129, 0.8)',
-                            'rgba(245, 158, 11, 0.8)',
-                            'rgba(239, 68, 68, 0.8)'
-                        ]
-                    }],
-                    { plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } } }
+                    waveLabels,
+                    [{ data: [data.waveSafe, 45, data.waveHigh], backgroundColor: waveColors }],
+                    doughnutOpts
                 );
+
+                const renderLegend = (id, labels, colors) => {
+                    document.getElementById(id).innerHTML = labels.map((l, i) =>
+                        `<span class="inline-flex items-center mr-2 mb-1"><span class="inline-block w-3 h-3 rounded-sm mr-1" style="background:${colors[i]}"></span>${l}</span>`
+                    ).join('');
+                };
+                renderLegend('windspeedLegend', windLabels, windColors);
+                renderLegend('temperatureLegend', tempLabels, tempColors);
+                renderLegend('waveLegend', waveLabels, waveColors);
                 
                 document.getElementById('windspeedStats').innerHTML = `
                     <div class="text-blue-600"><strong>평균:</strong> ${data.windAvg} m/s</div>
@@ -1361,6 +1361,69 @@
                     <div class="text-blue-600"><strong>평균:</strong> ${data.waveAvg}m</div>
                     <div class="text-green-600"><strong>작업 안전:</strong> ${data.waveSafe}%</div>
                     <div class="text-red-600"><strong>작업 제한:</strong> ${data.waveHigh}%</div>
+                `;
+
+                // 주간 일별 상세 기상 테이블 렌더링
+                const detailContainer = document.getElementById('modalWeeklyDetail');
+                if (!detailContainer) return;
+
+                const today = new Date();
+                const weekStart = new Date(today);
+                weekStart.setDate(weekStart.getDate() + (weekNumber - 1) * 7);
+
+                const days = Array.from({length: 7}, (_, i) => {
+                    const d = new Date(weekStart);
+                    d.setDate(d.getDate() + i);
+                    const weatherData = generateDailyWeatherData();
+                    return { date: d, ...weatherData, status: getOverallDailyStatus(weatherData) };
+                });
+
+                const dayHeaders = days.map(d =>
+                    `<th class="text-center text-xs px-2 py-2 whitespace-nowrap">${d.date.toLocaleDateString('ko-KR', {month:'short', day:'numeric', weekday:'short'})}</th>`
+                ).join('');
+
+                const statusRow = days.map(d =>
+                    `<td class="text-center p-2"><div class="w-full h-4 rounded ${STATUS_COLORS[d.status]}"></div></td>`
+                ).join('');
+
+                const variables = [
+                    { key: 'windSpeed', label: '풍속 (m/s)', icon: 'fa-wind', criteria: `< ${WEATHER_THRESHOLDS.windSpeed.danger}m/s`, good: v => v < WEATHER_THRESHOLDS.windSpeed.danger },
+                    { key: 'maxTemp', label: '최고기온 (°C)', icon: 'fa-temperature-high', criteria: `< ${WEATHER_THRESHOLDS.temperature.dangerMax}°C`, good: v => v < WEATHER_THRESHOLDS.temperature.dangerMax },
+                    { key: 'minTemp', label: '최저기온 (°C)', icon: 'fa-temperature-low', criteria: `> ${WEATHER_THRESHOLDS.temperature.dailyMin}°C`, good: v => v > WEATHER_THRESHOLDS.temperature.dailyMin },
+                    { key: 'precip', label: '강수량 (mm)', icon: 'fa-cloud-rain', criteria: `< ${WEATHER_THRESHOLDS.precipitation.danger}mm`, good: v => v < WEATHER_THRESHOLDS.precipitation.danger },
+                    { key: 'waveHeight', label: '파고 (m)', icon: 'fa-water', criteria: `< ${WEATHER_THRESHOLDS.waveHeight.daily}m`, good: v => v < WEATHER_THRESHOLDS.waveHeight.daily }
+                ];
+
+                const varRows = variables.map(v => {
+                    const cells = days.map(d => {
+                        const val = parseFloat(d[v.key]);
+                        const isGood = v.good(val);
+                        return `<td class="text-center p-2">
+                            <div class="flex flex-col items-center gap-1">
+                                <div class="w-4 h-4 rounded-full ${isGood ? 'bg-green-500' : 'bg-red-500'}"></div>
+                                <span class="text-xs text-gray-600">${val.toFixed(1)}</span>
+                            </div>
+                        </td>`;
+                    }).join('');
+                    return `<tr><td class="sticky-col font-semibold text-gray-700 text-xs whitespace-nowrap px-3 py-2"><i class="fas ${v.icon} mr-1"></i>${v.label} <span class="text-xs text-gray-400">(${v.criteria})</span></td>${cells}</tr>`;
+                }).join('');
+
+                const confidenceRow = days.map(d =>
+                    `<td class="text-center text-xs font-semibold py-2">${Math.floor(parseFloat(d.confidence) / 10) * 10}%</td>`
+                ).join('');
+
+                detailContainer.innerHTML = `
+                    <h4 class="text-lg font-semibold mb-3"><i class="fas fa-calendar-week mr-2 text-blue-600"></i>주간 일별 상세 기상</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse text-sm">
+                            <thead><tr class="bg-gray-50"><th class="sticky-col text-left px-3 py-2 text-xs text-gray-500">항목</th>${dayHeaders}</tr></thead>
+                            <tbody>
+                                <tr class="bg-purple-50"><td class="sticky-col font-semibold text-purple-700 text-xs px-3 py-2"><i class="fas fa-check-circle mr-1"></i>종합</td>${statusRow}</tr>
+                                <tr><td class="sticky-col font-semibold text-gray-700 text-xs px-3 py-2"><i class="fas fa-chart-line mr-1"></i>신뢰도</td>${confidenceRow}</tr>
+                                ${varRows}
+                            </tbody>
+                        </table>
+                    </div>
                 `;
             }
         });

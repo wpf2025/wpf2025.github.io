@@ -712,20 +712,20 @@
                         options:midBoxplotOpts('기온 (℃)')
                     });
                     const midWavePattern = [
-                        {range:[0.8,1.3],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                        {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
                         {range:[0.3,0.7],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
-                        {range:[0.8,1.3],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                        {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
                         {range:[1.4,2.2],color:'rgba(239,68,68,0.6)',border:'rgb(239,68,68)'},
-                        {range:[0.8,1.3],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                        {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
                         {range:[0.3,0.7],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
-                        {range:[0.8,1.3],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                        {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
                         {range:[2.0,3.2],color:'rgba(220,38,127,0.6)',border:'rgb(220,38,127)'},
-                        {range:[0.8,1.3],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                        {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
                         {range:[1.4,2.2],color:'rgba(239,68,68,0.6)',border:'rgb(239,68,68)'},
                         {range:[0.1,0.4],color:'rgba(34,197,94,0.6)',border:'rgb(34,197,94)'},
-                        {range:[0.8,1.3],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                        {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
                         {range:[0.3,0.7],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
-                        {range:[0.8,1.3],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'}
+                        {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'}
                     ];
                     charts.midtermWaveBoxplot = new Chart(document.getElementById('midtermWaveBoxplot')?.getContext('2d'),{
                         type:'boxplot',
@@ -936,18 +936,18 @@
                     
                     // 파고 박스플롯 (다양한 케이스)
                     const wavePattern = [
-                        { type: 'normal', range: [0.8, 1.3], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 보통
+                        { type: 'normal', range: [0.8, 1.5], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 보통
                         { type: 'low', range: [0.3, 0.7], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 낮음
-                        { type: 'normal', range: [0.8, 1.3], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 보통
+                        { type: 'normal', range: [0.8, 1.5], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 보통
                         { type: 'high', range: [1.4, 2.2], color: 'rgba(239, 68, 68, 0.6)', borderColor: 'rgb(239, 68, 68)' }, // 높음
-                        { type: 'normal', range: [0.8, 1.3], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 보통
+                        { type: 'normal', range: [0.8, 1.5], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 보통
                         { type: 'low', range: [0.3, 0.7], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 낮음
-                        { type: 'normal', range: [0.8, 1.3], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 보통
+                        { type: 'normal', range: [0.8, 1.5], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 보통
                         { type: 'very_high', range: [2.0, 3.2], color: 'rgba(220, 38, 127, 0.6)', borderColor: 'rgb(220, 38, 127)' }, // 매우 높음
-                        { type: 'normal', range: [0.8, 1.3], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 보통
+                        { type: 'normal', range: [0.8, 1.5], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 보통
                         { type: 'high', range: [1.4, 2.2], color: 'rgba(239, 68, 68, 0.6)', borderColor: 'rgb(239, 68, 68)' }, // 높음
                         { type: 'calm', range: [0.1, 0.4], color: 'rgba(34, 197, 94, 0.6)', borderColor: 'rgb(34, 197, 94)' }, // 매우 낮음
-                        { type: 'normal', range: [0.8, 1.3], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' } // 보통
+                        { type: 'normal', range: [0.8, 1.5], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' } // 보통
                     ];
                     
                     const waveBoxData = wavePattern.map(caseType => {
@@ -1509,7 +1509,7 @@
                     doughnutOpts
                 );
                 
-                const waveLabels = ['낮음 (< 0.8m)', '보통 (0.8~1.3m)', '높음 (> 1.3m)'];
+                const waveLabels = ['낮음 (< 0.8m)', '보통 (0.8~1.5m)', '높음 (> 1.5m)'];
                 const waveColors = ['rgba(16, 185, 129, 0.8)', 'rgba(245, 158, 11, 0.8)', 'rgba(239, 68, 68, 0.8)'];
                 charts.modalWaveChart = createChart(document.getElementById('modalWaveChart')?.getContext('2d'), 'doughnut',
                     waveLabels,

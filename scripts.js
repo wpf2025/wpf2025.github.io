@@ -39,6 +39,21 @@
             return data;
         };
 
+        // Box plot 데이터 생성 함수
+        const generateBoxplotData = (min, max) => {
+            const range = max - min;
+            const q1 = min + range * 0.25;
+            const median = min + range * 0.5;
+            const q3 = min + range * 0.75;
+            return {
+                min: min + Math.random() * range * 0.1,
+                q1: q1 + (Math.random() - 0.5) * range * 0.1,
+                median: median + (Math.random() - 0.5) * range * 0.1,
+                q3: q3 + (Math.random() - 0.5) * range * 0.1,
+                max: max - Math.random() * range * 0.1
+            };
+        };
+
         // 오늘 기상예보 데이터 생성 및 표시
         const initTodayWeather = () => {
             const today = new Date();
@@ -661,6 +676,62 @@
                         Array.from({length: 14}, (_, i) => `D+${i+1}`), 
                         [{ label: '일일 예상 발전량 (MWh)', data: generateRandomData(14, 720, 1440), borderColor: 'rgb(245, 158, 11)', tension: 0.1, fill: false }]
                     );
+
+                    // 중기예측 14일 기상 박스플롯
+                    const midDayLabels = Array.from({length: 14}, (_, i) => `D+${i+1}`);
+                    const midWindPattern = [
+                        {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                        {range:[3,6],color:'rgba(59,130,246,0.6)',border:'rgb(59,130,246)'},
+                        {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                        {range:[10,15],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                        {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                        {range:[0,3],color:'rgba(135,206,235,0.6)',border:'rgb(135,206,235)'},
+                        {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                        {range:[15,22],color:'rgba(239,68,68,0.6)',border:'rgb(239,68,68)'},
+                        {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                        {range:[3,6],color:'rgba(59,130,246,0.6)',border:'rgb(59,130,246)'},
+                        {range:[10,15],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                        {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                        {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                        {range:[3,6],color:'rgba(59,130,246,0.6)',border:'rgb(59,130,246)'}
+                    ];
+                    const midBoxplotOpts = (ylabel) => ({
+                        responsive:true, maintainAspectRatio:false,
+                        onClick:(e,el)=>{if(el.length>0) showMidtermWeatherDetail(el[0].index);},
+                        scales:{y:{title:{display:true,text:ylabel},beginAtZero:true}},
+                        plugins:{legend:{display:false}}
+                    });
+                    charts.midtermWindBoxplot = new Chart(document.getElementById('midtermWindBoxplot')?.getContext('2d'),{
+                        type:'boxplot',
+                        data:{labels:midDayLabels,datasets:[{label:'풍속',data:midWindPattern.map(p=>generateBoxplotData(p.range[0],p.range[1])),backgroundColor:midWindPattern.map(p=>p.color),borderColor:midWindPattern.map(p=>p.border),borderWidth:2}]},
+                        options:midBoxplotOpts('풍속 (m/s)')
+                    });
+                    charts.midtermTempBoxplot = new Chart(document.getElementById('midtermTempBoxplot')?.getContext('2d'),{
+                        type:'boxplot',
+                        data:{labels:midDayLabels,datasets:[{label:'기온',data:midDayLabels.map(()=>generateBoxplotData(5,25)),backgroundColor:'rgba(16,185,129,0.6)',borderColor:'rgb(16,185,129)',borderWidth:2}]},
+                        options:midBoxplotOpts('기온 (℃)')
+                    });
+                    const midWavePattern = [
+                        {range:[0.8,1.3],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                        {range:[0.3,0.7],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                        {range:[0.8,1.3],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                        {range:[1.4,2.2],color:'rgba(239,68,68,0.6)',border:'rgb(239,68,68)'},
+                        {range:[0.8,1.3],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                        {range:[0.3,0.7],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                        {range:[0.8,1.3],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                        {range:[2.0,3.2],color:'rgba(220,38,127,0.6)',border:'rgb(220,38,127)'},
+                        {range:[0.8,1.3],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                        {range:[1.4,2.2],color:'rgba(239,68,68,0.6)',border:'rgb(239,68,68)'},
+                        {range:[0.1,0.4],color:'rgba(34,197,94,0.6)',border:'rgb(34,197,94)'},
+                        {range:[0.8,1.3],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                        {range:[0.3,0.7],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                        {range:[0.8,1.3],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'}
+                    ];
+                    charts.midtermWaveBoxplot = new Chart(document.getElementById('midtermWaveBoxplot')?.getContext('2d'),{
+                        type:'boxplot',
+                        data:{labels:midDayLabels,datasets:[{label:'파고',data:midWavePattern.map(p=>generateBoxplotData(p.range[0],p.range[1])),backgroundColor:midWavePattern.map(p=>p.color),borderColor:midWavePattern.map(p=>p.border),borderWidth:2}]},
+                        options:midBoxplotOpts('파고 (m)')
+                    });
                 }
                 // Per Turbine (WTG #1 to #5)
                 if (document.getElementById('s_2week-content')?.offsetParent !== null) {
@@ -768,21 +839,6 @@
                     
                     // 기상 예측 박스플롯 차트들
                     const weekLabels = Array.from({length: 12}, (_, i) => `${i+1}주차`);
-                    
-                    // Box plot 데이터 생성 함수
-                    const generateBoxplotData = (min, max) => {
-                        const range = max - min;
-                        const q1 = min + range * 0.25;
-                        const median = min + range * 0.5;
-                        const q3 = min + range * 0.75;
-                        return {
-                            min: min + Math.random() * range * 0.1,
-                            q1: q1 + (Math.random() - 0.5) * range * 0.1,
-                            median: median + (Math.random() - 0.5) * range * 0.1,
-                            q3: q3 + (Math.random() - 0.5) * range * 0.1,
-                            max: max - Math.random() * range * 0.1
-                        };
-                    };
                     
                     // 풍속 박스플롯 (다양한 케이스)
                     const windspeedPattern = [
@@ -1289,6 +1345,124 @@
                         delete charts[chartId];
                     }
                 });
+            };
+
+            // 중기예측 24시간 O&M 모달
+            window.showMidtermWeatherDetail = function(dayIndex) {
+                const modal = document.getElementById('midtermWeatherModal');
+                const title = document.getElementById('midtermModalTitle');
+                const today = new Date();
+                const targetDate = new Date(today);
+                targetDate.setDate(targetDate.getDate() + dayIndex);
+                title.textContent = `D+${dayIndex+1} 상세 기상 정보 (${targetDate.toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'short'})})`;
+
+                const hours = Array.from({length:24},(_,h)=>{
+                    const data = generateHourlyWeatherData(h);
+                    return {...data, status: getHourlyOverallStatus(data)};
+                });
+
+                const hourHeaders = hours.map(h=>`<th class="text-center text-xs px-2 py-3 min-w-[44px]">${h.hour}시</th>`).join('');
+                const statusRow = hours.map(h=>`<td class="text-center p-2"><div class="w-full h-5 rounded ${STATUS_COLORS[h.status]}"></div></td>`).join('');
+                const confRow = hours.map(h=>`<td class="text-center text-xs font-semibold py-2">${Math.floor(parseFloat(h.confidence)/10)*10}%</td>`).join('');
+
+                const vars = [
+                    {key:'windSpeed',label:'풍속',icon:'fa-wind',criteria:'≤ 10m/s',good:v=>v<=10},
+                    {key:'temp',label:'기온',icon:'fa-temperature-high',criteria:'≤ 30°C',good:v=>v<=30},
+                    {key:'temp',label:'기온(저)',icon:'fa-temperature-low',criteria:'≥ 5°C',good:v=>v>=5},
+                    {key:'waveHeight',label:'파고',icon:'fa-water',criteria:'≤ 1.5m',good:v=>v<=1.5}
+                ];
+                const varRows = vars.map(v=>{
+                    const cells = hours.map(h=>{
+                        const val = parseFloat(h[v.key]);
+                        return `<td class="text-center p-2"><div class="w-6 h-6 mx-auto rounded-full ${v.good(val)?'bg-green-500':'bg-red-500'} cursor-default" title="${val.toFixed(1)}"></div></td>`;
+                    }).join('');
+                    return `<tr><td class="sticky-col font-semibold text-gray-700 text-sm whitespace-nowrap px-3 py-3"><i class="fas ${v.icon} mr-1"></i>${v.label} <span class="text-xs text-gray-400">(${v.criteria})</span></td>${cells}</tr>`;
+                }).join('');
+
+                const windData = hours.map(h=>parseFloat(h.windSpeed));
+
+                document.getElementById('midtermModalDetail').innerHTML = `
+                    <h4 class="text-lg font-semibold mb-3"><i class="fas fa-wind mr-2 text-blue-600"></i>시간별 풍속 예측</h4>
+                    <div class="chart-container h-[200px] mb-6"><canvas id="midtermHourlyWindChart"></canvas></div>
+                    <h4 class="text-lg font-semibold mb-3"><i class="fas fa-clock mr-2 text-blue-600"></i>24시간 O&M 가능 여부 판단</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse text-sm">
+                            <thead><tr class="bg-gray-50"><th class="sticky-col text-left px-3 py-2 text-xs text-gray-500">항목</th>${hourHeaders}</tr></thead>
+                            <tbody>
+                                <tr class="bg-purple-50"><td class="sticky-col font-semibold text-purple-700 text-xs px-3 py-2"><i class="fas fa-check-circle mr-1"></i>종합</td>${statusRow}</tr>
+                                ${varRows}
+                            </tbody>
+                        </table>
+                    </div>`;
+
+                if (charts.midtermHourlyWindChart) { charts.midtermHourlyWindChart.destroy(); }
+                const windspeedColors2 = windData.map(speed => {
+                    if (speed < 3) return 'rgba(239, 68, 68, 0.8)';
+                    else if (speed < 6) return 'rgba(245, 158, 11, 0.8)';
+                    else if (speed <= 12) return 'rgba(16, 185, 129, 0.8)';
+                    else return 'rgba(59, 130, 246, 0.8)';
+                });
+
+                modal.classList.remove('hidden');
+
+                setTimeout(() => {
+                    charts.midtermHourlyWindChart = new Chart(document.getElementById('midtermHourlyWindChart').getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: hours.map(h=>`${h.hour}시`),
+                        datasets: [{
+                            label: '풍속 (m/s)',
+                            data: windData,
+                            borderColor: 'rgb(59, 130, 246)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.3,
+                            fill: true,
+                            borderWidth: 2,
+                            pointBackgroundColor: windspeedColors2,
+                            pointBorderColor: windspeedColors2,
+                            pointRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: true },
+                            tooltip: {
+                                callbacks: {
+                                    afterLabel: function(context) {
+                                        const speed = context.parsed.y;
+                                        if (speed < 3) return '발전 불가 (컷인 미달)';
+                                        else if (speed < 6) return '저풍속 구간';
+                                        else if (speed <= 12) return '최적 발전 구간';
+                                        else return '정격 출력 구간';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 20,
+                                title: { display: true, text: '풍속 (m/s)' },
+                                grid: {
+                                    color: function(context) {
+                                        if (context.tick.value === 3) return 'rgba(239, 68, 68, 0.5)';
+                                        if (context.tick.value === 6) return 'rgba(245, 158, 11, 0.5)';
+                                        if (context.tick.value === 12) return 'rgba(16, 185, 129, 0.5)';
+                                        return 'rgba(0, 0, 0, 0.1)';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                }, 50);
+            };
+
+            window.closeMidtermWeatherModal = function() {
+                if (charts.midtermHourlyWindChart) { charts.midtermHourlyWindChart.destroy(); delete charts.midtermHourlyWindChart; }
+                document.getElementById('midtermWeatherModal').classList.add('hidden');
             };
             
             function createModalCharts(weekNumber) {

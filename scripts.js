@@ -786,18 +786,18 @@
                     
                     // 풍속 박스플롯 (다양한 케이스)
                     const windspeedPattern = [
-                        { type: 'optimal', range: [6, 12], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍
-                        { type: 'weak', range: [3, 6], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 약풍
-                        { type: 'optimal', range: [6, 12], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍
-                        { type: 'strong', range: [12, 18], color: 'rgba(59, 130, 246, 0.6)', borderColor: 'rgb(59, 130, 246)' }, // 강풍
-                        { type: 'optimal', range: [6, 12], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍
-                        { type: 'weak', range: [3, 6], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 약풍
-                        { type: 'optimal', range: [6, 12], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍
-                        { type: 'very_strong', range: [15, 22], color: 'rgba(139, 92, 246, 0.6)', borderColor: 'rgb(139, 92, 246)' }, // 매우 강풍
-                        { type: 'optimal', range: [6, 12], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍
-                        { type: 'strong', range: [12, 18], color: 'rgba(59, 130, 246, 0.6)', borderColor: 'rgb(59, 130, 246)' }, // 강풍
-                        { type: 'calm', range: [0, 3], color: 'rgba(239, 68, 68, 0.6)', borderColor: 'rgb(239, 68, 68)' }, // 매우 약풍
-                        { type: 'optimal', range: [6, 12], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' } // 중간풍
+                        { type: 'optimal', range: [6, 10], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍 Green
+                        { type: 'weak', range: [3, 6], color: 'rgba(59, 130, 246, 0.6)', borderColor: 'rgb(59, 130, 246)' }, // 약풍 Blue
+                        { type: 'optimal', range: [6, 10], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍 Green
+                        { type: 'strong', range: [10, 15], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 강풍 Orange
+                        { type: 'optimal', range: [6, 10], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍 Green
+                        { type: 'weak', range: [3, 6], color: 'rgba(59, 130, 246, 0.6)', borderColor: 'rgb(59, 130, 246)' }, // 약풍 Blue
+                        { type: 'optimal', range: [6, 10], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍 Green
+                        { type: 'very_strong', range: [15, 22], color: 'rgba(239, 68, 68, 0.6)', borderColor: 'rgb(239, 68, 68)' }, // 매우 강풍 Red
+                        { type: 'optimal', range: [6, 10], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍 Green
+                        { type: 'strong', range: [10, 15], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 강풍 Orange
+                        { type: 'calm', range: [0, 3], color: 'rgba(135, 206, 235, 0.6)', borderColor: 'rgb(135, 206, 235)' }, // 매우 약풍 Sky Blue
+                        { type: 'optimal', range: [6, 10], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' } // 중간풍 Green
                     ];
                     
                     const windspeedBoxData = windspeedPattern.map(caseType => {
@@ -1312,16 +1312,16 @@
                 
                 const doughnutOpts = { scales: {}, plugins: { legend: { display: false } } };
 
-                const windLabels = ['매우 약풍 (0~3 m/s)', '약풍 (3~6 m/s)', '중간풍 (6~12 m/s)', '강풍 (12~18 m/s)', '매우 강풍 (>18 m/s)'];
-                const windColors = ['rgba(239, 68, 68, 0.8)', 'rgba(245, 158, 11, 0.8)', 'rgba(16, 185, 129, 0.8)', 'rgba(59, 130, 246, 0.8)', 'rgba(139, 92, 246, 0.8)'];
+                const windLabels = ['매우 약풍 (0~3 m/s)', '약풍 (3~6 m/s)', '중간풍 (6~10 m/s)', '강풍 (10~15 m/s)', '매우 강풍 (≥15 m/s)'];
+                const windColors = ['rgba(135, 206, 235, 0.8)', 'rgba(59, 130, 246, 0.8)', 'rgba(16, 185, 129, 0.8)', 'rgba(245, 158, 11, 0.8)', 'rgba(239, 68, 68, 0.8)'];
                 charts.modalWindspeedChart = createChart(document.getElementById('modalWindspeedChart')?.getContext('2d'), 'doughnut',
                     windLabels,
-                    [{ data: [data.windLow, 25, data.windOptimal, 15, 5], backgroundColor: windColors }],
+                    [{ data: [data.windLow, 15, data.windOptimal, 20, 5], backgroundColor: windColors }],
                     doughnutOpts
                 );
                 
-                const tempLabels = ['저온 (< 5℃)', '적정 (5~25℃)', '고온 (> 30℃)'];
-                const tempColors = ['rgba(59, 130, 246, 0.8)', 'rgba(16, 185, 129, 0.8)', 'rgba(239, 68, 68, 0.8)'];
+                const tempLabels = ['저온 (≤5℃)', '적정 (5~30℃)', '고온 (≥30℃)'];
+                const tempColors = ['rgba(135, 206, 235, 0.8)', 'rgba(16, 185, 129, 0.8)', 'rgba(239, 68, 68, 0.8)'];
                 charts.modalTemperatureChart = createChart(document.getElementById('modalTemperatureChart')?.getContext('2d'), 'doughnut',
                     tempLabels,
                     [{ data: [15, data.tempOptimal, data.tempHigh], backgroundColor: tempColors }],
@@ -1387,11 +1387,10 @@
                 ).join('');
 
                 const variables = [
-                    { key: 'windSpeed', label: '풍속 (m/s)', icon: 'fa-wind', criteria: `< ${WEATHER_THRESHOLDS.windSpeed.danger}m/s`, good: v => v < WEATHER_THRESHOLDS.windSpeed.danger },
-                    { key: 'maxTemp', label: '최고기온 (°C)', icon: 'fa-temperature-high', criteria: `< ${WEATHER_THRESHOLDS.temperature.dangerMax}°C`, good: v => v < WEATHER_THRESHOLDS.temperature.dangerMax },
-                    { key: 'minTemp', label: '최저기온 (°C)', icon: 'fa-temperature-low', criteria: `> ${WEATHER_THRESHOLDS.temperature.dailyMin}°C`, good: v => v > WEATHER_THRESHOLDS.temperature.dailyMin },
-                    { key: 'precip', label: '강수량 (mm)', icon: 'fa-cloud-rain', criteria: `< ${WEATHER_THRESHOLDS.precipitation.danger}mm`, good: v => v < WEATHER_THRESHOLDS.precipitation.danger },
-                    { key: 'waveHeight', label: '파고 (m)', icon: 'fa-water', criteria: `< ${WEATHER_THRESHOLDS.waveHeight.daily}m`, good: v => v < WEATHER_THRESHOLDS.waveHeight.daily }
+                    { key: 'windSpeed', label: '풍속', icon: 'fa-wind', criteria: '≤ 10m/s', good: v => v <= 10 },
+                    { key: 'maxTemp', label: '최고기온', icon: 'fa-temperature-high', criteria: '≤ 30°C', good: v => v <= 30 },
+                    { key: 'minTemp', label: '최저기온', icon: 'fa-temperature-low', criteria: '≥ 5°C', good: v => v >= 5 },
+                    { key: 'waveHeight', label: '파고', icon: 'fa-water', criteria: '≤ 1.5m', good: v => v <= 1.5 }
                 ];
 
                 const varRows = variables.map(v => {
@@ -1399,10 +1398,7 @@
                         const val = parseFloat(d[v.key]);
                         const isGood = v.good(val);
                         return `<td class="text-center p-2">
-                            <div class="flex flex-col items-center gap-1">
-                                <div class="w-4 h-4 rounded-full ${isGood ? 'bg-green-500' : 'bg-red-500'}"></div>
-                                <span class="text-xs text-gray-600">${val.toFixed(1)}</span>
-                            </div>
+                            <div class="w-5 h-5 mx-auto rounded-full ${isGood ? 'bg-green-500' : 'bg-red-500'} cursor-default" title="${val.toFixed(1)}"></div>
                         </td>`;
                     }).join('');
                     return `<tr><td class="sticky-col font-semibold text-gray-700 text-xs whitespace-nowrap px-3 py-2"><i class="fas ${v.icon} mr-1"></i>${v.label} <span class="text-xs text-gray-400">(${v.criteria})</span></td>${cells}</tr>`;
@@ -1413,7 +1409,7 @@
                 ).join('');
 
                 detailContainer.innerHTML = `
-                    <h4 class="text-lg font-semibold mb-3"><i class="fas fa-calendar-week mr-2 text-blue-600"></i>주간 일별 상세 기상</h4>
+                    <h4 class="text-lg font-semibold mb-3"><i class="fas fa-calendar-week mr-2 text-blue-600"></i>주간 일별 상세 기상 : O&M 가능 여부 판단</h4>
                     <div class="overflow-x-auto">
                         <table class="w-full border-collapse text-sm">
                             <thead><tr class="bg-gray-50"><th class="sticky-col text-left px-3 py-2 text-xs text-gray-500">항목</th>${dayHeaders}</tr></thead>

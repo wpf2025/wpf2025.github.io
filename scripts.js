@@ -2143,11 +2143,11 @@
         const generateHourlyWeatherData = (hour) => {
             return {
                 hour: hour,
-                windSpeed: (5 + Math.random() * 10).toFixed(1),
+                windSpeed: (3 + Math.random() * 8).toFixed(1),
                 temp: (10 + Math.random() * 15).toFixed(1),
                 precip: generateRealisticPrecipitation(),
                 humidity: (60 + Math.random() * 30).toFixed(0),
-                waveHeight: (0.5 + Math.random() * 2).toFixed(1),
+                waveHeight: (0.3 + Math.random() * 1.4).toFixed(1),
                 lightning: (Math.random() * 20).toFixed(0),
                 confidence: (70 + Math.random() * 25).toFixed(0)
             };
@@ -2156,11 +2156,11 @@
         // 일별 날씨 데이터 생성
         const generateDailyWeatherData = () => {
             return {
-                windSpeed: (5 + Math.random() * 15).toFixed(1),
-                maxTemp: (15 + Math.random() * 20).toFixed(1),
+                windSpeed: (3 + Math.random() * 9).toFixed(1),
+                maxTemp: (15 + Math.random() * 15).toFixed(1),
                 minTemp: (5 + Math.random() * 10).toFixed(1),
                 precip: (Math.random() * 15).toFixed(1),
-                waveHeight: (0.5 + Math.random() * 1).toFixed(1),
+                waveHeight: (0.3 + Math.random() * 1.4).toFixed(1),
                 confidence: (60 + Math.random() * 30).toFixed(0)
             };
         };

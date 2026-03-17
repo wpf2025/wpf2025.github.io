@@ -1358,11 +1358,18 @@
 
                 const hours = Array.from({length:24},(_,h)=>{
                     const data = generateHourlyWeatherData(h);
-                    return {...data, status: getHourlyOverallStatus(data)};
+                    const wind = parseFloat(data.windSpeed);
+                    const wave = parseFloat(data.waveHeight);
+                    const temp = parseFloat(data.temp);
+                    const windOk = wind <= 10;
+                    const waveOk = wave <= 1.5;
+                    const tempOk = temp >= 5 && temp <= 30;
+                    const omStatus = (windOk && waveOk && tempOk) ? 'good' : (windOk && waveOk) ? 'warning' : 'danger';
+                    return {...data, omStatus};
                 });
 
                 const hourHeaders = hours.map(h=>`<th class="text-center text-xs px-2 py-3 min-w-[44px]">${h.hour}시</th>`).join('');
-                const statusRow = hours.map(h=>`<td class="text-center p-2"><div class="w-full h-5 rounded ${STATUS_COLORS[h.status]}"></div></td>`).join('');
+                const statusRow = hours.map(h=>`<td class="text-center p-2"><div class="w-full h-5 rounded ${STATUS_COLORS[h.omStatus]}"></div></td>`).join('');
                 const confRow = hours.map(h=>`<td class="text-center text-xs font-semibold py-2">${Math.floor(parseFloat(h.confidence)/10)*10}%</td>`).join('');
 
                 const vars = [
@@ -1374,7 +1381,7 @@
                 const varRows = vars.map(v=>{
                     const cells = hours.map(h=>{
                         const val = parseFloat(h[v.key]);
-                        return `<td class="text-center p-2"><div class="w-6 h-6 mx-auto rounded-full ${v.good(val)?'bg-green-500':'bg-red-500'} cursor-default" title="${val.toFixed(1)}"></div></td>`;
+                        return `<td class="text-center p-2"><span class="text-lg font-bold ${v.good(val)?'text-blue-600':'text-gray-400'} cursor-default" title="${val.toFixed(1)}">${v.good(val)?'✓':'✗'}</span></td>`;
                     }).join('');
                     return `<tr><td class="sticky-col font-semibold text-gray-700 text-sm whitespace-nowrap px-3 py-3"><i class="fas ${v.icon} mr-1"></i>${v.label} <span class="text-xs text-gray-400">(${v.criteria})</span></td>${cells}</tr>`;
                 }).join('');
@@ -1549,7 +1556,15 @@
                     const d = new Date(weekStart);
                     d.setDate(d.getDate() + i);
                     const weatherData = generateDailyWeatherData();
-                    return { date: d, ...weatherData, status: getOverallDailyStatus(weatherData) };
+                    const wind = parseFloat(weatherData.windSpeed);
+                    const wave = parseFloat(weatherData.waveHeight);
+                    const maxT = parseFloat(weatherData.maxTemp);
+                    const minT = parseFloat(weatherData.minTemp);
+                    const windOk = wind <= 10;
+                    const waveOk = wave <= 1.5;
+                    const tempOk = maxT <= 30 && minT >= 5;
+                    const omStatus = (windOk && waveOk && tempOk) ? 'good' : (windOk && waveOk) ? 'warning' : 'danger';
+                    return { date: d, ...weatherData, omStatus };
                 });
 
                 const dayHeaders = days.map(d =>
@@ -1557,7 +1572,7 @@
                 ).join('');
 
                 const statusRow = days.map(d =>
-                    `<td class="text-center p-2"><div class="w-full h-4 rounded ${STATUS_COLORS[d.status]}"></div></td>`
+                    `<td class="text-center p-2"><div class="w-full h-4 rounded ${STATUS_COLORS[d.omStatus]}"></div></td>`
                 ).join('');
 
                 const variables = [
@@ -1572,7 +1587,7 @@
                         const val = parseFloat(d[v.key]);
                         const isGood = v.good(val);
                         return `<td class="text-center p-2">
-                            <div class="w-5 h-5 mx-auto rounded-full ${isGood ? 'bg-green-500' : 'bg-red-500'} cursor-default" title="${val.toFixed(1)}"></div>
+                            <span class="text-lg font-bold ${isGood ? 'text-blue-600' : 'text-gray-400'} cursor-default" title="${val.toFixed(1)}">${isGood ? '✓' : '✗'}</span>
                         </td>`;
                     }).join('');
                     return `<tr><td class="sticky-col font-semibold text-gray-700 text-xs whitespace-nowrap px-3 py-2"><i class="fas ${v.icon} mr-1"></i>${v.label} <span class="text-xs text-gray-400">(${v.criteria})</span></td>${cells}</tr>`;

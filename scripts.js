@@ -1342,6 +1342,15 @@
             // 정비 스케줄 최적화 기능
             initMaintenanceScheduler();
             
+            // 박스플롯 체크박스 토글
+            window.toggleBoxplot = function(type) {
+                const map = { wind: 'boxplotWind', temp: 'boxplotTemp', wave: 'boxplotWave' };
+                const chkMap = { wind: 'chkWind', temp: 'chkTemp', wave: 'chkWave' };
+                const el = document.getElementById(map[type]);
+                const checked = document.getElementById(chkMap[type]).checked;
+                el.classList.toggle('hidden', !checked);
+            };
+
             // 기상 상세 모달 기능
             window.showWeatherDetail = function(weekNumber) {
                 const panel = document.getElementById('weatherDetailInline');

@@ -12,6 +12,7 @@
             border-bottom: 3px solid transparent;
             transition: all 0.2s ease-in-out;
             color: #6b7280; /* gray-500 */
+            background-color: #dbeafe; /* blue-100 */
         }
         .tab-button:hover, .sub-tab-button:hover {
             color: #2563eb; /* blue-600 */
@@ -21,7 +22,7 @@
             border-bottom-color: #2563eb; /* blue-600 */
             color: #2563eb;
             font-weight: 600;
-            background-color: #eff6ff; /* blue-50 */
+            background-color: #bfdbfe; /* blue-200 */
         }
         .card {
             background-color: white;

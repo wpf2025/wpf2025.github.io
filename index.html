@@ -145,8 +145,8 @@
                     <h2 class="section-title">단기(~3일) 발전량 예측<span class="sample-badge">SAMPLE</span></h2>
                     <div class="mb-4 border-b border-gray-200">
                         <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="shorttermMainTabs" role="tablist">
-                            <li class="mr-2" role="presentation"><button class="tab-button inline-block p-4 rounded-t-lg" id="shortterm-total-tab" data-tabs-target="#shortterm-total-content" type="button" role="tab" aria-controls="shortterm-total-content" aria-selected="true">발전소 전체 예측</button></li>
-                            <li class="mr-2" role="presentation"><button class="tab-button inline-block p-4 rounded-t-lg" id="shortterm-turbine-tab" data-tabs-target="#shortterm-turbine-content" type="button" role="tab" aria-controls="shortterm-turbine-content" aria-selected="false">터빈별 예측</button></li>
+                            <li class="mr-2" role="presentation"><button class="tab-button inline-block p-4 rounded-t-lg" id="shortterm-total-tab" data-tabs-target="#shortterm-total-content" type="button" role="tab" aria-controls="shortterm-total-content" aria-selected="true">발전소</button></li>
+                            <li class="mr-2" role="presentation"><button class="tab-button inline-block p-4 rounded-t-lg" id="shortterm-turbine-tab" data-tabs-target="#shortterm-turbine-content" type="button" role="tab" aria-controls="shortterm-turbine-content" aria-selected="false">터빈별</button></li>
                             <li class="mr-2" role="presentation"><button class="tab-button inline-block p-4 rounded-t-lg" id="shortterm-windspeed-tab" data-tabs-target="#shortterm-windspeed-content" type="button" role="tab" aria-controls="shortterm-windspeed-content" aria-selected="false">시간별 풍속 예측</button></li>
                             <li class="mr-2" role="presentation"><button class="tab-button inline-block p-4 rounded-t-lg" id="shortterm-maintenance-tab" data-tabs-target="#shortterm-maintenance-content" type="button" role="tab" aria-controls="shortterm-maintenance-content" aria-selected="false">정비 스케줄 최적화</button></li>
                         </ul>
@@ -587,12 +587,12 @@
                 </section>
 
                 <section id="s_2week-content" class="content-section hidden">
-                    <h2 class="section-title">중기(2주) 발전량 예측<span class="sample-badge">SAMPLE</span></h2>
+                    <h2 class="section-title">중기(2주) 예측<span class="sample-badge">SAMPLE</span></h2>
                     <div class="mb-4 border-b border-gray-200">
-                        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="twoWeekMainTabs" role="tablist">
-                            <li class="mr-2" role="presentation"><button class="tab-button inline-block p-4 rounded-t-lg" id="2week-total-tab" data-tabs-target="#2week-total-content" type="button" role="tab" aria-controls="2week-total-content" aria-selected="true">발전소 전체 예측</button></li>
-                            <li class="mr-2" role="presentation"><button class="tab-button inline-block p-4 rounded-t-lg" id="2week-turbine-tab" data-tabs-target="#2week-turbine-content" type="button" role="tab" aria-controls="2week-turbine-content" aria-selected="false">터빈별 예측</button></li>
-                            <li class="mr-2" role="presentation"><button class="tab-button inline-block p-4 rounded-t-lg" id="2week-maintenance-tab" data-tabs-target="#2week-maintenance-content" type="button" role="tab" aria-controls="2week-maintenance-content" aria-selected="false">정비 스케줄 최적화</button></li>
+                        <ul class="flex flex-wrap -mb-px text-base font-semibold text-center" id="twoWeekMainTabs" role="tablist">
+                            <li class="mr-2" role="presentation"><button class="tab-button inline-block px-6 py-3 rounded-t-lg" id="2week-total-tab" data-tabs-target="#2week-total-content" type="button" role="tab" aria-controls="2week-total-content" aria-selected="true">발전소</button></li>
+                            <li class="mr-2" role="presentation"><button class="tab-button inline-block px-6 py-3 rounded-t-lg" id="2week-turbine-tab" data-tabs-target="#2week-turbine-content" type="button" role="tab" aria-controls="2week-turbine-content" aria-selected="false">터빈별</button></li>
+                            <li class="mr-2" role="presentation"><button class="tab-button inline-block px-6 py-3 rounded-t-lg opacity-40 cursor-not-allowed" id="2week-maintenance-tab" data-tabs-target="#2week-maintenance-content" type="button" role="tab" aria-controls="2week-maintenance-content" aria-selected="false" disabled>TBD</button></li>
                         </ul>
                     </div>
 
@@ -602,24 +602,22 @@
                         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
                             <!-- 주평균 예측 (1/4) -->
                             <div class="card">
-                                <h4 class="text-lg font-semibold mb-3">주평균 발전량</h4>
+                                <h4 class="text-lg font-semibold mb-3">주간 총 발전량</h4>
                                 <div class="space-y-4">
                                     <div class="p-4 bg-blue-50 rounded-lg">
                                         <p class="kpi-label">1주차 예상 발전량</p>
                                         <p class="kpi-value text-3xl">7.0 <span class="text-base">GWh</span></p>
-                                        <p class="text-xs text-gray-500">(6.3 ~ 7.7 GWh 범위)</p>
                                     </div>
                                     <div class="p-4 bg-blue-50 rounded-lg">
                                         <p class="kpi-label">2주차 예상 발전량</p>
                                         <p class="kpi-value text-3xl">7.5 <span class="text-base">GWh</span></p>
-                                        <p class="text-xs text-gray-500">(6.8 ~ 8.2 GWh 범위)</p>
                                     </div>
                                 </div>
                             </div>
                             
                             <!-- 일평균 예측 (3/4) -->
                             <div class="card lg:col-span-3">
-                                <h4 class="text-lg font-semibold mb-3">일평균 발전량 (14일)</h4>
+                                <h4 class="text-lg font-semibold mb-3">일일 총 발전량 (14일)</h4>
                                 <div class="p-4 mb-4 text-sm text-yellow-700 bg-yellow-100 rounded-lg alert-warning" role="alert">
                                     <i class="fas fa-exclamation-triangle mr-2"></i>
                                     <strong>주의:</strong> 일평균 예측은 변동성이 크므로, 주간 경향성 및 변동성 파악 용도로 활용하십시오.
@@ -838,15 +836,15 @@
                         <div class="card mb-6">
                             <h4 class="text-lg font-semibold mb-4">발전량 예측</h4>
                             
-                            <!-- 월평균 발전량 -->
+                            <!-- 월간 총 발전량 -->
                             <div class="mb-6">
-                                <h5 class="text-md font-semibold mb-3">월평균 발전량</h5>
+                                <h5 class="text-md font-semibold mb-3">월간 총 발전량</h5>
                                 <div class="chart-container"><canvas id="threeMonthMonthlyChart"></canvas></div>
                             </div>
                             
                             <!-- 주평균 발전량 -->
                             <div>
-                                <h5 class="text-md font-semibold mb-3">주평균 발전량 (12주)</h5>
+                                <h5 class="text-md font-semibold mb-3">주간 총 발전량 (12주)</h5>
                                 <div class="chart-container"><canvas id="threeMonthWeeklyChart"></canvas></div>
                             </div>
                         </div>

@@ -674,7 +674,7 @@
                     // 일평균 차트
                     charts.twoWeekDailyTotalChart = createChart(document.getElementById('twoWeekDailyTotalChart')?.getContext('2d'), 'line',
                         Array.from({length: 14}, (_, i) => `D+${i+1}`), 
-                        [{ label: '일일 예상 발전량 (MWh)', data: generateRandomData(14, 720, 1440), borderColor: 'rgb(245, 158, 11)', tension: 0.1, fill: false }]
+                        [{ label: '일일 총 발전량 (MWh)', data: generateRandomData(14, 720, 1440), borderColor: 'rgb(245, 158, 11)', tension: 0.1, fill: false }]
                     );
 
                     // 중기예측 14일 기상 박스플롯

@@ -665,36 +665,22 @@
                     <div id="2week-turbine-content" class="main-tab-panel hidden">
                         <!-- Overview 영역 -->
                         <div id="turbineOverviewArea">
-                            <div class="mb-4 border-b border-gray-200">
-                                <ul class="flex flex-wrap -mb-px text-sm font-medium text-center">
-                                    <li class="mr-2"><button class="turbine-overview-tab sub-tab-button inline-block p-3 rounded-t-lg active" data-target="overviewA">A. 히트맵</button></li>
-                                    <li class="mr-2"><button class="turbine-overview-tab sub-tab-button inline-block p-3 rounded-t-lg" data-target="overviewB">B. 랭킹</button></li>
-                                    <li class="mr-2"><button class="turbine-overview-tab sub-tab-button inline-block p-3 rounded-t-lg" data-target="overviewC">C. 하이브리드</button></li>
-                                </ul>
-                            </div>
-                            <!-- A안: 히트맵 -->
-                            <div id="overviewA" class="turbine-overview-panel card">
+                            <div class="card">
                                 <h4 class="text-lg font-semibold mb-3">14일 × 20호기 발전량 히트맵</h4>
-                                <p class="text-sm text-gray-500 mb-3">셀 클릭 시 해당 터빈 상세 페이지로 이동합니다. 색상: <span class="text-red-500">낮음</span> → <span class="text-blue-500">높음</span></p>
-                                <div id="heatmapA"></div>
-                            </div>
-                            <!-- B안: 랭킹 -->
-                            <div id="overviewB" class="turbine-overview-panel card hidden">
-                                <h4 class="text-lg font-semibold mb-3">터빈별 14일 총 발전량 랭킹</h4>
-                                <p class="text-sm text-gray-500 mb-3">터빈 클릭 시 상세 페이지로 이동합니다. ⚠️ = 평균 대비 85% 미만</p>
-                                <div id="rankingB"></div>
-                            </div>
-                            <!-- C안: 하이브리드 -->
-                            <div id="overviewC" class="turbine-overview-panel card hidden">
-                                <div class="grid grid-cols-3 gap-4 mb-4">
-                                    <div class="p-4 bg-blue-50 rounded-lg text-center"><p class="kpi-label">총 발전량</p><p id="hybridKpiTotal" class="kpi-value text-2xl">-</p></div>
-                                    <div class="p-4 bg-green-50 rounded-lg text-center"><p class="kpi-label">터빈 평균</p><p id="hybridKpiAvg" class="kpi-value text-2xl">-</p></div>
-                                    <div class="p-4 bg-red-50 rounded-lg text-center"><p class="kpi-label">주의 터빈</p><p id="hybridKpiWarn" class="kpi-value text-2xl">-</p></div>
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="text-sm text-gray-500">낮음</span>
+                                    <div class="w-6 h-4 rounded" style="background:#fff9c4"></div>
+                                    <div class="w-6 h-4 rounded" style="background:#c8e6c9"></div>
+                                    <div class="w-6 h-4 rounded" style="background:#b3e5fc"></div>
+                                    <div class="w-6 h-4 rounded" style="background:#81d4fa"></div>
+                                    <div class="w-6 h-4 rounded" style="background:#4fc3f7"></div>
+                                    <span class="text-sm text-gray-500">높음 (날짜별 상대 비교)</span>
                                 </div>
-                                <h4 class="text-lg font-semibold mb-3">발전량 히트맵</h4>
-                                <div id="hybridHeatmap" class="mb-4"></div>
-                                <h4 class="text-lg font-semibold mb-3">하위 5개 터빈</h4>
-                                <div id="hybridBottom5"></div>
+                                <p class="text-sm text-gray-500 mb-3">셀 클릭 시 해당 터빈 상세 페이지로 이동합니다.</p>
+                                <div id="heatmapA" class="mb-6"></div>
+                                <h4 class="text-lg font-semibold mb-3">터빈별 14일 총 발전량 랭킹</h4>
+                                <p class="text-sm text-gray-500 mb-3">터빈 클릭 시 상세 페이지로 이동합니다. ⚠️ = 평균 대비 90% 미만</p>
+                                <div id="rankingA"></div>
                             </div>
                         </div>
                         <!-- 상세 페이지 -->

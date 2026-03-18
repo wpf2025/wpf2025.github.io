@@ -737,24 +737,38 @@
                 if (document.getElementById('s_2week-content')?.offsetParent !== null) {
                     const TC = 20;
                     const dLabels = Array.from({length: 14}, (_, i) => `D+${i+1}`);
+                    // 날짜별 공통 풍황 팩터 (같은 날은 모든 터빈이 비슷한 경향)
+                    const dayFactor = Array.from({length: 14}, (_, d) => {
+                        const weekBase = d < 7 ? 1.0 : 0.95 + Math.random() * 0.1;
+                        return weekBase * (0.7 + Math.random() * 0.6);
+                    });
+                    // 터빈별 성능 계수 (일부 터빈이 지속적으로 높거나 낮음)
+                    const turbinePerf = Array.from({length: TC}, () => 0.85 + Math.random() * 0.3);
                     const tData = {};
                     for (let t = 1; t <= TC; t++) {
-                        const base = 300 + Math.random() * 100;
-                        const w1 = Math.round(base + (Math.random() - 0.5) * 60);
-                        const w2 = Math.round(base + (Math.random() - 0.5) * 60);
+                        const perf = turbinePerf[t - 1];
                         const daily = [], wind = [];
                         for (let d = 0; d < 14; d++) {
-                            const avg = (d < 7 ? w1 : w2) / 7;
-                            daily.push(Math.round(Math.max(20, avg * (1 + (Math.random() - 0.5) * 0.4))));
-                            wind.push(parseFloat((3 + Math.random() * 9).toFixed(1)));
+                            const baseWind = 4 + dayFactor[d] * 6;
+                            const tWind = parseFloat(Math.max(1, baseWind + (Math.random() - 0.5) * 2).toFixed(1));
+                            wind.push(tWind);
+                            const power = Math.round(Math.max(10, tWind * 8 * perf * (1 + (Math.random() - 0.5) * 0.1)));
+                            daily.push(power);
                         }
+                        const w1 = daily.slice(0, 7).reduce((a, b) => a + b, 0);
+                        const w2 = daily.slice(7).reduce((a, b) => a + b, 0);
                         tData[t] = { weekly: [w1, w2], daily, wind, total: daily.reduce((a, b) => a + b, 0) };
                     }
                     const allVals = Object.values(tData).flatMap(d => d.daily);
                     const gMin = Math.min(...allVals), gMax = Math.max(...allVals);
-                    const heatColor = (v) => {
-                        const r = (v - gMin) / (gMax - gMin || 1);
-                        return r > 0.5 ? `rgb(${Math.round(59+(1-r)*2*196)},${Math.round(130+(1-r)*125)},246)` : `rgb(239,${Math.round(r*2*162)},${Math.round(68+r*2*178)})`;
+                    const heatColor = (v, dayIdx) => {
+                        const dayVals = Object.values(tData).map(d => d.daily[dayIdx]);
+                        const dMin = Math.min(...dayVals), dMax = Math.max(...dayVals);
+                        const r = (v - dMin) / (dMax - dMin || 1);
+                        const palette = [[255,249,196],[200,230,201],[179,229,252],[129,212,250],[79,195,247]];
+                        const idx = Math.min(4, Math.floor(r * 5));
+                        const c = palette[idx];
+                        return `rgb(${c[0]},${c[1]},${c[2]})`;
                     };
                     const windColor = (v) => v<3?'rgb(135,206,235)':v<6?'rgb(59,130,246)':v<10?'rgb(16,185,129)':v<15?'rgb(245,158,11)':'rgb(239,68,68)';
 
@@ -791,7 +805,7 @@
                         for (let t = 1; t <= TC; t++) {
                             const d = tData[t];
                             h += `<tr class="cursor-pointer hover:opacity-80" onclick="showTurbineDetail(${t})"><td class="p-1 font-semibold sticky left-0 bg-white z-10 whitespace-nowrap">WTG #${t}</td>`;
-                            d.daily.forEach(v => { h += `<td class="p-1 text-center" title="${v} MWh"><div class="w-full h-6 rounded" style="background:${heatColor(v)}"></div></td>`; });
+                            d.daily.forEach((v,i) => { h += `<td class="p-1 text-center" title="발전량: ${v} MWh / 풍속: ${d.wind[i]} m/s"><div class="w-full h-6 rounded" style="background:${heatColor(v,i)}"></div></td>`; });
                             h += `<td class="p-1 text-center font-semibold">${d.total}</td></tr>`;
                         }
                         h += '</tbody></table></div>'; c.innerHTML = h;
@@ -810,7 +824,7 @@
                     const renderRanking = (cid) => {
                         const c = document.getElementById(cid); if(!c) return;
                         const sorted = Object.entries(tData).map(([t,d])=>({t:parseInt(t),...d})).sort((a,b)=>b.total-a.total);
-                        const threshold = sorted.reduce((s,d)=>s+d.total,0)/TC*0.85;
+                        const threshold = sorted.reduce((s,d)=>s+d.total,0)/TC*0.9;
                         let h = '';
                         sorted.forEach((d,idx) => {
                             const warn = d.total < threshold;
@@ -826,43 +840,8 @@
                         sorted.forEach(d => drawSpark(`spark-${cid}-${d.t}`, d.daily, d.total<threshold?'#f87171':'#60a5fa'));
                     };
 
-                    // C안: 하이브리드
-                    const renderHybrid = () => {
-                        const sorted = Object.entries(tData).map(([t,d])=>({t:parseInt(t),...d})).sort((a,b)=>a.total-b.total);
-                        const totalAll = sorted.reduce((s,d)=>s+d.total,0), avg = totalAll/TC;
-                        const warnCount = sorted.filter(d=>d.total<avg*0.85).length;
-                        document.getElementById('hybridKpiTotal').textContent = `${(totalAll/1000).toFixed(1)} GWh`;
-                        document.getElementById('hybridKpiAvg').textContent = `${Math.round(avg)} MWh`;
-                        document.getElementById('hybridKpiWarn').textContent = `${warnCount}기`;
-                        renderHeatmap('hybridHeatmap');
-                        const bot5 = sorted.slice(0,5), bc = document.getElementById('hybridBottom5');
-                        if(!bc) return;
-                        let h = '';
-                        bot5.forEach(d => {
-                            h += `<div class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 cursor-pointer border-b" onclick="showTurbineDetail(${d.t})">`;
-                            h += `<span class="w-20 font-semibold text-sm text-red-600">WTG #${d.t}</span>`;
-                            h += `<span class="text-sm font-semibold">${d.total} MWh</span>`;
-                            h += `<canvas id="spark-hyb-${d.t}" width="80" height="24" class="flex-shrink-0"></canvas></div>`;
-                        });
-                        bc.innerHTML = h;
-                        bot5.forEach(d => drawSpark(`spark-hyb-${d.t}`, d.daily, '#f87171'));
-                    };
-
                     renderHeatmap('heatmapA');
-                    renderRanking('rankingB');
-                    renderHybrid();
-
-                    document.querySelectorAll('.turbine-overview-tab').forEach(tab => {
-                        tab.addEventListener('click', () => {
-                            document.querySelectorAll('.turbine-overview-tab').forEach(t => t.classList.remove('active'));
-                            tab.classList.add('active');
-                            document.querySelectorAll('.turbine-overview-panel').forEach(p => p.classList.add('hidden'));
-                            document.getElementById(tab.dataset.target).classList.remove('hidden');
-                            if(tab.dataset.target==='overviewA') renderHeatmap('heatmapA');
-                            if(tab.dataset.target==='overviewB') renderRanking('rankingB');
-                            if(tab.dataset.target==='overviewC') renderHybrid();
-                        });
-                    });
+                    renderRanking('rankingA');
                 }
             }
             

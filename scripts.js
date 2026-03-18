@@ -804,7 +804,7 @@
                         h += '<th class="p-1 text-center min-w-[60px]">합계</th></tr></thead><tbody>';
                         for (let t = 1; t <= TC; t++) {
                             const d = tData[t];
-                            h += `<tr class="cursor-pointer hover:opacity-80" onclick="showTurbineDetail(${t})"><td class="p-1 font-semibold sticky left-0 bg-white z-10 whitespace-nowrap">WTG #${t}</td>`;
+                            h += `<tr><td class="p-1 font-semibold sticky left-0 bg-white z-10 whitespace-nowrap cursor-pointer text-blue-600 hover:text-blue-800 hover:underline" onclick="showTurbineDetail(${t})">WTG #${t} <i class="fas fa-chevron-right text-[10px] ml-1"></i></td>`;
                             d.daily.forEach((v,i) => { h += `<td class="p-1 text-center" title="발전량: ${v} MWh / 풍속: ${d.wind[i]} m/s"><div class="w-full h-6 rounded" style="background:${heatColor(v,i)}"></div></td>`; });
                             h += `<td class="p-1 text-center font-semibold">${d.total}</td></tr>`;
                         }

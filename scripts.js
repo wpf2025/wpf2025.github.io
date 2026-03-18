@@ -79,9 +79,7 @@
             // 범위 정보 업데이트
             document.getElementById('todayWindRange').textContent = `${Math.min(...windSpeeds).toFixed(1)} ~ ${Math.max(...windSpeeds).toFixed(1)} m/s`;
             document.getElementById('todayTempRange').textContent = `${Math.min(...temps).toFixed(1)} ~ ${Math.max(...temps).toFixed(1)}°C`;
-            document.getElementById('todayRainfall').textContent = `${rainfalls.reduce((a, b) => a + b, 0).toFixed(1)} mm`;
             document.getElementById('todayWaveRange').textContent = `${Math.min(...waves).toFixed(1)} ~ ${Math.max(...waves).toFixed(1)} m`;
-            document.getElementById('todayLightning').textContent = `${Math.max(...lightnings)}%`;
             
             // 24시간 타임라인 생성
             const timeline = document.getElementById('todayWeatherTimeline');
@@ -143,15 +141,28 @@
         const initChartsForCurrentView = () => {
             destroyAllCharts(); 
 
+            // Overview Charts - Turbine Map
+            if (document.getElementById('turbineMap')) {
+                const map = L.map('turbineMap').setView([35.485, 126.317], 10);
+                L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '© Esri', maxZoom: 18 }).addTo(map);
+                const turbines = [[35.489977,126.340817],[35.484832,126.334644],[35.479686,126.328472],[35.474539,126.322300],[35.469392,126.316130],[35.493631,126.333218],[35.488485,126.327045],[35.483338,126.320874],[35.478191,126.314702],[35.473044,126.308532],[35.497284,126.325619],[35.492137,126.319446],[35.486990,126.313275],[35.481844,126.307104],[35.476696,126.300934],[35.500937,126.318019],[35.495768,126.311821],[35.490642,126.305675],[35.485495,126.299504],[35.480348,126.293335]];
+                turbines.forEach((c,i) => L.marker(c).addTo(map).bindPopup(`<b>WTG #${i+1}</b>`));
+            }
+
             // Overview Charts
             if (document.getElementById('overview-content')?.offsetParent !== null) {
-                charts.recentTrendChart = createChart(document.getElementById('recentTrendChart')?.getContext('2d'), 'line',
-                    ['D-6', 'D-5', 'D-4', 'D-3', 'D-2', 'D-1', '오늘'], 
-                    [{ label: '일일 발전량 (MWh)', data: generateRandomData(7, 200, 461), borderColor: 'rgb(16, 185, 129)', tension: 0.1, fill: false}]
-                );
+                // 오늘 시간별 풍속 (중기예측 스타일)
+                const ovLabels = Array.from({length:24},(_,h)=>`${h}시`);
+                const ovWind = Array.from({length:24},()=>+(3+Math.random()*12).toFixed(1));
+                const ovWindColors = ovWind.map(s => s<3?'rgba(135,206,235,0.8)':s<6?'rgba(59,130,246,0.8)':s<10?'rgba(16,185,129,0.8)':s<15?'rgba(245,158,11,0.8)':'rgba(239,68,68,0.8)');
+                charts.overviewWindChart = new Chart(document.getElementById('overviewWindChart').getContext('2d'), {
+                    type:'line', data:{labels:ovLabels,datasets:[{label:'풍속 (m/s)',data:ovWind,borderColor:'rgb(59,130,246)',backgroundColor:'rgba(59,130,246,0.1)',tension:0.3,fill:true,borderWidth:2,pointBackgroundColor:ovWindColors,pointBorderColor:ovWindColors,pointRadius:4}]},
+                    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true}},scales:{y:{beginAtZero:true,max:20,title:{display:true,text:'풍속 (m/s)'},grid:{color:function(ctx){const v=ctx.tick.value;if(v===3)return'rgba(135,206,235,0.5)';if(v===6)return'rgba(59,130,246,0.5)';if(v===10)return'rgba(16,185,129,0.5)';if(v===15)return'rgba(239,68,68,0.5)';return'rgba(0,0,0,0.1)'}}}}}
+                });
+                // 오늘 시간별 발전량
                 charts.hourlyPatternChart = createChart(document.getElementById('hourlyPatternChart')?.getContext('2d'), 'bar',
-                    Array.from({length: 24}, (_, i) => `${i}시`),
-                    [{ label: '시간대별 예상 발전량 (MW)', data: generateRandomData(24, 2, 19.2), backgroundColor: 'rgba(99, 102, 241, 0.6)'}]
+                    ovLabels,
+                    [{ label: '시간별 예상 발전량 (MW)', data: generateRandomData(24, 2, 19.2), backgroundColor: 'rgba(99, 102, 241, 0.6)'}]
                 );
             }
 
@@ -159,505 +170,55 @@
             if (document.getElementById('shortterm-content')?.offsetParent !== null) {
                 // Total Plant - Daily & Hourly (통합 페이지)
                 if (document.getElementById('shortterm-total-content')?.offsetParent !== null) {
-                    // 일평균 차트
-                    charts.shorttermDailyTotalChart = createChart(document.getElementById('shorttermDailyTotalChart')?.getContext('2d'), 'bar',
-                        ['오늘', '내일', '모레'], 
-                        [{ label: '일평균 발전량 (GWh)', data: [5.2, 4.8, 5.5], backgroundColor: 'rgba(59, 130, 246, 0.8)'}]
-                    );
-                    
-                    // 시간별 차트
-                    const hourlyLabels = [];
-                    for (let day = 0; day < 3; day++) {
-                        for (let hour = 0; hour < 24; hour++) {
-                            hourlyLabels.push(`D+${day} ${hour}시`);
-                        }
+                    // 24시간 풍속 라인 차트 (중기예측 스타일)
+                    const windLabels = [];
+                    const windData = [];
+                    for (let h = 0; h < 24; h++) {
+                        windLabels.push(`${h}시`);
+                        windData.push(+(3 + Math.random() * 12).toFixed(1));
                     }
+                    const windColors = windData.map(s => s < 3 ? 'rgba(135,206,235,0.8)' : s < 6 ? 'rgba(59,130,246,0.8)' : s < 10 ? 'rgba(16,185,129,0.8)' : s < 15 ? 'rgba(245,158,11,0.8)' : 'rgba(239,68,68,0.8)');
+                    charts.shorttermWindChart = new Chart(document.getElementById('shorttermWindChart').getContext('2d'), {
+                        type: 'line',
+                        data: { labels: windLabels, datasets: [{ label: '풍속 (m/s)', data: windData, borderColor: 'rgb(59,130,246)', backgroundColor: 'rgba(59,130,246,0.1)', tension: 0.3, fill: true, borderWidth: 2, pointBackgroundColor: windColors, pointBorderColor: windColors, pointRadius: 4 }] },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true }, tooltip: { callbacks: { afterLabel: function(ctx) { const s = ctx.parsed.y; return s < 3 ? '발전 불가' : s < 6 ? '저풍속' : s < 10 ? '최적 발전' : s < 15 ? '정격 출력' : '고출력/위험'; } } } }, scales: { y: { beginAtZero: true, max: 20, title: { display: true, text: '풍속 (m/s)' }, grid: { color: function(ctx) { const v = ctx.tick.value; if (v === 3) return 'rgba(135,206,235,0.5)'; if (v === 6) return 'rgba(59,130,246,0.5)'; if (v === 10) return 'rgba(16,185,129,0.5)'; if (v === 15) return 'rgba(239,68,68,0.5)'; return 'rgba(0,0,0,0.1)'; } } } } }
+                    });
+
+                    // 24시간 발전량 차트
+                    const hourlyLabels = [];
+                    for (let h = 0; h < 24; h++) { hourlyLabels.push(`${h}시`); }
                     charts.shorttermHourlyTotalChart = createChart(document.getElementById('shorttermHourlyTotalChart')?.getContext('2d'), 'line',
                         hourlyLabels,
-                        [{ label: '시간별 발전량 (MW)', data: generateRandomData(72, 80, 180), borderColor: 'rgb(16, 185, 129)', tension: 0.1, fill: false}]
+                        [{ label: '시간별 발전량 (MW)', data: generateRandomData(24, 80, 180), borderColor: 'rgb(16, 185, 129)', tension: 0.1, fill: false}]
                     );
                 }
-                // Per Turbine - Daily
+                // Per Turbine - 24시간 발전량+풍속 듀얼 차트 (20호기)
                 if (document.getElementById('shortterm-turbine-content')?.offsetParent !== null) {
-                    // 터빈별 고정 데이터 (HTML의 KPI 값과 정확히 일치)
-                    const turbineData = {
-                        1: [1.1, 0.9, 1.2], // WTG #1: 오늘, 내일, 모레
-                        2: [1.0, 1.1, 1.0], // WTG #2
-                        3: [1.2, 0.8, 1.3], // WTG #3
-                        4: [0.9, 1.0, 1.0], // WTG #4
-                        5: [1.0, 1.0, 1.0]  // WTG #5
-                    };
-                    
-                    // 일평균 차트들
-                    for (let i = 1; i <= 5; i++) {
-                        const chartElement = document.getElementById(`shorttermWtg${i}DailyChart`);
-                        if (chartElement) {
-                            charts[`shorttermWtg${i}DailyChart`] = createChart(chartElement.getContext('2d'), 'bar',
-                                ['오늘', '내일', '모레'],
-                                [{ 
-                                    label: `WTG #${i} 일평균 (GWh)`, 
-                                    data: turbineData[i], 
-                                    backgroundColor: `rgba(${59 + i * 20}, ${130 + i * 10}, 246, 0.8)`
-                                }],
-                                {
-                                    plugins: {
-                                        legend: { display: false }
-                                    },
-                                    scales: {
-                                        y: {
-                                            beginAtZero: true,
-                                            max: 1.5,
-                                            ticks: {
-                                                font: { size: 10 }
-                                            }
-                                        }
-                                    }
-                                }
-                            );
-                        }
-                    }
-                }
-                // Per Turbine - Hourly
-                if (document.getElementById('shortterm-turbine-content')?.offsetParent !== null) {
-                    const hourlyLabels72 = [];
-                    for (let day = 0; day < 3; day++) {
-                        for (let hour = 0; hour < 24; hour++) {
-                            const dayName = day === 0 ? '오늘' : day === 1 ? '내일' : '모레';
-                            hourlyLabels72.push(`${dayName} ${hour}시`);
-                        }
-                    }
-                    
-                    // 각 터빈별 72시간 데이터 생성
-                    const wtg1Data = generateRandomData(72, 15, 35);
-                    const wtg2Data = generateRandomData(72, 15, 35);
-                    const wtg3Data = generateRandomData(72, 15, 35);
-                    const wtg4Data = generateRandomData(72, 15, 35);
-                    const wtg5Data = generateRandomData(72, 15, 35);
-                    
-                    // 전체 합계 데이터 계산
-                    const totalData = wtg1Data.map((val, idx) => 
-                        val + wtg2Data[idx] + wtg3Data[idx] + wtg4Data[idx] + wtg5Data[idx]
-                    );
-                    
-                    // 전체 통합 차트 (모든 발전기 + 합계)
-                    const allTurbinesChartElement = document.getElementById('shorttermAllTurbinesHourlyChart');
-                    if (allTurbinesChartElement) {
-                        charts.shorttermAllTurbinesHourlyChart = createChart(allTurbinesChartElement.getContext('2d'), 'line',
-                            hourlyLabels72,
-                            [
-                                { label: 'WTG #1', data: wtg1Data, borderColor: 'rgb(59, 130, 246)', backgroundColor: 'rgba(59, 130, 246, 0.1)', tension: 0.1, fill: false, borderWidth: 2},
-                                { label: 'WTG #2', data: wtg2Data, borderColor: 'rgb(16, 185, 129)', backgroundColor: 'rgba(16, 185, 129, 0.1)', tension: 0.1, fill: false, borderWidth: 2},
-                                { label: 'WTG #3', data: wtg3Data, borderColor: 'rgb(245, 158, 11)', backgroundColor: 'rgba(245, 158, 11, 0.1)', tension: 0.1, fill: false, borderWidth: 2},
-                                { label: 'WTG #4', data: wtg4Data, borderColor: 'rgb(239, 68, 68)', backgroundColor: 'rgba(239, 68, 68, 0.1)', tension: 0.1, fill: false, borderWidth: 2},
-                                { label: 'WTG #5', data: wtg5Data, borderColor: 'rgb(139, 92, 246)', backgroundColor: 'rgba(139, 92, 246, 0.1)', tension: 0.1, fill: false, borderWidth: 2},
-                                { label: '전체 합계', data: totalData, borderColor: 'rgb(0, 0, 0)', backgroundColor: 'rgba(0, 0, 0, 0.1)', tension: 0.1, fill: false, borderWidth: 3}
-                            ]
-                        );
-                    }
-                    
-                    // 개별 발전기 차트들
-                    for (let i = 1; i <= 5; i++) {
-                        const chartElement = document.getElementById(`shorttermWtg${i}HourlyChart`);
-                        if (chartElement) {
-                            const data = [wtg1Data, wtg2Data, wtg3Data, wtg4Data, wtg5Data][i-1];
-                            const colors = [
-                                'rgb(59, 130, 246)', 'rgb(16, 185, 129)', 'rgb(245, 158, 11)', 
-                                'rgb(239, 68, 68)', 'rgb(139, 92, 246)'
-                            ];
-                            charts[`shorttermWtg${i}HourlyChart`] = createChart(chartElement.getContext('2d'), 'line',
-                                hourlyLabels72,
-                                [{ label: `WTG #${i} (MW)`, data: data, borderColor: colors[i-1], backgroundColor: colors[i-1].replace('rgb', 'rgba').replace(')', ', 0.2)'), tension: 0.1, fill: true, borderWidth: 2}]
-                            );
-                        }
-                    }
-                }
-            }
+                    const hLabels = Array.from({length:24},(_,h)=>`${h}시`);
+                    const TC = 20;
+                    const turbineColors = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316','#84cc16','#e879f9','#14b8a6','#6366f1','#ec4899','#22c55e','#a855f7','#0ea5e9','#eab308','#d946ef','#64748b','#f43f5e','#2dd4bf'];
 
-            // Windspeed Forecast (48 hours)
-            if (document.getElementById('shortterm-content')?.offsetParent !== null) {
-                const windspeedChartElement = document.getElementById('shorttermWindspeedChart');
-                const distributionChartElement = document.getElementById('windspeedDistributionChart');
-                
-                if (windspeedChartElement) {
-                    const windspeedLabels = [];
-                    for (let day = 0; day < 2; day++) {
-                        for (let hour = 0; hour < 24; hour++) {
-                            const dayName = day === 0 ? '오늘' : '내일';
-                            windspeedLabels.push(`${dayName} ${hour}시`);
+                    const grid = document.getElementById('shorttermTurbineDetailGrid');
+                    if (grid) {
+                        let html = '';
+                        for (let i = 1; i <= TC; i++) {
+                            html += `<div class="card"><h5 class="text-md font-semibold mb-3">WTG #${i} 상세 예측</h5><div class="chart-container h-[250px]"><canvas id="shorttermWtgDetail${i}"></canvas></div></div>`;
+                        }
+                        grid.innerHTML = html;
+                        for (let i = 1; i <= TC; i++) {
+                            const pwrD = generateRandomData(24, 15, 35);
+                            const windD = generateRandomData(24, 3, 15);
+                            const c = turbineColors[i-1];
+                            charts[`shorttermWtgDetail${i}`] = new Chart(document.getElementById(`shorttermWtgDetail${i}`).getContext('2d'), {
+                                type: 'line',
+                                data: { labels: hLabels, datasets: [
+                                    { label: '발전량 (MW)', data: pwrD, borderColor: c, backgroundColor: c+'1a', tension: 0.3, fill: true, borderWidth: 2, yAxisID: 'y' },
+                                    { label: '풍속 (m/s)', data: windD, borderColor: 'rgba(100,100,100,0.6)', borderDash: [5,3], tension: 0.3, fill: false, borderWidth: 1.5, pointRadius: 2, yAxisID: 'y1' }
+                                ] },
+                                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { display: true, labels: { font: { size: 11 } } } }, scales: { y: { type: 'linear', position: 'left', title: { display: true, text: 'MW' }, beginAtZero: true }, y1: { type: 'linear', position: 'right', title: { display: true, text: 'm/s' }, beginAtZero: true, max: 20, grid: { drawOnChartArea: false } } } }
+                            });
                         }
                     }
-                    
-                    // 풍속 데이터 생성 (3-15 m/s 범위)
-                    const windspeedData = generateRandomData(48, 3, 15);
-                    
-                    // 풍속 구간별 색상 설정
-                    const windspeedColors = windspeedData.map(speed => {
-                        if (speed < 3) return 'rgba(239, 68, 68, 0.8)';      // 빨간색 (컷인 미달)
-                        else if (speed >= 3 && speed < 6) return 'rgba(245, 158, 11, 0.8)'; // 주황색 (저풍속)
-                        else if (speed >= 6 && speed <= 12) return 'rgba(16, 185, 129, 0.8)'; // 녹색 (최적)
-                        else return 'rgba(59, 130, 246, 0.8)';               // 파란색 (정격)
-                    });
-                    
-                    // 시간별 풍속 예측 차트
-                    charts.shorttermWindspeedChart = createChart(windspeedChartElement.getContext('2d'), 'line',
-                        windspeedLabels,
-                        [{ 
-                            label: '풍속 (m/s)', 
-                            data: windspeedData, 
-                            borderColor: 'rgb(59, 130, 246)', 
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            tension: 0.3, 
-                            fill: true,
-                            borderWidth: 2,
-                            pointBackgroundColor: windspeedColors,
-                            pointBorderColor: windspeedColors,
-                            pointRadius: 4
-                        }],
-                        {
-                            plugins: {
-                                legend: { display: true },
-                                tooltip: {
-                                    callbacks: {
-                                        afterLabel: function(context) {
-                                            const speed = context.parsed.y;
-                                            if (speed < 3) return '발전 불가 (컷인 미달)';
-                                            else if (speed >= 3 && speed < 6) return '저풍속 구간';
-                                            else if (speed >= 6 && speed <= 12) return '최적 발전 구간';
-                                            else return '정격 출력 구간';
-                                        }
-                                    }
-                                }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    max: 16,
-                                    title: {
-                                        display: true,
-                                        text: '풍속 (m/s)'
-                                    },
-                                    grid: {
-                                        color: function(context) {
-                                            if (context.tick.value === 3) return 'rgba(239, 68, 68, 0.5)';
-                                            if (context.tick.value === 6) return 'rgba(245, 158, 11, 0.5)';
-                                            if (context.tick.value === 12) return 'rgba(16, 185, 129, 0.5)';
-                                            return 'rgba(0, 0, 0, 0.1)';
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    );
-                }
-                
-                if (distributionChartElement) {
-                    // 풍속 데이터가 이미 생성되었다고 가정하고 분포 계산
-                    const sampleWindspeedData = generateRandomData(48, 3, 15);
-                    const cutInBelow = sampleWindspeedData.filter(speed => speed < 3).length;
-                    const lowWind = sampleWindspeedData.filter(speed => speed >= 3 && speed < 6).length;
-                    const optimal = sampleWindspeedData.filter(speed => speed >= 6 && speed <= 12).length;
-                    const rated = sampleWindspeedData.filter(speed => speed > 12).length;
-                    
-                    charts.windspeedDistributionChart = createChart(distributionChartElement.getContext('2d'), 'doughnut',
-                        ['컷인 미달 (< 3m/s)', '저풍속 (3-6m/s)', '최적 풍속 (6-12m/s)', '정격 풍속 (> 12m/s)'],
-                        [{
-                            data: [cutInBelow, lowWind, optimal, rated],
-                            backgroundColor: [
-                                'rgba(239, 68, 68, 0.8)',   // 빨간색
-                                'rgba(245, 158, 11, 0.8)',  // 주황색
-                                'rgba(16, 185, 129, 0.8)',  // 녹색
-                                'rgba(59, 130, 246, 0.8)'   // 파란색
-                            ],
-                            borderWidth: 2,
-                            borderColor: '#ffffff'
-                        }],
-                        {
-                            plugins: {
-                                legend: {
-                                    position: 'bottom',
-                                    labels: {
-                                        padding: 20,
-                                        usePointStyle: true
-                                    }
-                                },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function(context) {
-                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                            const percentage = ((context.parsed / total) * 100).toFixed(1);
-                                            return `${context.label}: ${context.parsed}시간 (${percentage}%)`;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    );
-                }
-            }
-
-            // Maintenance Schedule Optimization (48 hours)
-            if (document.getElementById('shortterm-content')?.offsetParent !== null) {
-                const maintenanceOptChart = document.getElementById('maintenanceOptimizationChart');
-                const turbineOpChart = document.getElementById('turbineOperationChart');
-                const craneOpChart = document.getElementById('craneOperationChart');
-                
-                if (maintenanceOptChart) {
-                    const labels48h = [];
-                    for (let day = 0; day < 2; day++) {
-                        for (let hour = 0; hour < 24; hour++) {
-                            const dayName = day === 0 ? '오늘' : '내일';
-                            labels48h.push(`${dayName} ${hour}시`);
-                        }
-                    }
-                    
-                    // 발전량과 풍속 데이터 생성
-                    const powerData = generateRandomData(48, 50, 200);
-                    const windData = generateRandomData(48, 3, 15);
-                    
-                    // 정비 최적 구간 계산 (저발전량 + 저풍속)
-                    const maintenanceScore = powerData.map((power, i) => {
-                        const wind = windData[i];
-                        // 낮은 발전량과 낮은 풍속일수록 높은 점수
-                        return ((200 - power) / 200 * 50) + ((15 - wind) / 15 * 50);
-                    });
-                    
-                    charts.maintenanceOptimizationChart = createChart(maintenanceOptChart.getContext('2d'), 'line',
-                        labels48h,
-                        [
-                            { 
-                                label: '발전량 (MW)', 
-                                data: powerData, 
-                                borderColor: 'rgb(59, 130, 246)', 
-                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                                yAxisID: 'y',
-                                tension: 0.3,
-                                fill: false
-                            },
-                            { 
-                                label: '풍속 (m/s)', 
-                                data: windData, 
-                                borderColor: 'rgb(245, 158, 11)', 
-                                backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                                yAxisID: 'y1',
-                                tension: 0.3,
-                                fill: false
-                            },
-                            { 
-                                label: '정비 적합도', 
-                                data: maintenanceScore, 
-                                borderColor: 'rgb(16, 185, 129)', 
-                                backgroundColor: 'rgba(16, 185, 129, 0.2)',
-                                yAxisID: 'y2',
-                                tension: 0.3,
-                                fill: true,
-                                borderWidth: 3
-                            }
-                        ],
-                        {
-                            plugins: {
-                                legend: { display: true }
-                            },
-                            scales: {
-                                y: {
-                                    type: 'linear',
-                                    display: true,
-                                    position: 'left',
-                                    title: { display: true, text: '발전량 (MW)' }
-                                },
-                                y1: {
-                                    type: 'linear',
-                                    display: true,
-                                    position: 'right',
-                                    title: { display: true, text: '풍속 (m/s)' },
-                                    grid: { drawOnChartArea: false }
-                                },
-                                y2: {
-                                    type: 'linear',
-                                    display: false,
-                                    min: 0,
-                                    max: 100
-                                }
-                            }
-                        }
-                    );
-                }
-                
-                if (turbineOpChart) {
-                    // 터빈 가동률 차트
-                    const operationData = [
-                        { label: 'WTG #1', normal: 20, maintenance: 4, high_risk: 0 },
-                        { label: 'WTG #2', normal: 22, maintenance: 2, high_risk: 0 },
-                        { label: 'WTG #3', normal: 16, maintenance: 8, high_risk: 0 },
-                        { label: 'WTG #4', normal: 21, maintenance: 3, high_risk: 0 },
-                        { label: 'WTG #5', normal: 23, maintenance: 1, high_risk: 0 }
-                    ];
-                    
-                    charts.turbineOperationChart = createChart(turbineOpChart.getContext('2d'), 'bar',
-                        operationData.map(d => d.label),
-                        [
-                            {
-                                label: '정상 운전 (시간)',
-                                data: operationData.map(d => d.normal),
-                                backgroundColor: 'rgba(16, 185, 129, 0.8)'
-                            },
-                            {
-                                label: '정비 모드 (시간)',
-                                data: operationData.map(d => d.maintenance),
-                                backgroundColor: 'rgba(245, 158, 11, 0.8)'
-                            },
-                            {
-                                label: '고위험 중단 (시간)',
-                                data: operationData.map(d => d.high_risk),
-                                backgroundColor: 'rgba(239, 68, 68, 0.8)'
-                            }
-                        ],
-                        {
-                            plugins: {
-                                legend: { display: true }
-                            },
-                            scales: {
-                                x: { stacked: true },
-                                y: { 
-                                    stacked: true,
-                                    title: { display: true, text: '시간 (h)' },
-                                    max: 24
-                                }
-                            }
-                        }
-                    );
-                }
-                
-                if (craneOpChart) {
-                    // 크레인 운영 차트 (풍속 기준, 일출/일몰 시간 고려)
-                    const craneWindData = generateRandomData(24, 2, 12);
-                    const craneLabels = Array.from({length: 24}, (_, i) => `${i}시`);
-                    
-                    // 일출/일몰 시간 설정 (12월 기준)
-                    const sunrise = 7; // 06:42 -> 7시로 반올림
-                    const sunset = 17; // 17:28 -> 17시로 반올림
-                    
-                    charts.craneOperationChart = createChart(craneOpChart.getContext('2d'), 'bar',
-                        craneLabels,
-                        [{
-                            label: '풍속 (m/s)',
-                            data: craneWindData,
-                            backgroundColor: craneWindData.map((wind, hour) => {
-                                // 일출 전/일몰 후는 작업 불가 (회색)
-                                if (hour < sunrise || hour >= sunset) {
-                                    return 'rgba(156, 163, 175, 0.8)'; // 회색 (야간)
-                                }
-                                // 일광 시간대는 풍속에 따라 색상 결정
-                                if (wind <= 5) return 'rgba(16, 185, 129, 0.8)';  // 안전 (녹색)
-                                else if (wind <= 8) return 'rgba(245, 158, 11, 0.8)'; // 주의 (주황)
-                                else return 'rgba(239, 68, 68, 0.8)';  // 위험 (빨강)
-                            }),
-                            borderColor: craneWindData.map((wind, hour) => {
-                                if (hour < sunrise || hour >= sunset) {
-                                    return 'rgb(156, 163, 175)';
-                                }
-                                if (wind <= 5) return 'rgb(16, 185, 129)';
-                                else if (wind <= 8) return 'rgb(245, 158, 11)';
-                                else return 'rgb(239, 68, 68)';
-                            }),
-                            borderWidth: 1
-                        }],
-                        {
-                            plugins: {
-                                legend: { display: false },
-                                tooltip: {
-                                    callbacks: {
-                                        afterLabel: function(context) {
-                                            const hour = context.dataIndex;
-                                            const wind = context.parsed.y;
-                                            
-                                            if (hour < sunrise || hour >= sunset) {
-                                                return '야간 - 작업 불가';
-                                            }
-                                            
-                                            if (wind <= 5) return '크레인 작업 안전';
-                                            else if (wind <= 8) return '크레인 작업 주의';
-                                            else return '크레인 작업 금지';
-                                        }
-                                    }
-                                }
-                            },
-                            scales: {
-                                y: {
-                                    title: { display: true, text: '풍속 (m/s)' },
-                                    max: 15
-                                },
-                                x: {
-                                    title: { display: true, text: '시간 (일출: 07시, 일몰: 17시)' }
-                                }
-                            }
-                        }
-                    );
-                }
-                
-                // 최적화 버튼 이벤트 리스너
-                const optimizeBtn = document.getElementById('optimizeSchedule');
-                if (optimizeBtn) {
-                    optimizeBtn.addEventListener('click', function() {
-                        // 최적화 실행 시뮬레이션
-                        const maintenanceType = document.getElementById('maintenanceType').value;
-                        const targetTurbine = document.getElementById('targetTurbine').value;
-                        const priority = document.getElementById('priority').value;
-                        
-                        // 버튼 상태 변경 (로딩)
-                        const optimizeIcon = document.getElementById('optimizeIcon');
-                        const optimizeText = document.getElementById('optimizeText');
-                        const resultsDiv = document.getElementById('optimizationResults');
-                        
-                        optimizeBtn.disabled = true;
-                        optimizeIcon.className = 'fas fa-spinner fa-spin mr-2';
-                        optimizeText.textContent = '최적화 중...';
-                        
-                        // 일출/일몰 시간을 고려한 최적 시간 계산
-                        const sunrise = 7;
-                        const sunset = 17;
-                        
-                        // 작업 유형별 소요 시간
-                        const workDuration = {
-                            'routine': 2,
-                            'blade': 4,
-                            'gearbox': 8,
-                            'generator': 6,
-                            'crane': 12
-                        };
-                        
-                        const duration = workDuration[maintenanceType] || 4;
-                        const optimalStartTime = Math.floor(Math.random() * (sunset - sunrise - duration)) + sunrise;
-                        
-                        // 시뮬레이션 지연
-                        setTimeout(() => {
-                            // 결과 계산
-                            const avgWind = (Math.random() * 3 + 3).toFixed(1); // 3-6 m/s
-                            const loss = (Math.random() * 2 + 1).toFixed(1); // 1-3M
-                            const safety = Math.floor(Math.random() * 5 + 95); // 95-99%
-                            
-                            // 결과 업데이트
-                            document.getElementById('recommendedTime').textContent = `내일 ${optimalStartTime.toString().padStart(2, '0')}:00`;
-                            document.getElementById('expectedLoss').textContent = `₩${loss}M`;
-                            document.getElementById('avgWindSpeed').textContent = `${avgWind} m/s`;
-                            document.getElementById('safetyScore').textContent = `${safety}%`;
-                            
-                            // 결과 표시
-                            resultsDiv.classList.remove('hidden');
-                            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                            
-                            // 버튼 상태 복원
-                            optimizeBtn.disabled = false;
-                            optimizeIcon.className = 'fas fa-check mr-2';
-                            optimizeText.textContent = '최적화 완료';
-                            
-                            // 3초 후 버튼 텍스트 원래대로
-                            setTimeout(() => {
-                                optimizeIcon.className = 'fas fa-cogs mr-2';
-                                optimizeText.textContent = '최적 스케줄 생성';
-                            }, 3000);
-                            
-                        }, 2000); // 2초 로딩 시뮬레이션
-                    });
                 }
             }
 
@@ -665,12 +226,6 @@
             if (document.getElementById('s_2week-content')?.offsetParent !== null) { 
                 // Total Plant - Weekly & Daily (통합 페이지)
                 if (document.getElementById('2week-total-content')?.offsetParent !== null) {
-                    // 주평균 차트
-                    charts.twoWeekWeeklyTotalChart = createChart(document.getElementById('twoWeekWeeklyTotalChart')?.getContext('2d'), 'bar',
-                        ['1주차', '2주차'], 
-                        [{ label: '주간 총 발전량 (GWh)', data: [7.0, 7.5], backgroundColor: 'rgba(59, 130, 246, 0.6)'}]
-                    );
-                    
                     // 일평균 차트
                     charts.twoWeekDailyTotalChart = createChart(document.getElementById('twoWeekDailyTotalChart')?.getContext('2d'), 'line',
                         Array.from({length: 14}, (_, i) => `D+${i+1}`), 
@@ -1304,44 +859,6 @@
             initWeatherForecast();
 
             // 풍속 구간별 분포 토글 함수
-            window.toggleWindspeedDistribution = function() {
-                const content = document.getElementById('windspeedDistributionContent');
-                const icon = document.getElementById('windspeedDistributionIcon');
-                
-                if (content.classList.contains('hidden')) {
-                    content.classList.remove('hidden');
-                    icon.classList.remove('fa-chevron-down');
-                    icon.classList.add('fa-chevron-up');
-                    icon.style.transform = 'rotate(180deg)';
-                } else {
-                    content.classList.add('hidden');
-                    icon.classList.remove('fa-chevron-up');
-                    icon.classList.add('fa-chevron-down');
-                    icon.style.transform = 'rotate(0deg)';
-                }
-            };
-
-            // 터빈 가동률 조정 계획 토글 함수
-            window.toggleTurbineOperation = function() {
-                const content = document.getElementById('turbineOperationContent');
-                const icon = document.getElementById('turbineOperationIcon');
-                
-                if (content.classList.contains('hidden')) {
-                    content.classList.remove('hidden');
-                    icon.classList.remove('fa-chevron-down');
-                    icon.classList.add('fa-chevron-up');
-                    icon.style.transform = 'rotate(180deg)';
-                } else {
-                    content.classList.add('hidden');
-                    icon.classList.remove('fa-chevron-up');
-                    icon.classList.add('fa-chevron-down');
-                    icon.style.transform = 'rotate(0deg)';
-                }
-            };
-
-            // 정비 스케줄 최적화 기능
-            initMaintenanceScheduler();
-            
             // 박스플롯 체크박스 토글
             window.toggleBoxplot = function(type) {
                 const map = { wind: 'boxplotWind', temp: 'boxplotTemp', wave: 'boxplotWave' };

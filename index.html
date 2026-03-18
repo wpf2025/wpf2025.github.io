@@ -26,9 +26,6 @@
                 <a href="#" class="sidebar-item active block py-3 px-6" data-target="overview">
                     <i class="fas fa-tachometer-alt mr-3 w-5 text-center"></i><span data-i18n="sidebar.overview">서남해해상풍력</span>
                 </a>
-                <a href="#" class="sidebar-item block py-3 px-6" data-target="weather">
-                    <i class="fas fa-cloud-sun mr-3 w-5 text-center"></i><span data-i18n="sidebar.weather">기상예측</span>
-                </a>
                 <a href="#" class="sidebar-item block py-3 px-6" data-target="shortterm">
                     <i class="fas fa-clock mr-3 w-5 text-center"></i><span data-i18n="sidebar.shortterm">하루전예측</span>
                 </a>
@@ -364,81 +361,6 @@
                 </section>
 
 
-                <section id="weather-content" class="content-section hidden">
-                    <h2 class="section-title"><span data-i18n="weather.title">기상예측</span></h2>
-                    
-                    <!-- 상단 컨트롤 -->
-                    <div class="card">
-                        <div class="flex flex-wrap items-center gap-4 mb-4">
-                            <div class="flex items-center gap-2">
-                                <span class="text-sm font-medium text-gray-700" data-i18n="weather.period">예측 기간:</span>
-                                <label class="inline-flex items-center">
-                                    <input type="radio" name="weatherPeriod" value="10days" checked class="form-radio text-blue-600">
-                                    <span class="ml-2 text-sm" data-i18n="weather.10days">10일 (1시간)</span>
-                                </label>
-                                <label class="inline-flex items-center ml-4">
-                                    <input type="radio" name="weatherPeriod" value="90days" class="form-radio text-blue-600">
-                                    <span class="ml-2 text-sm" data-i18n="weather.90days">90일 (1일)</span>
-                                </label>
-                            </div>
-                            <div class="flex items-center gap-2 ml-auto">
-                                <span class="text-sm font-medium text-gray-700" data-i18n="weather.mode">표시 모드:</span>
-                                <button id="weatherListBtn" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-l-lg hover:bg-blue-700" data-i18n="weather.list">List</button>
-                                <button id="weatherChartsBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-r-lg hover:bg-gray-300" data-i18n="weather.charts">Charts</button>
-                            </div>
-                        </div>
-                        <p class="text-xs text-gray-500">마지막 업데이트: <span id="weatherLastUpdate">2025-10-23 08:30 UTC</span></p>
-                    </div>
-
-                    <!-- List 모드 -->
-                    <div id="weatherListMode">
-                        <!-- 10일 예측 List -->
-                        <div id="weather10daysList" class="space-y-2">
-                            <!-- JavaScript로 동적 생성 -->
-                        </div>
-                        
-                        <!-- 90일 예측 List -->
-                        <div id="weather90daysList" class="space-y-2 hidden">
-                            <!-- JavaScript로 동적 생성 -->
-                        </div>
-                    </div>
-
-                    <!-- Charts 모드 -->
-                    <div id="weatherChartsMode" class="hidden">
-                        <!-- 10일 예측 Charts -->
-                        <div id="weather10daysCharts">
-                            <!-- 캘린더 그리드 -->
-                            <div class="card">
-                                <h3 class="text-lg font-semibold mb-4">10일 기상 개요</h3>
-                                <div id="weather10daysCalendarGrid" class="grid grid-cols-5 md:grid-cols-10 gap-2 mb-6">
-                                    <!-- JavaScript로 동적 생성 -->
-                                </div>
-                            </div>
-                            
-                            <!-- 상세 캘린더 뷰 -->
-                            <div class="card">
-                                <h3 class="text-lg font-semibold mb-4">상세 캘린더 뷰</h3>
-                                <p class="text-sm text-gray-600 mb-4">기간: <span id="weather10daysDateRange"></span></p>
-                                <div id="weather10daysDetailedView" class="overflow-x-auto">
-                                    <!-- JavaScript로 동적 생성 -->
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- 90일 예측 Charts -->
-                        <div id="weather90daysCharts" class="hidden">
-                            <div class="card">
-                                <h3 class="text-lg font-semibold mb-4">3개월 기상 캘린더</h3>
-                                <div id="weather90daysCalendarGrid">
-                                    <!-- JavaScript로 동적 생성 -->
-                                </div>
-                                <div id="weather90daysDetailedView" class="overflow-x-auto mt-6">
-                                    <!-- JavaScript로 동적 생성 -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
                 <section id="details-content" class="content-section hidden">
                     <h2 class="section-title">상세 정보 및 신뢰도</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

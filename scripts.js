@@ -784,7 +784,6 @@
             console.log('Setting up tabs...');
             setupTabs('#twoWeekMainTabs', '#s_2week-content', 'main-tab-panel', 0); 
             setupTabs('#shorttermMainTabs', '#shortterm-content', 'main-tab-panel', 0);
-            setupTabs('#shorttermSubTabsTurbine', '#shorttermSubTabsTurbineContent', 'sub-tab-panel-item', 0);
             // 장기예측은 탭이 없으므로 setupTabs 불필요
             console.log('Tabs setup completed.');
 

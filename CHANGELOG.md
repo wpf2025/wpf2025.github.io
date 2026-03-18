@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-03-18
+
+### Added
+- **메인페이지 재설계**:
+  - 오늘 시간별 풍속 예측 차트 (구간별 색상 라인)
+  - 오늘 시간별 발전량 바 차트
+  - 발전소 위치 Leaflet 위성지도 + WTG#1~#20 실제 좌표 마커
+- **하루전예측 발전소 탭**: 24시간 풍속 라인 차트 + 발전량 KPI/시간별 차트
+- **하루전예측 터빈별 탭**: WTG#1~#20 개별 발전량+풍속 듀얼 Y축 차트
+
+### Changed
+- **탭 이름 변경**: 단기예측→하루전예측, 중기예측→2주예측, 장기예측→3개월예측
+- **개요 탭**: 개요→서남해해상풍력
+- **하루전예측**: 3일(72시간)→1일(24시간)으로 변경
+- **하루전예측 터빈별**: 서브탭 제거, 20호기 확장, 발전량+풍속 듀얼 차트
+- **하루전예측 풍속/정비 탭**: TBD 비활성화 및 HTML/JS 코드 제거
+- **메인페이지**: 발전 현황 KPI, 7일 실적 추이, 유지보수 알림 제거
+- **기상예보**: 강수량/낙뢰 항목 제거
+- **SAMPLE 배지**: 전체 페이지에서 제거
+
+### Fixed
+- **Leaflet 지도 중복 초기화 에러**: `_leaflet_id` 체크로 방지
+- **숫자 시작 ID querySelector 에러**: `getElementById`로 변경
+- **삭제된 HTML 요소 JS 참조 에러**: todayRainfall/todayLightning 등 제거
+
 ## [1.4.0] - 2026-03-18
 
 ### Added

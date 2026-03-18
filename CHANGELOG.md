@@ -5,9 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.4.0] - 2026-03-17
+## [1.4.0] - 2026-03-18
 
 ### Added
+- **장기예측 박스플롯 체크박스 토글**: 풍속/기온/파고 박스플롯을 체크박스로 선택 표시 (기본: 풍속만)
 - **장기예측 모달 주간 상세 테이블**:
   - 박스플롯 클릭 시 해당 주차 7일간 일별 상세 기상 테이블 표시
   - O&M 가능 여부 판단 기준: 풍속 ≤ 10m/s, 최고기온 ≤ 30°C, 최저기온 ≥ 5°C, 파고 ≤ 1.5m
@@ -21,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - O&M 기준: 풍속 ≤ 10m/s, 기온 ≤ 30°C / ≥ 5°C, 파고 ≤ 1.5m
 
 ### Changed
+- **장기예측 기상/발전량 카드 분리**: 기상 예측과 발전량 예측을 별도 카드로 분리
 - **모달 크기 확대**: `max-w-4xl` → `max-w-6xl` (장기), `max-w-[95vw]` (중기)
 - **중기예측 레이아웃 개선**: 주평균(1/4) + 일평균(3/4) 한 줄 그리드 레이아웃
 - **중기예측 주평균 바 차트 제거**: KPI 카드만 표시하여 공간 효율화

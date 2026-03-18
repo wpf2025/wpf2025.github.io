@@ -142,7 +142,7 @@
             destroyAllCharts(); 
 
             // Overview Charts - Turbine Map
-            if (document.getElementById('turbineMap')) {
+            if (document.getElementById('turbineMap') && !document.getElementById('turbineMap')._leaflet_id) {
                 const map = L.map('turbineMap').setView([35.485, 126.317], 10);
                 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '© Esri', maxZoom: 18 }).addTo(map);
                 const turbines = [[35.489977,126.340817],[35.484832,126.334644],[35.479686,126.328472],[35.474539,126.322300],[35.469392,126.316130],[35.493631,126.333218],[35.488485,126.327045],[35.483338,126.320874],[35.478191,126.314702],[35.473044,126.308532],[35.497284,126.325619],[35.492137,126.319446],[35.486990,126.313275],[35.481844,126.307104],[35.476696,126.300934],[35.500937,126.318019],[35.495768,126.311821],[35.490642,126.305675],[35.485495,126.299504],[35.480348,126.293335]];

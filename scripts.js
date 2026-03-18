@@ -705,7 +705,7 @@
                             panel.classList.add('hidden');
                         });
                         const targetPanelId = tab.getAttribute('data-tabs-target');
-                        const targetPanel = document.querySelector(targetPanelId);
+                        const targetPanel = document.getElementById(targetPanelId.replace('#',''));
                         if (targetPanel) {
                             targetPanel.classList.remove('hidden');
                             console.log('Panel shown:', targetPanelId);

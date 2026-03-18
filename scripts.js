@@ -1351,6 +1351,13 @@
                 el.classList.toggle('hidden', !checked);
             };
 
+            // 중기 박스플롯 체크박스 토글
+            window.toggleMidtermBoxplot = function(type) {
+                const map = { wind: 'midBoxplotWind', temp: 'midBoxplotTemp', wave: 'midBoxplotWave' };
+                const chkMap = { wind: 'chkMidWind', temp: 'chkMidTemp', wave: 'chkMidWave' };
+                document.getElementById(map[type]).classList.toggle('hidden', !document.getElementById(chkMap[type]).checked);
+            };
+
             // 기상 상세 모달 기능
             window.showWeatherDetail = function(weekNumber) {
                 const panel = document.getElementById('weatherDetailInline');
@@ -1387,7 +1394,7 @@
 
             // 중기예측 24시간 O&M 모달
             window.showMidtermWeatherDetail = function(dayIndex) {
-                const modal = document.getElementById('midtermWeatherModal');
+                const panel = document.getElementById('midtermWeatherInline');
                 const title = document.getElementById('midtermModalTitle');
                 const today = new Date();
                 const targetDate = new Date(today);
@@ -1408,7 +1415,6 @@
 
                 const hourHeaders = hours.map(h=>`<th class="text-center text-xs px-2 py-3 min-w-[44px]">${h.hour}시</th>`).join('');
                 const statusRow = hours.map(h=>`<td class="text-center p-2"><div class="w-full h-5 rounded ${STATUS_COLORS[h.omStatus]}"></div></td>`).join('');
-                const confRow = hours.map(h=>`<td class="text-center text-xs font-semibold py-2">${Math.floor(parseFloat(h.confidence)/10)*10}%</td>`).join('');
 
                 const vars = [
                     {key:'windSpeed',label:'풍속',icon:'fa-wind',criteria:'≤ 10m/s',good:v=>v<=10},
@@ -1419,12 +1425,14 @@
                 const varRows = vars.map(v=>{
                     const cells = hours.map(h=>{
                         const val = parseFloat(h[v.key]);
-                        return `<td class="text-center p-2"><span class="text-lg font-bold ${v.good(val)?'text-blue-600':'text-gray-400'} cursor-default" title="${val.toFixed(1)}">${v.good(val)?'✓':'✗'}</span></td>`;
+                        return `<td class="text-center p-2"><span class="text-lg font-bold ${v.good(val)?'text-blue-600':'text-gray-400'}" title="${val.toFixed(1)}">${v.good(val)?'✓':'✗'}</span></td>`;
                     }).join('');
                     return `<tr><td class="sticky-col font-semibold text-gray-700 text-sm whitespace-nowrap px-3 py-3"><i class="fas ${v.icon} mr-1"></i>${v.label} <span class="text-xs text-gray-400">(${v.criteria})</span></td>${cells}</tr>`;
                 }).join('');
 
                 const windData = hours.map(h=>parseFloat(h.windSpeed));
+
+                if (charts.midtermHourlyWindChart) { charts.midtermHourlyWindChart.destroy(); delete charts.midtermHourlyWindChart; }
 
                 document.getElementById('midtermModalDetail').innerHTML = `
                     <h4 class="text-lg font-semibold mb-3"><i class="fas fa-wind mr-2 text-blue-600"></i>시간별 풍속 예측</h4>
@@ -1440,15 +1448,15 @@
                         </table>
                     </div>`;
 
-                if (charts.midtermHourlyWindChart) { charts.midtermHourlyWindChart.destroy(); }
+                panel.classList.remove('hidden');
+                panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
                 const windspeedColors2 = windData.map(speed => {
                     if (speed < 3) return 'rgba(239, 68, 68, 0.8)';
                     else if (speed < 6) return 'rgba(245, 158, 11, 0.8)';
                     else if (speed <= 12) return 'rgba(16, 185, 129, 0.8)';
                     else return 'rgba(59, 130, 246, 0.8)';
                 });
-
-                modal.classList.remove('hidden');
 
                 setTimeout(() => {
                     charts.midtermHourlyWindChart = new Chart(document.getElementById('midtermHourlyWindChart').getContext('2d'), {
@@ -1501,13 +1509,12 @@
                         }
                     }
                 });
-
                 }, 50);
             };
 
-            window.closeMidtermWeatherModal = function() {
+            window.closeMidtermWeatherInline = function() {
                 if (charts.midtermHourlyWindChart) { charts.midtermHourlyWindChart.destroy(); delete charts.midtermHourlyWindChart; }
-                document.getElementById('midtermWeatherModal').classList.add('hidden');
+                document.getElementById('midtermWeatherInline').classList.add('hidden');
             };
             
             function createModalCharts(weekNumber) {

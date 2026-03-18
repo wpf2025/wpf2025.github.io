@@ -733,92 +733,136 @@
                         options:midBoxplotOpts('파고 (m)')
                     });
                 }
-                // Per Turbine (WTG #1 to #5)
+                // Per Turbine (WTG #1 to #20) — Overview 3안 + 상세
                 if (document.getElementById('s_2week-content')?.offsetParent !== null) {
-                    // 터빈별 고정 데이터 (HTML KPI 값과 정확히 일치)
-                    const turbineWeeklyData = {
-                        1: [350, 375], // WTG #1: 1주차, 2주차 (MWh)
-                        2: [355, 380], // WTG #2
-                        3: [345, 370], // WTG #3
-                        4: [360, 385], // WTG #4
-                        5: [340, 365]  // WTG #5
+                    const TC = 20;
+                    const dLabels = Array.from({length: 14}, (_, i) => `D+${i+1}`);
+                    const tData = {};
+                    for (let t = 1; t <= TC; t++) {
+                        const base = 300 + Math.random() * 100;
+                        const w1 = Math.round(base + (Math.random() - 0.5) * 60);
+                        const w2 = Math.round(base + (Math.random() - 0.5) * 60);
+                        const daily = [], wind = [];
+                        for (let d = 0; d < 14; d++) {
+                            const avg = (d < 7 ? w1 : w2) / 7;
+                            daily.push(Math.round(Math.max(20, avg * (1 + (Math.random() - 0.5) * 0.4))));
+                            wind.push(parseFloat((3 + Math.random() * 9).toFixed(1)));
+                        }
+                        tData[t] = { weekly: [w1, w2], daily, wind, total: daily.reduce((a, b) => a + b, 0) };
+                    }
+                    const allVals = Object.values(tData).flatMap(d => d.daily);
+                    const gMin = Math.min(...allVals), gMax = Math.max(...allVals);
+                    const heatColor = (v) => {
+                        const r = (v - gMin) / (gMax - gMin || 1);
+                        return r > 0.5 ? `rgb(${Math.round(59+(1-r)*2*196)},${Math.round(130+(1-r)*125)},246)` : `rgb(239,${Math.round(r*2*162)},${Math.round(68+r*2*178)})`;
                     };
-                    
-                    // 주간 데이터를 기반으로 일간 데이터 생성 (주평균을 7로 나누고 약간의 변동 추가)
-                    const turbineDailyData = {};
-                    for (let i = 1; i <= 5; i++) {
-                        const week1Avg = turbineWeeklyData[i][0] / 7; // MWh를 일평균으로 변환
-                        const week2Avg = turbineWeeklyData[i][1] / 7;
-                        
-                        // 14일간 데이터 생성 (주평균 기준으로 ±20% 변동)
-                        const dailyData = [];
-                        for (let day = 0; day < 14; day++) {
-                            const baseValue = day < 7 ? week1Avg : week2Avg;
-                            const variation = (Math.random() - 0.5) * 0.4; // ±20% 변동
-                            const dailyValue = Math.max(20, baseValue * (1 + variation)); // 최소값 보장 (20MWh)
-                            dailyData.push(Math.round(dailyValue)); // MWh 단위 유지
+                    const windColor = (v) => v<3?'rgb(135,206,235)':v<6?'rgb(59,130,246)':v<10?'rgb(16,185,129)':v<15?'rgb(245,158,11)':'rgb(239,68,68)';
+
+                    window.showTurbineDetail = (t) => {
+                        document.getElementById('turbineOverviewArea').classList.add('hidden');
+                        const det = document.getElementById('turbineDetailArea');
+                        det.classList.remove('hidden');
+                        const d = tData[t];
+                        document.getElementById('turbineDetailTitle').textContent = `WTG #${t} 상세`;
+                        document.getElementById('detailWeek1').textContent = `${d.weekly[0]} MWh`;
+                        document.getElementById('detailWeek2').textContent = `${d.weekly[1]} MWh`;
+                        if (charts.tDetailDaily) charts.tDetailDaily.destroy();
+                        if (charts.tDetailWind) charts.tDetailWind.destroy();
+                        charts.tDetailDaily = new Chart(document.getElementById('turbineDetailDailyChart').getContext('2d'), {
+                            type:'line', data:{labels:dLabels, datasets:[{label:'일간 총 발전량 (MWh)',data:d.daily,borderColor:'rgb(59,130,246)',tension:0.2,fill:false,borderWidth:2}]},
+                            options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true}},scales:{y:{beginAtZero:true}}}
+                        });
+                        charts.tDetailWind = new Chart(document.getElementById('turbineDetailWindChart').getContext('2d'), {
+                            type:'line', data:{labels:dLabels, datasets:[{label:'일 평균 풍속 (m/s)',data:d.wind,borderColor:'rgb(107,114,128)',tension:0.2,fill:false,borderWidth:2,pointBackgroundColor:d.wind.map(windColor),pointRadius:5}]},
+                            options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true}},scales:{y:{beginAtZero:true,grid:{color:(ctx)=>{const v=ctx.tick?.value;return(v===3||v===6||v===10||v===15)?'rgba(0,0,0,0.15)':'rgba(0,0,0,0.05)';}}},x:{}}}
+                        });
+                    };
+                    window.backToOverview = () => {
+                        document.getElementById('turbineDetailArea').classList.add('hidden');
+                        document.getElementById('turbineOverviewArea').classList.remove('hidden');
+                    };
+
+                    // A안: 히트맵
+                    const renderHeatmap = (cid) => {
+                        const c = document.getElementById(cid); if(!c) return;
+                        let h = '<div class="overflow-x-auto"><table class="w-full text-xs border-collapse"><thead><tr><th class="p-1 text-left sticky left-0 bg-white z-10">터빈</th>';
+                        dLabels.forEach(l => { h += `<th class="p-1 text-center min-w-[44px]">${l}</th>`; });
+                        h += '<th class="p-1 text-center min-w-[60px]">합계</th></tr></thead><tbody>';
+                        for (let t = 1; t <= TC; t++) {
+                            const d = tData[t];
+                            h += `<tr class="cursor-pointer hover:opacity-80" onclick="showTurbineDetail(${t})"><td class="p-1 font-semibold sticky left-0 bg-white z-10 whitespace-nowrap">WTG #${t}</td>`;
+                            d.daily.forEach(v => { h += `<td class="p-1 text-center" title="${v} MWh"><div class="w-full h-6 rounded" style="background:${heatColor(v)}"></div></td>`; });
+                            h += `<td class="p-1 text-center font-semibold">${d.total}</td></tr>`;
                         }
-                        turbineDailyData[i] = dailyData;
-                    }
-                    
-                    const dailyLabels = Array.from({length: 14}, (_, i) => `D+${i+1}`);
-                    for (let i = 1; i <= 5; i++) {
-                        const weeklyChartElement = document.getElementById(`wtg${i}WeeklyChart`);
-                        const dailyChartElement = document.getElementById(`wtg${i}DailyChart`);
-                        
-                        if (weeklyChartElement) {
-                            // Weekly Bar Chart for Turbine
-                            charts[`wtg${i}WeeklyChart`] = createChart(weeklyChartElement.getContext('2d'), 'bar',
-                                ['1주차', '2주차'],
-                                [{ 
-                                    label: `WTG #${i} 주간 (MWh)`, 
-                                    data: turbineWeeklyData[i], 
-                                    backgroundColor: `rgba(${50 + i*30}, ${100 + i*15}, ${150 - i*20}, 0.6)` 
-                                }],
-                                { 
-                                    plugins: { legend: { display: false } }, 
-                                    scales: { 
-                                        y: { 
-                                            beginAtZero: true,
-                                            max: 400,
-                                            ticks: { font: { size: 10 }}
-                                        }
-                                    }
-                                }
-                            );
-                        }
-                        
-                        if (dailyChartElement) {
-                            // Daily Line Chart for Turbine
-                            charts[`wtg${i}DailyChart`] = createChart(dailyChartElement.getContext('2d'), 'line',
-                                dailyLabels,
-                                [{ 
-                                    label: `WTG #${i} 일간 (MWh)`, 
-                                    data: turbineDailyData[i],
-                                    borderColor: `rgb(${50 + i*30}, ${100 + i*15}, ${150 - i*20})`,
-                                    tension: 0.2,
-                                    fill: false,
-                                    borderWidth: 2
-                                }],
-                                {
-                                    plugins: { legend: { display: false } },
-                                    scales: {
-                                        y: {
-                                            beginAtZero: true,
-                                            ticks: { font: { size: 10 }}
-                                        },
-                                        x: {
-                                            ticks: { font: { size: 9 }}
-                                        }
-                                    }
-                                }
-                            );
-                        }
-                    }
-                }
-                // Maintenance Schedule (within 2week section)
-                if (document.getElementById('s_2week-content')?.offsetParent !== null) {
-                    // 정비 스케줄 차트는 사용자가 최적화를 실행할 때 생성됨
+                        h += '</tbody></table></div>'; c.innerHTML = h;
+                    };
+
+                    // 스파크라인 그리기 헬퍼
+                    const drawSpark = (canvasId, vals, color) => {
+                        const cv = document.getElementById(canvasId); if(!cv) return;
+                        const ctx = cv.getContext('2d'), mn = Math.min(...vals), mx = Math.max(...vals), rng = mx-mn||1;
+                        ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.beginPath();
+                        vals.forEach((v,i) => { const x=(i/(vals.length-1))*80, y=22-((v-mn)/rng)*20; i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
+                        ctx.stroke();
+                    };
+
+                    // B안: 랭킹
+                    const renderRanking = (cid) => {
+                        const c = document.getElementById(cid); if(!c) return;
+                        const sorted = Object.entries(tData).map(([t,d])=>({t:parseInt(t),...d})).sort((a,b)=>b.total-a.total);
+                        const threshold = sorted.reduce((s,d)=>s+d.total,0)/TC*0.85;
+                        let h = '';
+                        sorted.forEach((d,idx) => {
+                            const warn = d.total < threshold;
+                            h += `<div class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 cursor-pointer border-b" onclick="showTurbineDetail(${d.t})">`;
+                            h += `<span class="w-8 text-center font-bold text-sm ${idx<3?'text-blue-600':warn?'text-red-500':'text-gray-500'}">${idx+1}</span>`;
+                            h += `<span class="w-20 font-semibold text-sm">WTG #${d.t}</span>`;
+                            h += `<div class="flex-1 h-5 bg-gray-100 rounded overflow-hidden"><div class="h-full rounded ${warn?'bg-red-400':'bg-blue-400'}" style="width:${(d.total/sorted[0].total*100).toFixed(1)}%"></div></div>`;
+                            h += `<span class="w-24 text-right text-sm font-semibold">${d.total} MWh</span>`;
+                            h += warn?'<span class="text-red-500">⚠️</span>':'<span class="w-5"></span>';
+                            h += `<canvas id="spark-${cid}-${d.t}" width="80" height="24" class="flex-shrink-0"></canvas></div>`;
+                        });
+                        c.innerHTML = h;
+                        sorted.forEach(d => drawSpark(`spark-${cid}-${d.t}`, d.daily, d.total<threshold?'#f87171':'#60a5fa'));
+                    };
+
+                    // C안: 하이브리드
+                    const renderHybrid = () => {
+                        const sorted = Object.entries(tData).map(([t,d])=>({t:parseInt(t),...d})).sort((a,b)=>a.total-b.total);
+                        const totalAll = sorted.reduce((s,d)=>s+d.total,0), avg = totalAll/TC;
+                        const warnCount = sorted.filter(d=>d.total<avg*0.85).length;
+                        document.getElementById('hybridKpiTotal').textContent = `${(totalAll/1000).toFixed(1)} GWh`;
+                        document.getElementById('hybridKpiAvg').textContent = `${Math.round(avg)} MWh`;
+                        document.getElementById('hybridKpiWarn').textContent = `${warnCount}기`;
+                        renderHeatmap('hybridHeatmap');
+                        const bot5 = sorted.slice(0,5), bc = document.getElementById('hybridBottom5');
+                        if(!bc) return;
+                        let h = '';
+                        bot5.forEach(d => {
+                            h += `<div class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 cursor-pointer border-b" onclick="showTurbineDetail(${d.t})">`;
+                            h += `<span class="w-20 font-semibold text-sm text-red-600">WTG #${d.t}</span>`;
+                            h += `<span class="text-sm font-semibold">${d.total} MWh</span>`;
+                            h += `<canvas id="spark-hyb-${d.t}" width="80" height="24" class="flex-shrink-0"></canvas></div>`;
+                        });
+                        bc.innerHTML = h;
+                        bot5.forEach(d => drawSpark(`spark-hyb-${d.t}`, d.daily, '#f87171'));
+                    };
+
+                    renderHeatmap('heatmapA');
+                    renderRanking('rankingB');
+                    renderHybrid();
+
+                    document.querySelectorAll('.turbine-overview-tab').forEach(tab => {
+                        tab.addEventListener('click', () => {
+                            document.querySelectorAll('.turbine-overview-tab').forEach(t => t.classList.remove('active'));
+                            tab.classList.add('active');
+                            document.querySelectorAll('.turbine-overview-panel').forEach(p => p.classList.add('hidden'));
+                            document.getElementById(tab.dataset.target).classList.remove('hidden');
+                            if(tab.dataset.target==='overviewA') renderHeatmap('heatmapA');
+                            if(tab.dataset.target==='overviewB') renderRanking('rankingB');
+                            if(tab.dataset.target==='overviewC') renderHybrid();
+                        });
+                    });
                 }
             }
             

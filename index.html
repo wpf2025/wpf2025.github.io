@@ -663,167 +663,60 @@
                     </div>
 
                     <div id="2week-turbine-content" class="main-tab-panel hidden">
-                        <h3 class="text-xl font-semibold mb-4">터빈별 2주 예측</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="turbineCardsContainer">
-                            <div class="card" id="wtg1Card">
-                                <h4 class="font-semibold text-lg mb-2">WTG #1</h4>
-                                <div class="grid grid-cols-2 gap-2 mb-3">
-                                    <div><p class="kpi-label">주평균 (1주차)</p><p class="kpi-turbine-value text-blue-700">350 <span class="text-xs">MWh</span></p></div>
-                                    <div><p class="kpi-label">주평균 (2주차)</p><p class="kpi-turbine-value text-blue-700">375 <span class="text-xs">MWh</span></p></div>
-                                </div>
-                                <div class="small-chart-container"><canvas id="wtg1WeeklyChart"></canvas></div>
-                                <h5 class="font-semibold text-md mt-4 mb-2">일평균 예상 발전량 (14일)</h5>
-                                <div class="turbine-daily-chart-container"><canvas id="wtg1DailyChart"></canvas></div>
+                        <!-- Overview 영역 -->
+                        <div id="turbineOverviewArea">
+                            <div class="mb-4 border-b border-gray-200">
+                                <ul class="flex flex-wrap -mb-px text-sm font-medium text-center">
+                                    <li class="mr-2"><button class="turbine-overview-tab sub-tab-button inline-block p-3 rounded-t-lg active" data-target="overviewA">A. 히트맵</button></li>
+                                    <li class="mr-2"><button class="turbine-overview-tab sub-tab-button inline-block p-3 rounded-t-lg" data-target="overviewB">B. 랭킹</button></li>
+                                    <li class="mr-2"><button class="turbine-overview-tab sub-tab-button inline-block p-3 rounded-t-lg" data-target="overviewC">C. 하이브리드</button></li>
+                                </ul>
                             </div>
-                            <div class="card" id="wtg2Card">
-                                <h4 class="font-semibold text-lg mb-2">WTG #2</h4>
-                               <div class="grid grid-cols-2 gap-2 mb-3">
-                                    <div><p class="kpi-label">주평균 (1주차)</p><p class="kpi-turbine-value text-blue-700">355 <span class="text-xs">MWh</span></p></div>
-                                    <div><p class="kpi-label">주평균 (2주차)</p><p class="kpi-turbine-value text-blue-700">380 <span class="text-xs">MWh</span></p></div>
-                                </div>
-                                <div class="small-chart-container"><canvas id="wtg2WeeklyChart"></canvas></div>
-                                <h5 class="font-semibold text-md mt-4 mb-2">일평균 예상 발전량 (14일)</h5>
-                                <div class="turbine-daily-chart-container"><canvas id="wtg2DailyChart"></canvas></div>
+                            <!-- A안: 히트맵 -->
+                            <div id="overviewA" class="turbine-overview-panel card">
+                                <h4 class="text-lg font-semibold mb-3">14일 × 20호기 발전량 히트맵</h4>
+                                <p class="text-sm text-gray-500 mb-3">셀 클릭 시 해당 터빈 상세 페이지로 이동합니다. 색상: <span class="text-red-500">낮음</span> → <span class="text-blue-500">높음</span></p>
+                                <div id="heatmapA"></div>
                             </div>
-                            <div class="card" id="wtg3Card">
-                                <h4 class="font-semibold text-lg mb-2">WTG #3</h4>
-                                <div class="grid grid-cols-2 gap-2 mb-3">
-                                    <div><p class="kpi-label">주평균 (1주차)</p><p class="kpi-turbine-value text-blue-700">345 <span class="text-xs">MWh</span></p></div>
-                                    <div><p class="kpi-label">주평균 (2주차)</p><p class="kpi-turbine-value text-blue-700">370 <span class="text-xs">MWh</span></p></div>
-                                </div>
-                                <div class="small-chart-container"><canvas id="wtg3WeeklyChart"></canvas></div>
-                                <h5 class="font-semibold text-md mt-4 mb-2">일평균 예상 발전량 (14일)</h5>
-                                <div class="turbine-daily-chart-container"><canvas id="wtg3DailyChart"></canvas></div>
+                            <!-- B안: 랭킹 -->
+                            <div id="overviewB" class="turbine-overview-panel card hidden">
+                                <h4 class="text-lg font-semibold mb-3">터빈별 14일 총 발전량 랭킹</h4>
+                                <p class="text-sm text-gray-500 mb-3">터빈 클릭 시 상세 페이지로 이동합니다. ⚠️ = 평균 대비 85% 미만</p>
+                                <div id="rankingB"></div>
                             </div>
-                            <div class="card" id="wtg4Card">
-                                <h4 class="font-semibold text-lg mb-2">WTG #4</h4>
-                                <div class="grid grid-cols-2 gap-2 mb-3">
-                                    <div><p class="kpi-label">주평균 (1주차)</p><p class="kpi-turbine-value text-blue-700">360 <span class="text-xs">MWh</span></p></div>
-                                    <div><p class="kpi-label">주평균 (2주차)</p><p class="kpi-turbine-value text-blue-700">385 <span class="text-xs">MWh</span></p></div>
+                            <!-- C안: 하이브리드 -->
+                            <div id="overviewC" class="turbine-overview-panel card hidden">
+                                <div class="grid grid-cols-3 gap-4 mb-4">
+                                    <div class="p-4 bg-blue-50 rounded-lg text-center"><p class="kpi-label">총 발전량</p><p id="hybridKpiTotal" class="kpi-value text-2xl">-</p></div>
+                                    <div class="p-4 bg-green-50 rounded-lg text-center"><p class="kpi-label">터빈 평균</p><p id="hybridKpiAvg" class="kpi-value text-2xl">-</p></div>
+                                    <div class="p-4 bg-red-50 rounded-lg text-center"><p class="kpi-label">주의 터빈</p><p id="hybridKpiWarn" class="kpi-value text-2xl">-</p></div>
                                 </div>
-                                <div class="small-chart-container"><canvas id="wtg4WeeklyChart"></canvas></div>
-                                <h5 class="font-semibold text-md mt-4 mb-2">일평균 예상 발전량 (14일)</h5>
-                                <div class="turbine-daily-chart-container"><canvas id="wtg4DailyChart"></canvas></div>
+                                <h4 class="text-lg font-semibold mb-3">발전량 히트맵</h4>
+                                <div id="hybridHeatmap" class="mb-4"></div>
+                                <h4 class="text-lg font-semibold mb-3">하위 5개 터빈</h4>
+                                <div id="hybridBottom5"></div>
                             </div>
-                            <div class="card" id="wtg5Card">
-                                <h4 class="font-semibold text-lg mb-2">WTG #5</h4>
-                                <div class="grid grid-cols-2 gap-2 mb-3">
-                                    <div><p class="kpi-label">주평균 (1주차)</p><p class="kpi-turbine-value text-blue-700">340 <span class="text-xs">MWh</span></p></div>
-                                    <div><p class="kpi-label">주평균 (2주차)</p><p class="kpi-turbine-value text-blue-700">365 <span class="text-xs">MWh</span></p></div>
+                        </div>
+                        <!-- 상세 페이지 -->
+                        <div id="turbineDetailArea" class="hidden">
+                            <button onclick="backToOverview()" class="mb-4 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg text-sm font-semibold"><i class="fas fa-arrow-left mr-2"></i>Overview로 돌아가기</button>
+                            <div class="card">
+                                <h4 id="turbineDetailTitle" class="text-xl font-semibold mb-4"></h4>
+                                <div class="grid grid-cols-2 gap-4 mb-6">
+                                    <div class="p-4 bg-blue-50 rounded-lg"><p class="kpi-label">1주차 총 발전량</p><p id="detailWeek1" class="kpi-value text-2xl">-</p></div>
+                                    <div class="p-4 bg-blue-50 rounded-lg"><p class="kpi-label">2주차 총 발전량</p><p id="detailWeek2" class="kpi-value text-2xl">-</p></div>
                                 </div>
-                                <div class="small-chart-container"><canvas id="wtg5WeeklyChart"></canvas></div>
-                                <h5 class="font-semibold text-md mt-4 mb-2">일평균 예상 발전량 (14일)</h5>
-                                <div class="turbine-daily-chart-container"><canvas id="wtg5DailyChart"></canvas></div>
+                                <h5 class="font-semibold mb-2">일간 총 발전량 (14일)</h5>
+                                <div class="chart-container h-[250px] mb-6"><canvas id="turbineDetailDailyChart"></canvas></div>
+                                <h5 class="font-semibold mb-2">일 평균 풍속 예측 (14일)</h5>
+                                <div class="chart-container h-[250px]"><canvas id="turbineDetailWindChart"></canvas></div>
                             </div>
                         </div>
                     </div>
 
                     <div id="2week-maintenance-content" class="main-tab-panel hidden">
-                        <h3 class="text-xl font-semibold mb-4">정비 스케줄 최적화</h3>
-                        
-                        <!-- 정비 계획 입력 섹션 -->
-                        <div class="card mb-6">
-                            <h4 class="text-lg font-semibold mb-4">정비 계획 설정</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">정비 대상 터빈</label>
-                                    <select id="maintenanceTurbine" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="">터빈 선택</option>
-                                        <option value="wtg1">WTG #1</option>
-                                        <option value="wtg2">WTG #2</option>
-                                        <option value="wtg3">WTG #3</option>
-                                        <option value="wtg4">WTG #4</option>
-                                        <option value="wtg5">WTG #5</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">정비 소요 시간</label>
-                                    <select id="maintenanceDuration" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="4">4시간 (경정비)</option>
-                                        <option value="8">8시간 (일반정비)</option>
-                                        <option value="24">1일 (중정비)</option>
-                                        <option value="48">2일 (대정비)</option>
-                                        <option value="72">3일 (특별정비)</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">정비 우선순위</label>
-                                    <select id="maintenancePriority" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="low">낮음 (예방정비)</option>
-                                        <option value="medium">보통 (계획정비)</option>
-                                        <option value="high">높음 (긴급정비)</option>
-                                        <option value="critical">매우높음 (비상정비)</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="flex gap-4">
-                                <button id="addMaintenanceBtn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500">
-                                    <i class="fas fa-plus mr-2"></i>정비 계획 추가
-                                </button>
-                                <button id="optimizeScheduleBtn" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:ring-2 focus:ring-green-500">
-                                    <i class="fas fa-magic mr-2"></i>최적 스케줄 생성
-                                </button>
-                                <button id="clearScheduleBtn" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:ring-2 focus:ring-gray-500">
-                                    <i class="fas fa-trash mr-2"></i>초기화
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- 현재 정비 계획 목록 -->
-                        <div class="card mb-6">
-                            <h4 class="text-lg font-semibold mb-4">현재 정비 계획 목록</h4>
-                            <div id="maintenanceList" class="space-y-3">
-                                <div class="text-gray-500 text-center py-4">
-                                    <i class="fas fa-clipboard-list text-3xl mb-2"></i>
-                                    <p>등록된 정비 계획이 없습니다.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 최적화 결과 -->
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <!-- 발전량 손실 분석 -->
-                            <div class="card">
-                                <h4 class="text-lg font-semibold mb-4">발전량 손실 분석</h4>
-                                <div id="lossAnalysis" class="space-y-4">
-                                    <div class="p-4 bg-gray-50 rounded-lg text-center">
-                                        <i class="fas fa-chart-line text-3xl text-gray-400 mb-2"></i>
-                                        <p class="text-gray-500">최적 스케줄을 생성하면<br>발전량 손실 분석이 표시됩니다.</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 최적 스케줄 결과 -->
-                            <div class="card">
-                                <h4 class="text-lg font-semibold mb-4">최적 정비 스케줄</h4>
-                                <div id="optimizedSchedule" class="space-y-4">
-                                    <div class="p-4 bg-gray-50 rounded-lg text-center">
-                                        <i class="fas fa-calendar-check text-3xl text-gray-400 mb-2"></i>
-                                        <p class="text-gray-500">최적 스케줄을 생성하면<br>권장 정비 일정이 표시됩니다.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 스케줄 시각화 차트 -->
-                        <div class="card mt-6">
-                            <h4 class="text-lg font-semibold mb-4">정비 스케줄 및 발전량 영향 시각화</h4>
-                            <div class="chart-container h-[400px]">
-                                <canvas id="maintenanceScheduleChart"></canvas>
-                            </div>
-                            <div class="mt-4 p-4 bg-blue-50 rounded-lg">
-                                <h5 class="font-semibold text-blue-800 mb-2">
-                                    <i class="fas fa-info-circle mr-2"></i>차트 해석 가이드
-                                </h5>
-                                <ul class="text-sm text-blue-700 space-y-1">
-                                    <li>• <strong>파란색 막대:</strong> 정비 전 전체 발전소 일별 총 발전량</li>
-                                    <li>• <strong>초록색 막대:</strong> 정비 후 전체 발전소 일별 총 발전량</li>
-                                    <li>• <strong>빨간색 막대:</strong> 정비로 인한 일별 발전량 손실</li>
-                                    <li>• <strong>배경 색상 영역:</strong> 각 터빈의 정비 기간 표시</li>
-                                    <li>• <strong>최적화 목표:</strong> 빨간색 막대(손실)의 총합을 최소화</li>
-                                </ul>
-                            </div>
-                        </div>
+                        <h3 class="text-xl font-semibold mb-4">TBD</h3>
+                        <div class="card"><p class="text-gray-500 text-center py-8">추후 구현 예정입니다.</p></div>
                     </div>
                 </section>
 

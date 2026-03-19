@@ -409,10 +409,10 @@
                 // 3 Month Forecast Charts
                 if (document.getElementById('longterm-3month-content')?.offsetParent !== null) {
                     // 발전량 예측 차트들
-                    charts.threeMonthMonthlyChart = createChart(document.getElementById('threeMonthMonthlyChart')?.getContext('2d'), 'bar',
-                        ['1개월차', '2개월차', '3개월차'],
-                        [{ label: '월간 총 발전량 (GWh)', data: [30, 32, 28], backgroundColor: 'rgba(134, 25, 143, 0.6)'}]
-                    );
+                    // 월간 총 발전량 텍스트 KPI
+                    const monthlyData = [{label:'1개월차',value:30},{label:'2개월차',value:32},{label:'3개월차',value:28}];
+                    const mtEl = document.getElementById('monthlyTotalText');
+                    if(mtEl) mtEl.innerHTML = monthlyData.map(m=>`<div class="bg-purple-50 rounded-lg p-4 text-center"><p class="text-sm text-gray-500 mb-1">${m.label}</p><p class="text-2xl font-bold text-purple-700">${m.value} <span class="text-sm font-normal">GWh</span></p></div>`).join('');
                     
                     charts.threeMonthWeeklyChart = createChart(document.getElementById('threeMonthWeeklyChart')?.getContext('2d'), 'line',
                         Array.from({length: 12}, (_, i) => `${i+1}주차`),

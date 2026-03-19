@@ -253,8 +253,9 @@
                     const midBoxplotOpts = (ylabel) => ({
                         responsive:true, maintainAspectRatio:false,
                         onClick:(e,el,chart)=>{
-                            const points = chart.getElementsAtEventForMode(e,'nearest',{intersect:false},true);
-                            if(points.length>0) showMidtermWeatherDetail(points[0].index);
+                            const xScale = chart.scales.x;
+                            const idx = xScale.getValueForPixel(e.x);
+                            if(idx >= 0 && idx < chart.data.labels.length) showMidtermWeatherDetail(idx);
                         },
                         scales:{y:{title:{display:true,text:ylabel},beginAtZero:true}},
                         plugins:{legend:{display:false}}
@@ -462,8 +463,9 @@
                             responsive: true,
                             maintainAspectRatio: false,
                             onClick: (event, elements, chart) => {
-                                const points = chart.getElementsAtEventForMode(event,'nearest',{intersect:false},true);
-                                if (points.length > 0) showWeatherDetail(points[0].index + 1);
+                                const xScale = chart.scales.x;
+                                const idx = xScale.getValueForPixel(event.x);
+                                if (idx >= 0 && idx < chart.data.labels.length) showWeatherDetail(idx + 1);
                             },
                             scales: {
                                 y: {
@@ -497,8 +499,9 @@
                             responsive: true,
                             maintainAspectRatio: false,
                             onClick: (event, elements, chart) => {
-                                const points = chart.getElementsAtEventForMode(event,'nearest',{intersect:false},true);
-                                if (points.length > 0) showWeatherDetail(points[0].index + 1);
+                                const xScale = chart.scales.x;
+                                const idx = xScale.getValueForPixel(event.x);
+                                if (idx >= 0 && idx < chart.data.labels.length) showWeatherDetail(idx + 1);
                             },
                             scales: {
                                 y: {
@@ -552,8 +555,9 @@
                             responsive: true,
                             maintainAspectRatio: false,
                             onClick: (event, elements, chart) => {
-                                const points = chart.getElementsAtEventForMode(event,'nearest',{intersect:false},true);
-                                if (points.length > 0) showWeatherDetail(points[0].index + 1);
+                                const xScale = chart.scales.x;
+                                const idx = xScale.getValueForPixel(event.x);
+                                if (idx >= 0 && idx < chart.data.labels.length) showWeatherDetail(idx + 1);
                             },
                             scales: {
                                 y: {

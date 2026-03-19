@@ -252,7 +252,10 @@
                     ];
                     const midBoxplotOpts = (ylabel) => ({
                         responsive:true, maintainAspectRatio:false,
-                        onClick:(e,el)=>{if(el.length>0) showMidtermWeatherDetail(el[0].index);},
+                        onClick:(e,el,chart)=>{
+                            const points = chart.getElementsAtEventForMode(e,'nearest',{intersect:false},true);
+                            if(points.length>0) showMidtermWeatherDetail(points[0].index);
+                        },
                         scales:{y:{title:{display:true,text:ylabel},beginAtZero:true}},
                         plugins:{legend:{display:false}}
                     });
@@ -458,11 +461,9 @@
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
-                            onClick: (event, elements) => {
-                                if (elements.length > 0) {
-                                    const weekIndex = elements[0].index;
-                                    showWeatherDetail(weekIndex + 1);
-                                }
+                            onClick: (event, elements, chart) => {
+                                const points = chart.getElementsAtEventForMode(event,'nearest',{intersect:false},true);
+                                if (points.length > 0) showWeatherDetail(points[0].index + 1);
                             },
                             scales: {
                                 y: {
@@ -495,11 +496,9 @@
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
-                            onClick: (event, elements) => {
-                                if (elements.length > 0) {
-                                    const weekIndex = elements[0].index;
-                                    showWeatherDetail(weekIndex + 1);
-                                }
+                            onClick: (event, elements, chart) => {
+                                const points = chart.getElementsAtEventForMode(event,'nearest',{intersect:false},true);
+                                if (points.length > 0) showWeatherDetail(points[0].index + 1);
                             },
                             scales: {
                                 y: {
@@ -552,11 +551,9 @@
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
-                            onClick: (event, elements) => {
-                                if (elements.length > 0) {
-                                    const weekIndex = elements[0].index;
-                                    showWeatherDetail(weekIndex + 1);
-                                }
+                            onClick: (event, elements, chart) => {
+                                const points = chart.getElementsAtEventForMode(event,'nearest',{intersect:false},true);
+                                if (points.length > 0) showWeatherDetail(points[0].index + 1);
                             },
                             scales: {
                                 y: {

@@ -419,159 +419,65 @@
                         [{ label: '주간 예상 발전량 (GWh)', data: generateRandomData(12, 6, 9, 1), borderColor: 'rgb(14, 116, 144)', tension: 0.1, fill: false }]
                     );
                     
-                    // 기상 예측 박스플롯 차트들
+                    // 기상 예측 통합 박스플롯
                     const weekLabels = Array.from({length: 12}, (_, i) => `${i+1}주차`);
-                    
-                    // 풍속 박스플롯 (다양한 케이스)
                     const windspeedPattern = [
-                        { type: 'optimal', range: [6, 10], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍 Green
-                        { type: 'weak', range: [3, 6], color: 'rgba(59, 130, 246, 0.6)', borderColor: 'rgb(59, 130, 246)' }, // 약풍 Blue
-                        { type: 'optimal', range: [6, 10], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍 Green
-                        { type: 'strong', range: [10, 15], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 강풍 Orange
-                        { type: 'optimal', range: [6, 10], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍 Green
-                        { type: 'weak', range: [3, 6], color: 'rgba(59, 130, 246, 0.6)', borderColor: 'rgb(59, 130, 246)' }, // 약풍 Blue
-                        { type: 'optimal', range: [6, 10], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍 Green
-                        { type: 'very_strong', range: [15, 22], color: 'rgba(239, 68, 68, 0.6)', borderColor: 'rgb(239, 68, 68)' }, // 매우 강풍 Red
-                        { type: 'optimal', range: [6, 10], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 중간풍 Green
-                        { type: 'strong', range: [10, 15], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 강풍 Orange
-                        { type: 'calm', range: [0, 3], color: 'rgba(135, 206, 235, 0.6)', borderColor: 'rgb(135, 206, 235)' }, // 매우 약풍 Sky Blue
-                        { type: 'optimal', range: [6, 10], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' } // 중간풍 Green
+                        {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                        {range:[3,6],color:'rgba(59,130,246,0.6)',border:'rgb(59,130,246)'},
+                        {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                        {range:[10,15],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                        {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                        {range:[3,6],color:'rgba(59,130,246,0.6)',border:'rgb(59,130,246)'},
+                        {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                        {range:[15,22],color:'rgba(239,68,68,0.6)',border:'rgb(239,68,68)'},
+                        {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                        {range:[10,15],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                        {range:[0,3],color:'rgba(135,206,235,0.6)',border:'rgb(135,206,235)'},
+                        {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'}
                     ];
-                    
-                    const windspeedBoxData = windspeedPattern.map(caseType => {
-                        return generateBoxplotData(caseType.range[0], caseType.range[1]);
-                    });
-                    
-                    const windspeedColors = windspeedPattern.map(caseType => caseType.color);
-                    const windspeedBorderColors = windspeedPattern.map(caseType => caseType.borderColor);
-                    
-                    charts.windspeedBoxplotChart = new Chart(document.getElementById('windspeedBoxplotChart')?.getContext('2d'), {
-                        type: 'boxplot',
-                        data: {
-                            labels: weekLabels,
-                            datasets: [{
-                                label: '풍속 분포',
-                                data: windspeedBoxData,
-                                backgroundColor: windspeedColors,
-                                borderColor: windspeedBorderColors,
-                                borderWidth: 2,
-                                outlierColor: windspeedBorderColors,
-                                outlierRadius: 3
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            onClick: (event, elements, chart) => {
-                                const xScale = chart.scales.x;
-                                const idx = xScale.getValueForPixel(event.x);
-                                if (idx >= 0 && idx < chart.data.labels.length) showWeatherDetail(idx + 1);
-                            },
-                            scales: {
-                                y: {
-                                    title: { display: true, text: '풍속 (m/s)' },
-                                    beginAtZero: true
-                                }
-                            },
-                            plugins: {
-                                legend: { display: false }
-                            }
-                        }
-                    });
-                    
-                    // 기온 박스플롯 (적정 기온이 70%로 최고 확률 → 녹색)
-                    const temperatureBoxData = weekLabels.map(() => generateBoxplotData(-5, 30));
-                    charts.temperatureBoxplotChart = new Chart(document.getElementById('temperatureBoxplotChart')?.getContext('2d'), {
-                        type: 'boxplot',
-                        data: {
-                            labels: weekLabels,
-                            datasets: [{
-                                label: '기온 분포',
-                                data: temperatureBoxData,
-                                backgroundColor: 'rgba(16, 185, 129, 0.6)',
-                                borderColor: 'rgb(16, 185, 129)',
-                                borderWidth: 2,
-                                outlierColor: 'rgb(16, 185, 129)',
-                                outlierRadius: 3
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            onClick: (event, elements, chart) => {
-                                const xScale = chart.scales.x;
-                                const idx = xScale.getValueForPixel(event.x);
-                                if (idx >= 0 && idx < chart.data.labels.length) showWeatherDetail(idx + 1);
-                            },
-                            scales: {
-                                y: {
-                                    title: { display: true, text: '기온 (℃)' }
-                                }
-                            },
-                            plugins: {
-                                legend: { display: false }
-                            }
-                        }
-                    });
-                    
-                    // 파고 박스플롯 (다양한 케이스)
                     const wavePattern = [
-                        { type: 'normal', range: [0.8, 1.5], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 보통
-                        { type: 'low', range: [0.3, 0.7], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 낮음
-                        { type: 'normal', range: [0.8, 1.5], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 보통
-                        { type: 'high', range: [1.4, 2.2], color: 'rgba(239, 68, 68, 0.6)', borderColor: 'rgb(239, 68, 68)' }, // 높음
-                        { type: 'normal', range: [0.8, 1.5], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 보통
-                        { type: 'low', range: [0.3, 0.7], color: 'rgba(16, 185, 129, 0.6)', borderColor: 'rgb(16, 185, 129)' }, // 낮음
-                        { type: 'normal', range: [0.8, 1.5], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 보통
-                        { type: 'very_high', range: [2.0, 3.2], color: 'rgba(220, 38, 127, 0.6)', borderColor: 'rgb(220, 38, 127)' }, // 매우 높음
-                        { type: 'normal', range: [0.8, 1.5], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' }, // 보통
-                        { type: 'high', range: [1.4, 2.2], color: 'rgba(239, 68, 68, 0.6)', borderColor: 'rgb(239, 68, 68)' }, // 높음
-                        { type: 'calm', range: [0.1, 0.4], color: 'rgba(34, 197, 94, 0.6)', borderColor: 'rgb(34, 197, 94)' }, // 매우 낮음
-                        { type: 'normal', range: [0.8, 1.5], color: 'rgba(245, 158, 11, 0.6)', borderColor: 'rgb(245, 158, 11)' } // 보통
+                        {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                        {range:[0.3,0.7],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                        {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                        {range:[1.4,2.2],color:'rgba(239,68,68,0.6)',border:'rgb(239,68,68)'},
+                        {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                        {range:[0.3,0.7],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                        {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                        {range:[2.0,3.2],color:'rgba(220,38,127,0.6)',border:'rgb(220,38,127)'},
+                        {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                        {range:[1.4,2.2],color:'rgba(239,68,68,0.6)',border:'rgb(239,68,68)'},
+                        {range:[0.1,0.4],color:'rgba(34,197,94,0.6)',border:'rgb(34,197,94)'},
+                        {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'}
                     ];
-                    
-                    const waveBoxData = wavePattern.map(caseType => {
-                        return generateBoxplotData(caseType.range[0], caseType.range[1]);
-                    });
-                    
-                    const waveColors = wavePattern.map(caseType => caseType.color);
-                    const waveBorderColors = wavePattern.map(caseType => caseType.borderColor);
-                    
-                    charts.waveBoxplotChart = new Chart(document.getElementById('waveBoxplotChart')?.getContext('2d'), {
-                        type: 'boxplot',
-                        data: {
-                            labels: weekLabels,
-                            datasets: [{
-                                label: '파고 분포',
-                                data: waveBoxData,
-                                backgroundColor: waveColors,
-                                borderColor: waveBorderColors,
-                                borderWidth: 2,
-                                outlierColor: waveBorderColors,
-                                outlierRadius: 3
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            onClick: (event, elements, chart) => {
-                                const xScale = chart.scales.x;
-                                const idx = xScale.getValueForPixel(event.x);
-                                if (idx >= 0 && idx < chart.data.labels.length) showWeatherDetail(idx + 1);
-                            },
-                            scales: {
-                                y: {
-                                    title: { display: true, text: '파고 (m)' },
-                                    beginAtZero: true
-                                }
-                            },
-                            plugins: {
-                                legend: { display: false }
-                            }
+                    window._longWindData = windspeedPattern.map(p=>generateBoxplotData(p.range[0],p.range[1]));
+                    window._longWindColors = windspeedPattern.map(p=>p.color);
+                    window._longWindBorders = windspeedPattern.map(p=>p.border);
+                    window._longTempData = weekLabels.map(()=>generateBoxplotData(-5,30));
+                    window._longWaveData = wavePattern.map(p=>generateBoxplotData(p.range[0],p.range[1]));
+                    window._longWaveColors = wavePattern.map(p=>p.color);
+                    window._longWaveBorders = wavePattern.map(p=>p.border);
+                    window._longWeekLabels = weekLabels;
+                    window.updateLongBoxplot = function() {
+                        if(charts.longCombinedBoxplot){charts.longCombinedBoxplot.destroy();delete charts.longCombinedBoxplot;}
+                        const sub = document.querySelector('input[name="longBoxplotSub"]:checked')?.value || 'none';
+                        const datasets = [{label:'풍속 (m/s)',data:window._longWindData,backgroundColor:window._longWindColors,borderColor:window._longWindBorders,borderWidth:2,yAxisID:'y'}];
+                        const scales = {y:{position:'left',title:{display:true,text:'풍속 (m/s)'},beginAtZero:true}};
+                        if(sub==='temp'){
+                            datasets.push({label:'기온 (℃)',data:window._longTempData,backgroundColor:'rgba(239,68,68,0.3)',borderColor:'rgb(239,68,68)',borderWidth:2,yAxisID:'y1'});
+                            scales.y1={position:'right',title:{display:true,text:'기온 (℃)'},grid:{drawOnChartArea:false}};
+                        } else if(sub==='wave'){
+                            datasets.push({label:'파고 (m)',data:window._longWaveData,backgroundColor:window._longWaveColors.map(c=>c.replace('0.6','0.3')),borderColor:window._longWaveBorders,borderWidth:2,yAxisID:'y1'});
+                            scales.y1={position:'right',title:{display:true,text:'파고 (m)'},beginAtZero:true,grid:{drawOnChartArea:false}};
                         }
-                    });
-
-
+                        charts.longCombinedBoxplot = new Chart(document.getElementById('longCombinedBoxplot').getContext('2d'),{
+                            type:'boxplot',
+                            data:{labels:window._longWeekLabels,datasets},
+                            options:{responsive:true,maintainAspectRatio:false,
+                                onClick:(event,el,chart)=>{const idx=chart.scales.x.getValueForPixel(event.x);if(idx>=0&&idx<chart.data.labels.length)showWeatherDetail(idx+1);},
+                                scales,plugins:{legend:{display:datasets.length>1}}}
+                        });
+                    };
+                    updateLongBoxplot();
 
                 }
             }
@@ -854,16 +760,6 @@
             
             // 오늘 기상예보 초기화
             initTodayWeather();
-            
-            // 풍속 구간별 분포 토글 함수
-            // 박스플롯 체크박스 토글
-            window.toggleBoxplot = function(type) {
-                const map = { wind: 'boxplotWind', temp: 'boxplotTemp', wave: 'boxplotWave' };
-                const chkMap = { wind: 'chkWind', temp: 'chkTemp', wave: 'chkWave' };
-                const el = document.getElementById(map[type]);
-                const checked = document.getElementById(chkMap[type]).checked;
-                el.classList.toggle('hidden', !checked);
-            };
 
             // 중기 박스플롯 체크박스 토글
             window.toggleMidtermBoxplot = function(type) {

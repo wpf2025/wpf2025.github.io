@@ -178,13 +178,13 @@
                     charts.shorttermCombinedChart = new Chart(document.getElementById('shorttermCombinedChart')?.getContext('2d'), {
                         type:'bar',
                         data:{labels:windLabels,datasets:[
-                            {label:'발전량 (MW)',data:powerData,backgroundColor:'rgba(147,197,253,0.7)',borderColor:'rgba(147,197,253,0.9)',borderWidth:1,yAxisID:'y',order:2},
+                            {label:'발전량 (MWh)',data:powerData,backgroundColor:'rgba(147,197,253,0.7)',borderColor:'rgba(147,197,253,0.9)',borderWidth:1,yAxisID:'y',order:2},
                             {label:'풍속 (m/s)',data:windData,type:'line',borderColor:'rgb(245,158,11)',backgroundColor:'transparent',tension:0.3,borderWidth:2,pointRadius:3,pointBackgroundColor:'rgb(245,158,11)',yAxisID:'y1',order:1}
                         ]},
                         options:{responsive:true,maintainAspectRatio:false,
                             plugins:{legend:{display:true,position:'bottom'}},
                             scales:{
-                                y:{position:'left',beginAtZero:true,title:{display:true,text:'MW'}},
+                                y:{position:'left',beginAtZero:true,title:{display:true,text:'MWh'}},
                                 y1:{position:'right',beginAtZero:true,title:{display:true,text:'m/s'},grid:{drawOnChartArea:false}}
                             }
                         }

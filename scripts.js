@@ -171,14 +171,10 @@
                 // Total Plant - Daily & Hourly (통합 페이지)
                 if (document.getElementById('shortterm-total-content')?.offsetParent !== null) {
                     // 24시간 풍속 라인 차트 (중기예측 스타일)
-                    const windLabels = [];
-                    const windData = [];
-                    for (let h = 0; h < 24; h++) {
-                        windLabels.push(`${h}시`);
-                        windData.push(+(3 + Math.random() * 12).toFixed(1));
-                    }
-                    const windColors = windData.map(s => s < 3 ? 'rgba(135,206,235,0.8)' : s < 6 ? 'rgba(59,130,246,0.8)' : s < 10 ? 'rgba(16,185,129,0.8)' : s < 15 ? 'rgba(245,158,11,0.8)' : 'rgba(239,68,68,0.8)');
-                    const powerData = Array.from({length:24}, ()=>+(Math.random()*14+1).toFixed(1));
+                    const windLabels = Array.from({length:24},(_,h)=>`${h}시`);
+                    const windBase = [2.5,2.0,1.8,2.2,3.5,4.5,6.5,8.5,9.5,10.0,10.5,10.2,9.8,10.0,9.5,9.0,8.5,7.5,6.5,5.5,4.5,3.5,3.0,2.0];
+                    const windData = windBase.map(w=>+(w+Math.random()*0.6-0.3).toFixed(1));
+                    const powerData = windData.map(w=>{const p=w<3?0.2:w<6?w*0.8:w<10?w*1.3:w*1.4;return +(p+Math.random()*0.5).toFixed(1);});
                     charts.shorttermCombinedChart = new Chart(document.getElementById('shorttermCombinedChart')?.getContext('2d'), {
                         type:'bar',
                         data:{labels:windLabels,datasets:[

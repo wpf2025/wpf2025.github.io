@@ -179,7 +179,7 @@
                     }
                     const windColors = windData.map(s => s < 3 ? 'rgba(135,206,235,0.8)' : s < 6 ? 'rgba(59,130,246,0.8)' : s < 10 ? 'rgba(16,185,129,0.8)' : s < 15 ? 'rgba(245,158,11,0.8)' : 'rgba(239,68,68,0.8)');
                     const powerData = Array.from({length:24}, ()=>+(Math.random()*14+1).toFixed(1));
-                    charts.shorttermCombinedChart = new Chart(document.getElementById('shorttermCombinedChart').getContext('2d'), {
+                    charts.shorttermCombinedChart = new Chart(document.getElementById('shorttermCombinedChart')?.getContext('2d'), {
                         type:'bar',
                         data:{labels:windLabels,datasets:[
                             {label:'발전량 (MW)',data:powerData,backgroundColor:'rgba(147,197,253,0.7)',borderColor:'rgba(147,197,253,0.9)',borderWidth:1,yAxisID:'y',order:2},

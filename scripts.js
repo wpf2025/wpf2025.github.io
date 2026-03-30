@@ -178,19 +178,21 @@
                         windData.push(+(3 + Math.random() * 12).toFixed(1));
                     }
                     const windColors = windData.map(s => s < 3 ? 'rgba(135,206,235,0.8)' : s < 6 ? 'rgba(59,130,246,0.8)' : s < 10 ? 'rgba(16,185,129,0.8)' : s < 15 ? 'rgba(245,158,11,0.8)' : 'rgba(239,68,68,0.8)');
-                    charts.shorttermWindChart = new Chart(document.getElementById('shorttermWindChart').getContext('2d'), {
-                        type: 'line',
-                        data: { labels: windLabels, datasets: [{ label: '풍속 (m/s)', data: windData, borderColor: 'rgb(59,130,246)', backgroundColor: 'rgba(59,130,246,0.1)', tension: 0.3, fill: true, borderWidth: 2, pointBackgroundColor: windColors, pointBorderColor: windColors, pointRadius: 4 }] },
-                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true }, tooltip: { callbacks: { afterLabel: function(ctx) { const s = ctx.parsed.y; return s < 3 ? '발전 불가' : s < 6 ? '저풍속' : s < 10 ? '최적 발전' : s < 15 ? '정격 출력' : '고출력/위험'; } } } }, scales: { y: { beginAtZero: true, max: 20, title: { display: true, text: '풍속 (m/s)' }, grid: { color: function(ctx) { const v = ctx.tick.value; if (v === 3) return 'rgba(135,206,235,0.5)'; if (v === 6) return 'rgba(59,130,246,0.5)'; if (v === 10) return 'rgba(16,185,129,0.5)'; if (v === 15) return 'rgba(239,68,68,0.5)'; return 'rgba(0,0,0,0.1)'; } } } } }
+                    const powerData = Array.from({length:24}, ()=>+(Math.random()*14+1).toFixed(1));
+                    charts.shorttermCombinedChart = new Chart(document.getElementById('shorttermCombinedChart').getContext('2d'), {
+                        type:'bar',
+                        data:{labels:windLabels,datasets:[
+                            {label:'발전량 (MW)',data:powerData,backgroundColor:'rgba(147,197,253,0.7)',borderColor:'rgba(147,197,253,0.9)',borderWidth:1,yAxisID:'y',order:2},
+                            {label:'풍속 (m/s)',data:windData,type:'line',borderColor:'rgb(245,158,11)',backgroundColor:'transparent',tension:0.3,borderWidth:2,pointRadius:3,pointBackgroundColor:'rgb(245,158,11)',yAxisID:'y1',order:1}
+                        ]},
+                        options:{responsive:true,maintainAspectRatio:false,
+                            plugins:{legend:{display:true,position:'bottom'}},
+                            scales:{
+                                y:{position:'left',beginAtZero:true,title:{display:true,text:'MW'}},
+                                y1:{position:'right',beginAtZero:true,title:{display:true,text:'m/s'},grid:{drawOnChartArea:false}}
+                            }
+                        }
                     });
-
-                    // 24시간 발전량 차트
-                    const hourlyLabels = [];
-                    for (let h = 0; h < 24; h++) { hourlyLabels.push(`${h}시`); }
-                    charts.shorttermHourlyTotalChart = createChart(document.getElementById('shorttermHourlyTotalChart')?.getContext('2d'), 'line',
-                        hourlyLabels,
-                        [{ label: '시간별 발전량 (MW)', data: generateRandomData(24, 80, 180), borderColor: 'rgb(16, 185, 129)', tension: 0.1, fill: false}]
-                    );
                 }
                 // Per Turbine - 24시간 발전량+풍속 듀얼 차트 (20호기)
                 if (document.getElementById('shortterm-turbine-content')?.offsetParent !== null) {

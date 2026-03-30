@@ -130,21 +130,15 @@
                     <div id="shortterm-total-content" class="main-tab-panel">
                         <h3 class="text-xl font-semibold mb-4">발전소 전체 예측</h3>
                         
-                        <!-- 풍속 예측 섹션 -->
                         <div class="card mb-6">
-                            <h4 class="text-lg font-semibold mb-3">시간별 풍속 예측 (24시간)</h4>
-                            <div class="chart-container h-[300px]"><canvas id="shorttermWindChart"></canvas></div>
-                        </div>
-                        
-                        <!-- 발전량 예측 섹션 -->
-                        <div class="card mb-6">
-                            <h4 class="text-lg font-semibold mb-3">발전량 예측</h4>
-                            <div class="p-4 bg-blue-50 rounded-lg mb-6">
-                                <p class="kpi-label">내일 예상 총 발전량</p>
-                                <p class="kpi-value text-3xl">4.8 <span class="text-base">GWh</span></p>
+                            <div class="flex items-center justify-between mb-3">
+                                <h4 class="text-lg font-semibold">시간별 발전량 + 풍속</h4>
+                                <div class="p-3 bg-blue-50 rounded-lg text-center">
+                                    <p class="text-xs text-gray-500">내일 예상 총 발전량</p>
+                                    <p class="text-xl font-bold text-blue-700">4.8 <span class="text-sm font-normal">GWh</span></p>
+                                </div>
                             </div>
-                            <h5 class="text-md font-semibold mb-3">시간별 발전량 (24시간)</h5>
-                            <div class="chart-container h-[300px]"><canvas id="shorttermHourlyTotalChart"></canvas></div>
+                            <div class="chart-container h-[350px]"><canvas id="shorttermCombinedChart"></canvas></div>
                         </div>
                     </div>
 

@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-04-02
+
+### Added
+- **하루전예측 날짜 선택**: 우측 상단에 `◀ 날짜 ▶ [오늘]` 날짜 네비게이터 추가
+  - 이전/다음 날짜 이동 버튼
+  - 오늘 버튼으로 즉시 복귀
+  - 날짜 변경 시 차트 자동 재생성
+- **통합 설계 문서**: 업그레이드 제안서 + DDI 설계 문서 통합 (`docs/WPF_통합설계문서.md`)
+
 ## [1.5.0] - 2026-03-18
 
 ### Added

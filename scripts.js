@@ -129,6 +129,27 @@
         
         let charts = {}; 
 
+        // 하루전 예측 날짜 선택
+        const shorttermDate = { current: new Date() };
+        const formatDate = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const updateShorttermDateLabel = () => {
+            const label = document.getElementById('shorttermDateLabel');
+            if (label) label.textContent = formatDate(shorttermDate.current);
+        };
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('#shorttermDatePrev, #shorttermDateNext, #shorttermDateToday');
+            if (!btn) return;
+            if (btn.id === 'shorttermDateToday') {
+                shorttermDate.current = new Date();
+            } else {
+                const d = new Date(shorttermDate.current);
+                d.setDate(d.getDate() + (btn.id === 'shorttermDateNext' ? 1 : -1));
+                shorttermDate.current = d;
+            }
+            updateShorttermDateLabel();
+            if (typeof initChartsForCurrentView === 'function') initChartsForCurrentView();
+        });
+
         const destroyAllCharts = () => {
             Object.values(charts).forEach(chart => {
                 if (chart && typeof chart.destroy === 'function') {
@@ -139,6 +160,7 @@
         };
 
         const initChartsForCurrentView = () => {
+            updateShorttermDateLabel();
             destroyAllCharts(); 
 
             // Overview Charts - Turbine Map

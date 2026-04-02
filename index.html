@@ -118,7 +118,19 @@
                 </section>
 
                 <section id="shortterm-content" class="content-section hidden">
-                    <h2 class="section-title">하루전 예측</h2>
+                    <div class="flex items-center justify-between mb-2">
+                        <h2 class="section-title mb-0">하루전 예측</h2>
+                        <div class="flex items-center gap-2">
+                            <button id="shorttermDatePrev" class="px-2 py-1 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" aria-label="이전 날짜">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <span id="shorttermDateLabel" class="text-sm font-semibold text-gray-700 min-w-[100px] text-center"></span>
+                            <button id="shorttermDateNext" class="px-2 py-1 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" aria-label="다음 날짜">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                            <button id="shorttermDateToday" class="ml-1 px-3 py-1 text-xs font-semibold bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">오늘</button>
+                        </div>
+                    </div>
                     <div class="mb-4 border-b border-gray-200">
                         <ul class="flex flex-wrap -mb-px text-base font-semibold text-center" id="shorttermMainTabs" role="tablist">
                             <li class="mr-2" role="presentation"><button class="tab-button inline-block px-6 py-3 rounded-t-lg" id="shortterm-total-tab" data-tabs-target="#shortterm-total-content" type="button" role="tab" aria-controls="shortterm-total-content" aria-selected="true">발전소</button></li>

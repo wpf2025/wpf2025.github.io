@@ -247,12 +247,18 @@
                 // Total Plant - Weekly & Daily (통합 페이지)
                 if (document.getElementById('2week-total-content')?.offsetParent !== null) {
                     // 일평균 차트
-                    charts.twoWeekDailyTotalChart = createChart(document.getElementById('twoWeekDailyTotalChart')?.getContext('2d'), 'line',
-                        Array.from({length: 14}, (_, i) => `D+${i+1}`), 
-                        [{ label: '일일 총 발전량 (MWh)', data: generateRandomData(14, 720, 1440), borderColor: 'rgb(245, 158, 11)', tension: 0.1, fill: false }]
-                    );
+                    const dailyPowerData = generateRandomData(14, 720, 1440);
+                    window._midDailyPower = dailyPowerData;
+                    charts.twoWeekDailyTotalChart = new Chart(document.getElementById('twoWeekDailyTotalChart')?.getContext('2d'), {
+                        type:'line',
+                        data:{labels:Array.from({length:14},(_,i)=>`D+${i+1}`), datasets:[
+                            {label:'일일 총 발전량 (MWh)',data:dailyPowerData,borderColor:'rgb(245,158,11)',tension:0.1,fill:false},
+                            {label:'정비 반영 발전량 (MWh)',data:[...dailyPowerData],borderColor:'rgb(239,68,68)',borderDash:[5,3],tension:0.1,fill:false,borderWidth:2,pointRadius:0,hidden:true}
+                        ]},
+                        options:{...defaultChartOptions,plugins:{legend:{display:true}}}
+                    });
 
-                    // 중기예측 14일 기상 박스플롯
+                    // 중기예측 14일 기상 박스플롯 — 통합 (3개월 예측과 동일 방식)
                     const midDayLabels = Array.from({length: 14}, (_, i) => `D+${i+1}`);
                     const midWindPattern = [
                         {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
@@ -270,26 +276,6 @@
                         {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
                         {range:[3,6],color:'rgba(59,130,246,0.6)',border:'rgb(59,130,246)'}
                     ];
-                    const midBoxplotOpts = (ylabel) => ({
-                        responsive:true, maintainAspectRatio:false,
-                        onClick:(e,el,chart)=>{
-                            const xScale = chart.scales.x;
-                            const idx = xScale.getValueForPixel(e.x);
-                            if(idx >= 0 && idx < chart.data.labels.length) showMidtermWeatherDetail(idx);
-                        },
-                        scales:{y:{title:{display:true,text:ylabel},beginAtZero:true}},
-                        plugins:{legend:{display:false}}
-                    });
-                    charts.midtermWindBoxplot = new Chart(document.getElementById('midtermWindBoxplot')?.getContext('2d'),{
-                        type:'boxplot',
-                        data:{labels:midDayLabels,datasets:[{label:'풍속',data:midWindPattern.map(p=>generateBoxplotData(p.range[0],p.range[1])),backgroundColor:midWindPattern.map(p=>p.color),borderColor:midWindPattern.map(p=>p.border),borderWidth:2}]},
-                        options:midBoxplotOpts('풍속 (m/s)')
-                    });
-                    charts.midtermTempBoxplot = new Chart(document.getElementById('midtermTempBoxplot')?.getContext('2d'),{
-                        type:'boxplot',
-                        data:{labels:midDayLabels,datasets:[{label:'기온',data:midDayLabels.map(()=>generateBoxplotData(5,25)),backgroundColor:'rgba(16,185,129,0.6)',borderColor:'rgb(16,185,129)',borderWidth:2}]},
-                        options:midBoxplotOpts('기온 (℃)')
-                    });
                     const midWavePattern = [
                         {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
                         {range:[0.3,0.7],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
@@ -306,11 +292,68 @@
                         {range:[0.3,0.7],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
                         {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'}
                     ];
-                    charts.midtermWaveBoxplot = new Chart(document.getElementById('midtermWaveBoxplot')?.getContext('2d'),{
-                        type:'boxplot',
-                        data:{labels:midDayLabels,datasets:[{label:'파고',data:midWavePattern.map(p=>generateBoxplotData(p.range[0],p.range[1])),backgroundColor:midWavePattern.map(p=>p.color),borderColor:midWavePattern.map(p=>p.border),borderWidth:2}]},
-                        options:midBoxplotOpts('파고 (m)')
-                    });
+                    window._midWindData = midWindPattern.map(p=>generateBoxplotData(p.range[0],p.range[1]));
+                    window._midWindColors = midWindPattern.map(p=>p.color);
+                    window._midWindBorders = midWindPattern.map(p=>p.border);
+                    window._midTempData = midDayLabels.map(()=>generateBoxplotData(5,25));
+                    window._midWaveData = midWavePattern.map(p=>generateBoxplotData(p.range[0],p.range[1]));
+                    window._midWaveColors = midWavePattern.map(p=>p.color);
+                    window._midWaveBorders = midWavePattern.map(p=>p.border);
+                    window._midDayLabels = midDayLabels;
+                    window.updateMidBoxplot = function() {
+                        if(charts.midCombinedBoxplot){charts.midCombinedBoxplot.destroy();delete charts.midCombinedBoxplot;}
+                        const sub = document.querySelector('input[name="midBoxplotSub"]:checked')?.value || 'none';
+                        const datasets = [{label:'풍속 (m/s)',data:window._midWindData,backgroundColor:window._midWindColors,borderColor:window._midWindBorders,borderWidth:2,yAxisID:'y'}];
+                        const scales = {y:{position:'left',title:{display:true,text:'풍속 (m/s)'},beginAtZero:true}};
+                        if(sub==='temp'){
+                            datasets.push({label:'기온 (℃)',data:window._midTempData,backgroundColor:'rgba(239,68,68,0.3)',borderColor:'rgb(239,68,68)',borderWidth:2,yAxisID:'y1'});
+                            scales.y1={position:'right',title:{display:true,text:'기온 (℃)'},grid:{drawOnChartArea:false}};
+                        } else if(sub==='wave'){
+                            datasets.push({label:'파고 (m)',data:window._midWaveData,backgroundColor:window._midWaveColors.map(c=>c.replace('0.6','0.3')),borderColor:window._midWaveBorders,borderWidth:2,yAxisID:'y1'});
+                            scales.y1={position:'right',title:{display:true,text:'파고 (m)'},beginAtZero:true,grid:{drawOnChartArea:false}};
+                        }
+                        charts.midCombinedBoxplot = new Chart(document.getElementById('midCombinedBoxplot').getContext('2d'),{
+                            type:'boxplot',
+                            data:{labels:window._midDayLabels,datasets},
+                            options:{responsive:true,maintainAspectRatio:false,
+                                onClick:(event,el,chart)=>{const idx=chart.scales.x.getValueForPixel(event.x);if(idx>=0&&idx<chart.data.labels.length)showMidtermWeatherDetail(idx);},
+                                scales,plugins:{legend:{display:datasets.length>1}}}
+                        });
+                    };
+                    updateMidBoxplot();
+
+                    // 14일 O&M 가능 여부 요약 테이블
+                    const omEl = document.getElementById('midtermOmSummary');
+                    if (omEl) {
+                        const days = Array.from({length:14}, (_,i) => {
+                            const d = new Date(); d.setDate(d.getDate()+i+1);
+                            const w = window._midWindData[i], t = window._midTempData[i], wv = window._midWaveData[i];
+                            const windOk = w.median <= 10, waveOk = wv.median <= 1.5;
+                            const tempOk = t.median >= 5 && t.median <= 30;
+                            const status = (windOk && waveOk && tempOk) ? 'good' : (windOk && waveOk) ? 'warning' : 'danger';
+                            return {label:`D+${i+1}`, date:d, status, wind:w.median, temp:t.median, wave:wv.median};
+                        });
+                        const statusBg = {good:'bg-green-100 text-green-800',warning:'bg-yellow-100 text-yellow-800',danger:'bg-red-100 text-red-800'};
+                        const statusIcon = {good:'🟢',warning:'🟡',danger:'🔴'};
+                        const statusLabel = {good:'가능',warning:'조건부',danger:'불가'};
+                        const fmt = d => `${d.getMonth()+1}/${d.getDate()}`;
+                        omEl.innerHTML = `
+                            <h5 class="text-md font-semibold mb-3"><i class="fas fa-check-circle mr-2 text-blue-600"></i>14일 O&M 가능 여부 요약</h5>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-xs border-collapse">
+                                    <thead><tr class="bg-gray-50">
+                                        <th class="px-2 py-2 text-left text-gray-500 min-w-[50px]">일자</th>
+                                        ${days.map(d=>`<th class="px-1 py-2 text-center min-w-[52px]">${d.label}<br><span class="text-gray-400 font-normal">${fmt(d.date)}</span></th>`).join('')}
+                                    </tr></thead>
+                                    <tbody>
+                                        <tr><td class="px-2 py-2 font-semibold text-gray-600">종합</td>${days.map(d=>`<td class="px-1 py-2 text-center"><span class="inline-block px-2 py-1 rounded-full text-xs font-bold ${statusBg[d.status]}">${statusIcon[d.status]}</span></td>`).join('')}</tr>
+                                        <tr><td class="px-2 py-1 text-gray-500"><i class="fas fa-wind mr-1"></i>풍속</td>${days.map(d=>`<td class="px-1 py-1 text-center font-semibold ${d.wind<=10?'text-blue-600':'text-red-500'}">${d.wind<=10?'✓':'✗'}</td>`).join('')}</tr>
+                                        <tr><td class="px-2 py-1 text-gray-500"><i class="fas fa-thermometer-half mr-1"></i>기온</td>${days.map(d=>`<td class="px-1 py-1 text-center font-semibold ${(d.temp>=5&&d.temp<=30)?'text-blue-600':'text-red-500'}">${(d.temp>=5&&d.temp<=30)?'✓':'✗'}</td>`).join('')}</tr>
+                                        <tr><td class="px-2 py-1 text-gray-500"><i class="fas fa-water mr-1"></i>파고</td>${days.map(d=>`<td class="px-1 py-1 text-center font-semibold ${d.wave<=1.5?'text-blue-600':'text-red-500'}">${d.wave<=1.5?'✓':'✗'}</td>`).join('')}</tr>
+                                    </tbody>
+                                </table>
+                            </div>`;
+                    }
                 }
                 // Per Turbine (WTG #1 to #20) — Overview 3안 + 상세
                 if (document.getElementById('s_2week-content')?.offsetParent !== null) {
@@ -380,12 +423,16 @@
                         const c = document.getElementById(cid); if(!c) return;
                         let h = '<div class="overflow-x-auto"><table class="w-full text-xs border-collapse"><thead><tr><th class="p-1 text-left sticky left-0 bg-white z-10">터빈</th>';
                         dLabels.forEach(l => { h += `<th class="p-1 text-center min-w-[44px]">${l}</th>`; });
-                        h += '<th class="p-1 text-center min-w-[60px]">합계</th></tr></thead><tbody>';
+                        h += '<th class="p-1 text-center min-w-[60px]">합계</th><th class="p-1 text-center min-w-[60px] text-red-500">손실</th></tr></thead><tbody>';
+                        const plans = window._maintenancePlans || {};
                         for (let t = 1; t <= TC; t++) {
                             const d = tData[t];
                             h += `<tr><td class="p-1 font-semibold sticky left-0 bg-white z-10 whitespace-nowrap cursor-pointer text-blue-600 hover:text-blue-800 hover:underline" onclick="showTurbineDetail(${t})">WTG #${t} <i class="fas fa-chevron-right text-[10px] ml-1"></i></td>`;
-                            d.daily.forEach((v,i) => { h += `<td class="p-1 text-center" title="발전량: ${v} MWh / 풍속: ${d.wind[i]} m/s"><div class="w-full h-6 rounded" style="background:${heatColor(v,i)}"></div></td>`; });
-                            h += `<td class="p-1 text-center font-semibold">${d.total}</td></tr>`;
+                            d.daily.forEach((v,i) => { h += `<td class="p-1 text-center cursor-pointer hover:ring-2 hover:ring-blue-400 hover:rounded" data-mt-key="${t}_${i}" title="발전량: ${v} MWh / 풍속: ${d.wind[i]} m/s" onclick="openMaintenanceModal(${t},${i},${v},${d.wind[i]})"><div class="w-full h-6 rounded" style="background:${heatColor(v,i)}"></div></td>`; });
+                            let loss = 0;
+                            for (let i = 0; i < 14; i++) { const p = plans[`${t}_${i}`]; if(p){ const [sh,sm]=p.start.split(':').map(Number),[eh,em]=p.end.split(':').map(Number); loss+=Math.max(0,(eh+em/60)-(sh+sm/60))*5; } }
+                            h += `<td class="p-1 text-center font-semibold">${d.total}</td>`;
+                            h += `<td class="p-1 text-center font-semibold text-red-500">${loss>0?`-${Math.round(loss)}`:''}</td></tr>`;
                         }
                         h += '</tbody></table></div>'; c.innerHTML = h;
                     };
@@ -421,6 +468,9 @@
 
                     renderHeatmap('heatmapA');
                     renderRanking('rankingA');
+                    updateHeatmapMarkers();
+                    updateMaintenanceLoss();
+                    window._reRenderHeatmap = () => { renderHeatmap('heatmapA'); updateHeatmapMarkers(); };
                 }
             }
             
@@ -781,12 +831,7 @@
             // 오늘 기상예보 초기화
             initTodayWeather();
 
-            // 중기 박스플롯 체크박스 토글
-            window.toggleMidtermBoxplot = function(type) {
-                const map = { wind: 'midBoxplotWind', temp: 'midBoxplotTemp', wave: 'midBoxplotWave' };
-                const chkMap = { wind: 'chkMidWind', temp: 'chkMidTemp', wave: 'chkMidWave' };
-                document.getElementById(map[type]).classList.toggle('hidden', !document.getElementById(chkMap[type]).checked);
-            };
+            // 중기 박스플롯은 updateMidBoxplot()으로 통합 (initChartsForCurrentView 내에서 정의)
 
             // 기상 상세 모달 기능
             window.showWeatherDetail = function(weekNumber) {
@@ -945,6 +990,138 @@
             window.closeMidtermWeatherInline = function() {
                 if (charts.midtermHourlyWindChart) { charts.midtermHourlyWindChart.destroy(); delete charts.midtermHourlyWindChart; }
                 document.getElementById('midtermWeatherInline').classList.add('hidden');
+            };
+
+            // 정비 계획 모달
+            window._maintenancePlans = JSON.parse(localStorage.getItem('maintenancePlans') || '{}');
+
+            window.openMaintenanceModal = function(turbine, dayIdx, power, wind) {
+                const d = new Date(); d.setDate(d.getDate() + dayIdx + 1);
+                const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                document.getElementById('mtModalTurbine').textContent = `WTG #${turbine}`;
+                document.getElementById('mtModalDate').textContent = dateStr;
+                document.getElementById('mtModalPower').textContent = `${power} MWh`;
+                document.getElementById('mtModalWind').textContent = `${wind} m/s`;
+                const key = `${turbine}_${dayIdx}`;
+                const existing = window._maintenancePlans[key];
+                document.getElementById('mtModalType').value = existing?.type || '정기 점검';
+                document.getElementById('mtModalStart').value = existing?.start || '09:00';
+                document.getElementById('mtModalEnd').value = existing?.end || '17:00';
+                document.getElementById('mtModalMemo').value = existing?.memo || '';
+                document.getElementById('maintenanceModal').dataset.key = key;
+                document.getElementById('mtDeleteBtn').classList.toggle('hidden', !existing);
+                document.getElementById('maintenanceModal').classList.remove('hidden');
+            };
+
+            window.closeMaintenanceModal = function() {
+                document.getElementById('maintenanceModal').classList.add('hidden');
+            };
+
+            window.deleteMaintenancePlan = function() {
+                const key = document.getElementById('maintenanceModal').dataset.key;
+                delete window._maintenancePlans[key];
+                localStorage.setItem('maintenancePlans', JSON.stringify(window._maintenancePlans));
+                closeMaintenanceModal();
+                updateMaintenanceLoss();
+                if (typeof window._reRenderHeatmap === 'function') window._reRenderHeatmap();
+                else updateHeatmapMarkers();
+            };
+
+            window.saveMaintenancePlan = function() {
+                const key = document.getElementById('maintenanceModal').dataset.key;
+                window._maintenancePlans[key] = {
+                    type: document.getElementById('mtModalType').value,
+                    start: document.getElementById('mtModalStart').value,
+                    end: document.getElementById('mtModalEnd').value,
+                    memo: document.getElementById('mtModalMemo').value
+                };
+                localStorage.setItem('maintenancePlans', JSON.stringify(window._maintenancePlans));
+                closeMaintenanceModal();
+                updateMaintenanceLoss();
+                if (typeof window._reRenderHeatmap === 'function') window._reRenderHeatmap();
+                else updateHeatmapMarkers();
+            };
+
+            window.updateMaintenanceLoss = function() {
+                const plans = window._maintenancePlans;
+                const keys = Object.keys(plans);
+                const lossEl = document.getElementById('maintenanceLossKpi');
+                const adjEl = document.getElementById('maintenanceAdjustedKpi');
+                const sumEl = document.getElementById('maintenancePlanSummary');
+                if (!keys.length) {
+                    lossEl?.classList.add('hidden'); adjEl?.classList.add('hidden'); sumEl?.classList.add('hidden');
+                    // 차트 정비 라인 숨기기
+                    const chart = charts.twoWeekDailyTotalChart;
+                    if (chart && chart.data.datasets[1]) { chart.data.datasets[1].hidden = true; chart.update(); }
+                    return;
+                }
+                // 일별 손실 계산
+                const dailyLoss = Array(14).fill(0);
+                let totalLoss = 0;
+                const planList = [];
+                keys.forEach(k => {
+                    const p = plans[k];
+                    const [t, d] = k.split('_').map(Number);
+                    const [sh,sm] = p.start.split(':').map(Number), [eh,em] = p.end.split(':').map(Number);
+                    const hours = Math.max(0, (eh+em/60)-(sh+sm/60));
+                    const loss = hours * 5;
+                    if (d >= 0 && d < 14) dailyLoss[d] += loss;
+                    totalLoss += loss;
+                    planList.push({t,d,type:p.type,start:p.start,end:p.end,loss:Math.round(loss)});
+                });
+                // 손실 KPI
+                document.getElementById('maintenanceLossValue').textContent = `${Math.round(totalLoss)} MWh`;
+                lossEl?.classList.remove('hidden');
+                // 정비 반영 예상 KPI
+                const basePower = window._midDailyPower;
+                if (basePower && adjEl) {
+                    const totalBase = basePower.reduce((a,b)=>a+b,0);
+                    const adjusted = totalBase - totalLoss;
+                    document.getElementById('maintenanceAdjustedValue').textContent = `${(adjusted/1000).toFixed(1)} GWh`;
+                    adjEl.classList.remove('hidden');
+                }
+                // 정비 내역 요약
+                if (sumEl) {
+                    planList.sort((a,b)=>a.d-b.d||a.t-b.t);
+                    sumEl.innerHTML = `<div class="mt-3 p-3 bg-gray-50 rounded-lg border text-xs">
+                        <p class="font-semibold text-gray-600 mb-2"><i class="fas fa-list mr-1"></i>정비 계획 (${planList.length}건)</p>
+                        ${planList.map(p=>`<div class="flex justify-between py-1 border-b border-gray-100">
+                            <span class="text-gray-700">D+${p.d+1} WTG#${p.t}</span>
+                            <span class="text-gray-500">${p.type} ${p.start}~${p.end}</span>
+                            <span class="text-red-500 font-semibold">-${p.loss} MWh</span>
+                        </div>`).join('')}
+                    </div>`;
+                    sumEl.classList.remove('hidden');
+                }
+                // 차트 정비 반영 라인 업데이트
+                const chart = charts.twoWeekDailyTotalChart;
+                if (chart && basePower) {
+                    const adjData = basePower.map((v,i) => Math.max(0, v - dailyLoss[i]));
+                    chart.data.datasets[1].data = adjData;
+                    chart.data.datasets[1].hidden = false;
+                    chart.update();
+                }
+            };
+
+            window.updateHeatmapMarkers = function() {
+                const plans = window._maintenancePlans;
+                document.querySelectorAll('[data-mt-key]').forEach(cell => {
+                    const key = cell.dataset.mtKey;
+                    if (plans[key]) {
+                        cell.classList.add('ring-2','ring-red-400','rounded');
+                        let badge = cell.querySelector('.mt-badge');
+                        if (!badge) {
+                            badge = document.createElement('div');
+                            badge.className = 'mt-badge absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center';
+                            badge.innerHTML = '<i class="fas fa-wrench text-white" style="font-size:8px"></i>';
+                            cell.style.position = 'relative';
+                            cell.appendChild(badge);
+                        }
+                    } else {
+                        cell.classList.remove('ring-2','ring-red-400','rounded');
+                        cell.querySelector('.mt-badge')?.remove();
+                    }
+                });
             };
             
             function createModalCharts(weekNumber) {

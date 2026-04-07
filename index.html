@@ -179,14 +179,16 @@
                             <h4 class="text-lg font-semibold mb-4">기상 예측 (14일)</h4>
                             <p class="text-sm text-gray-600 mb-2">각 일자를 클릭하면 해당 일의 24시간 상세 O&amp;M 가능 여부를 확인할 수 있습니다.</p>
                             <div class="flex gap-4 mb-4">
-                                <label class="inline-flex items-center text-sm"><input type="checkbox" id="chkMidWind" checked class="mr-1 text-blue-600" onchange="toggleMidtermBoxplot('wind')">풍속</label>
-                                <label class="inline-flex items-center text-sm"><input type="checkbox" id="chkMidTemp" class="mr-1 text-blue-600" onchange="toggleMidtermBoxplot('temp')">기온</label>
-                                <label class="inline-flex items-center text-sm"><input type="checkbox" id="chkMidWave" class="mr-1 text-blue-600" onchange="toggleMidtermBoxplot('wave')">파고</label>
+                                <label class="inline-flex items-center text-sm"><input type="checkbox" checked disabled class="mr-1 text-blue-600">풍속 (좌축)</label>
+                                <label class="inline-flex items-center text-sm"><input type="radio" name="midBoxplotSub" value="none" checked class="mr-1 text-blue-600" onchange="updateMidBoxplot()">단독</label>
+                                <label class="inline-flex items-center text-sm"><input type="radio" name="midBoxplotSub" value="temp" class="mr-1 text-blue-600" onchange="updateMidBoxplot()">+ 기온 (우축)</label>
+                                <label class="inline-flex items-center text-sm"><input type="radio" name="midBoxplotSub" value="wave" class="mr-1 text-blue-600" onchange="updateMidBoxplot()">+ 파고 (우축)</label>
                             </div>
-                            <div id="midBoxplotWind" class="mb-6">
-                                <h5 class="text-md font-semibold mb-3">풍속 (m/s)</h5>
-                                <div class="chart-container h-[300px]"><canvas id="midtermWindBoxplot"></canvas></div>
+                            <div class="mb-6">
+                                <div class="chart-container h-[350px]"><canvas id="midCombinedBoxplot"></canvas></div>
                             </div>
+                            <!-- 14일 O&M 가능 여부 요약 -->
+                            <div id="midtermOmSummary" class="mb-6"></div>
                             <!-- 인라인 상세 패널 -->
                             <div id="midtermWeatherInline" class="mb-6 p-4 bg-gray-50 rounded-lg border hidden">
                                 <div class="flex justify-between items-center mb-4">
@@ -194,14 +196,6 @@
                                     <button onclick="closeMidtermWeatherInline()" class="text-gray-500 hover:text-gray-700 text-sm"><i class="fas fa-times mr-1"></i>닫기</button>
                                 </div>
                                 <div id="midtermModalDetail"></div>
-                            </div>
-                            <div id="midBoxplotTemp" class="mb-6 hidden">
-                                <h5 class="text-md font-semibold mb-3">기온 (℃)</h5>
-                                <div class="chart-container h-[300px]"><canvas id="midtermTempBoxplot"></canvas></div>
-                            </div>
-                            <div id="midBoxplotWave" class="mb-6 hidden">
-                                <h5 class="text-md font-semibold mb-3">파고 (m)</h5>
-                                <div class="chart-container h-[300px]"><canvas id="midtermWaveBoxplot"></canvas></div>
                             </div>
                         </div>
 
@@ -221,6 +215,15 @@
                                             <p class="kpi-label">2주차 예상 발전량</p>
                                             <p class="kpi-value text-3xl">7.5 <span class="text-base">GWh</span></p>
                                         </div>
+                                        <div id="maintenanceLossKpi" class="hidden p-4 bg-red-50 rounded-lg border border-red-200">
+                                            <p class="kpi-label text-red-500"><i class="fas fa-wrench mr-1"></i>정비 손실 발전량</p>
+                                            <p id="maintenanceLossValue" class="text-2xl font-bold text-red-600"></p>
+                                        </div>
+                                        <div id="maintenanceAdjustedKpi" class="hidden p-4 bg-green-50 rounded-lg border border-green-200">
+                                            <p class="kpi-label text-green-600"><i class="fas fa-chart-line mr-1"></i>정비 반영 예상</p>
+                                            <p id="maintenanceAdjustedValue" class="text-2xl font-bold text-green-700"></p>
+                                        </div>
+                                        <div id="maintenancePlanSummary" class="hidden"></div>
                                     </div>
                                 </div>
                                 <!-- 일평균 예측 (3/4) -->
@@ -370,6 +373,42 @@
                 </section>
             </div>
         </main>
+    </div>
+
+    <!-- 정비 계획 입력 모달 -->
+    <div id="maintenanceModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold"><i class="fas fa-wrench mr-2 text-blue-600"></i>정비 계획 입력</h3>
+                <button onclick="closeMaintenanceModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="space-y-3 text-sm">
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-gray-50 rounded-lg p-3"><p class="text-gray-500 text-xs">터빈</p><p id="mtModalTurbine" class="font-bold text-gray-800"></p></div>
+                    <div class="bg-gray-50 rounded-lg p-3"><p class="text-gray-500 text-xs">날짜</p><p id="mtModalDate" class="font-bold text-gray-800"></p></div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-blue-50 rounded-lg p-3"><p class="text-gray-500 text-xs">예상 발전량</p><p id="mtModalPower" class="font-bold text-blue-700"></p></div>
+                    <div class="bg-blue-50 rounded-lg p-3"><p class="text-gray-500 text-xs">예상 풍속</p><p id="mtModalWind" class="font-bold text-blue-700"></p></div>
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">정비 유형</label>
+                    <select id="mtModalType" class="w-full border rounded-lg px-3 py-2 text-sm">
+                        <option>정기 점검</option><option>부품 교체</option><option>긴급 수리</option><option>기타</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block text-gray-600 mb-1">시작 시간</label><input type="time" id="mtModalStart" value="09:00" class="w-full border rounded-lg px-3 py-2 text-sm"></div>
+                    <div><label class="block text-gray-600 mb-1">종료 시간</label><input type="time" id="mtModalEnd" value="17:00" class="w-full border rounded-lg px-3 py-2 text-sm"></div>
+                </div>
+                <div><label class="block text-gray-600 mb-1">메모</label><textarea id="mtModalMemo" rows="2" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="정비 내용을 입력하세요"></textarea></div>
+            </div>
+            <div class="flex gap-3 mt-5">
+                <button onclick="saveMaintenancePlan()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 font-semibold text-sm"><i class="fas fa-save mr-1"></i>저장</button>
+                <button id="mtDeleteBtn" onclick="deleteMaintenancePlan()" class="flex-1 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 font-semibold text-sm hidden"><i class="fas fa-trash mr-1"></i>삭제</button>
+                <button onclick="closeMaintenanceModal()" class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 font-semibold text-sm">취소</button>
+            </div>
+        </div>
     </div>
 
     <script src="scripts.js" defer></script>

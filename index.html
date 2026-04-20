@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="version" content="1.5.0">
+    <meta name="version" content="1.7.0">
     <title>O&M을 위한 풍력 예측 서비스</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -40,7 +40,7 @@
                 </a>
             </nav>
             <div class="p-4 border-t border-gray-700">
-                <p class="text-xs text-gray-400">버전 1.5.0</p>
+                <p class="text-xs text-gray-400">버전 1.7.0</p>
             </div>
         </aside>
 
@@ -140,30 +140,46 @@
 
                     <!-- 발전소 전체 예측 탭 -->
                     <div id="shortterm-total-content" class="main-tab-panel">
-                        <h3 class="text-xl font-semibold mb-4">발전소 전체 예측</h3>
-                        
+                        <h3 id="shorttermTotalTitle" class="text-xl font-semibold mb-4">발전소 전체 예측 (72시간)</h3>
+
+                        <!-- KPI -->
+                        <div id="shorttermKpiArea" class="grid grid-cols-3 gap-4 mb-4"></div>
+
+                        <!-- 풍속 차트 -->
+                        <div class="card mb-4">
+                            <h4 id="shorttermWindTitle" class="text-lg font-semibold mb-2">시간별 풍속 (72시간)</h4>
+                            <div class="chart-container h-[280px]"><canvas id="shorttermWindChart"></canvas></div>
+                        </div>
+
+                        <!-- 발전량 차트 -->
                         <div class="card mb-6">
-                            <div class="flex items-center justify-between mb-3">
-                                <h4 class="text-lg font-semibold">시간별 발전량 + 풍속</h4>
-                                <div class="p-3 bg-blue-50 rounded-lg text-center">
-                                    <p class="text-xs text-gray-500">내일 예상 총 발전량</p>
-                                    <p class="text-xl font-bold text-blue-700">4.8 <span class="text-sm font-normal">GWh</span></p>
-                                </div>
-                            </div>
-                            <div class="chart-container h-[350px]"><canvas id="shorttermCombinedChart"></canvas></div>
+                            <h4 id="shorttermPowerTitle" class="text-lg font-semibold mb-2">시간별 발전량 (72시간)</h4>
+                            <div class="chart-container h-[280px]"><canvas id="shorttermPowerChart"></canvas></div>
                         </div>
                     </div>
 
                     <!-- 터빈별 예측 탭 -->
                     <div id="shortterm-turbine-content" class="main-tab-panel hidden">
-                        <h3 class="text-xl font-semibold mb-4">개별 터빈 상세 예측 (24시간)</h3>
+                        <h3 id="shorttermTurbineTitle" class="text-xl font-semibold mb-4">개별 터빈 발전량 예측 (72시간)</h3>
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-4 gap-y-2" id="shorttermTurbineDetailGrid"></div>
                     </div>
 
                 </section>
 
                 <section id="s_2week-content" class="content-section hidden">
-                    <h2 class="section-title">2주 예측</h2>
+                    <div class="flex items-center justify-between mb-2">
+                        <h2 class="section-title mb-0">2주 예측</h2>
+                        <div class="flex items-center gap-2">
+                            <button id="twoWeekDatePrev" class="px-2 py-1 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" aria-label="이전 날짜">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <span id="twoWeekDateLabel" class="text-sm font-semibold text-gray-700 min-w-[120px] text-center"></span>
+                            <button id="twoWeekDateNext" class="px-2 py-1 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" aria-label="다음 날짜">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                            <button id="twoWeekDateToday" class="ml-1 px-3 py-1 text-xs font-semibold bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">오늘</button>
+                        </div>
+                    </div>
                     <div class="mb-4 border-b border-gray-200">
                         <ul class="flex flex-wrap -mb-px text-base font-semibold text-center" id="twoWeekMainTabs" role="tablist">
                             <li class="mr-2" role="presentation"><button class="tab-button inline-block px-6 py-3 rounded-t-lg" id="2week-total-tab" data-tabs-target="#2week-total-content" type="button" role="tab" aria-controls="2week-total-content" aria-selected="true">발전소</button></li>
@@ -179,10 +195,9 @@
                             <h4 class="text-lg font-semibold mb-4">기상 예측 (14일)</h4>
                             <p class="text-sm text-gray-600 mb-2">각 일자를 클릭하면 해당 일의 24시간 상세 O&amp;M 가능 여부를 확인할 수 있습니다.</p>
                             <div class="flex gap-4 mb-4">
-                                <label class="inline-flex items-center text-sm"><input type="checkbox" checked disabled class="mr-1 text-blue-600">풍속 (좌축)</label>
-                                <label class="inline-flex items-center text-sm"><input type="radio" name="midBoxplotSub" value="none" checked class="mr-1 text-blue-600" onchange="updateMidBoxplot()">단독</label>
-                                <label class="inline-flex items-center text-sm"><input type="radio" name="midBoxplotSub" value="temp" class="mr-1 text-blue-600" onchange="updateMidBoxplot()">+ 기온 (우축)</label>
-                                <label class="inline-flex items-center text-sm"><input type="radio" name="midBoxplotSub" value="wave" class="mr-1 text-blue-600" onchange="updateMidBoxplot()">+ 파고 (우축)</label>
+                                <label class="inline-flex items-center text-sm"><input type="checkbox" checked disabled class="mr-1 text-blue-600">풍속 (좌축, 0~30 m/s)</label>
+                                <label class="inline-flex items-center text-sm"><input type="checkbox" id="chkMidTemp2" class="mr-1 text-blue-600" onchange="updateMidBoxplot()">기온 (-10~40°C)</label>
+                                <label class="inline-flex items-center text-sm"><input type="checkbox" id="chkMidWave2" class="mr-1 text-blue-600" onchange="updateMidBoxplot()">파고 (0~3.5 m)</label>
                             </div>
                             <div class="mb-6">
                                 <div class="chart-container h-[350px]"><canvas id="midCombinedBoxplot"></canvas></div>
@@ -243,18 +258,25 @@
                         <!-- Overview 영역 -->
                         <div id="turbineOverviewArea">
                             <div class="card">
-                                <h4 class="text-lg font-semibold mb-3">14일 × 20호기 발전량 히트맵</h4>
-                                <div class="flex items-center gap-2 mb-3">
-                                    <span class="text-sm text-gray-500">낮음</span>
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="text-lg font-semibold">14일 × 20호기 발전량 히트맵</h4>
+                                    <div class="flex gap-3 text-sm">
+                                        <label class="inline-flex items-center cursor-pointer"><input type="radio" name="heatmapMode" value="all" checked class="mr-1 text-blue-600" onchange="switchHeatmap()">일간 전체 (0~24시)</label>
+                                        <label class="inline-flex items-center cursor-pointer"><input type="radio" name="heatmapMode" value="daytime" class="mr-1 text-blue-600" onchange="switchHeatmap()">O&M 작업시간 (08~18시)</label>
+                                    </div>
+                                </div>
+                                <div id="heatmapLegend" class="flex items-center gap-2 mb-3">
+                                    <span class="text-sm text-gray-500">0</span>
                                     <div class="w-6 h-4 rounded" style="background:#fff9c4"></div>
                                     <div class="w-6 h-4 rounded" style="background:#c8e6c9"></div>
                                     <div class="w-6 h-4 rounded" style="background:#b3e5fc"></div>
                                     <div class="w-6 h-4 rounded" style="background:#81d4fa"></div>
                                     <div class="w-6 h-4 rounded" style="background:#4fc3f7"></div>
-                                    <span class="text-sm text-gray-500">높음 (날짜별 상대 비교)</span>
+                                    <span id="heatmapLegendMax" class="text-sm text-gray-500">72 MWh</span>
                                 </div>
-                                <p class="text-sm text-gray-500 mb-3">셀 클릭 시 해당 터빈 상세 페이지로 이동합니다.</p>
+                                <p class="text-sm text-gray-500 mb-3">셀 클릭 시 정비 계획을 입력할 수 있습니다.</p>
                                 <div id="heatmapA" class="mb-6"></div>
+                                <div id="heatmapDaytime" class="mb-6 hidden"></div>
                                 <h4 class="text-lg font-semibold mb-3">터빈별 14일 총 발전량 랭킹</h4>
                                 <p class="text-sm text-gray-500 mb-3">터빈 클릭 시 상세 페이지로 이동합니다. ⚠️ = 평균 대비 90% 미만</p>
                                 <div id="rankingA"></div>

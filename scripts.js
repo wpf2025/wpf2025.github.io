@@ -131,6 +131,20 @@
 
         // 하루전 예측 날짜 선택
         const shorttermDate = { current: new Date() };
+
+        // 2주 예측 날짜 선택
+        const twoWeekDate = { current: new Date() };
+        const updateTwoWeekDateLabel = () => {
+            const label = document.getElementById('twoWeekDateLabel');
+            if (label) {
+                const d = twoWeekDate.current;
+                const today = new Date(); today.setHours(0,0,0,0);
+                const sel = new Date(d); sel.setHours(0,0,0,0);
+                const diff = Math.round((today - sel) / 86400000);
+                const tag = diff === 0 ? ' (오늘)' : diff === 1 ? ' (어제)' : diff > 1 ? ` (${diff}일 전)` : '';
+                label.textContent = formatDate(d) + tag;
+            }
+        };
         const formatDate = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
         const updateShorttermDateLabel = () => {
             const label = document.getElementById('shorttermDateLabel');
@@ -149,6 +163,19 @@
             updateShorttermDateLabel();
             if (typeof initChartsForCurrentView === 'function') initChartsForCurrentView();
         });
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('#twoWeekDatePrev, #twoWeekDateNext, #twoWeekDateToday');
+            if (!btn) return;
+            if (btn.id === 'twoWeekDateToday') {
+                twoWeekDate.current = new Date();
+            } else {
+                const d = new Date(twoWeekDate.current);
+                d.setDate(d.getDate() + (btn.id === 'twoWeekDateNext' ? 1 : -1));
+                twoWeekDate.current = d;
+            }
+            updateTwoWeekDateLabel();
+            if (typeof initChartsForCurrentView === 'function') initChartsForCurrentView();
+        });
 
         const destroyAllCharts = () => {
             Object.values(charts).forEach(chart => {
@@ -161,6 +188,7 @@
 
         const initChartsForCurrentView = () => {
             updateShorttermDateLabel();
+            updateTwoWeekDateLabel();
             destroyAllCharts(); 
 
             // Overview Charts - Turbine Map
@@ -192,51 +220,230 @@
             if (document.getElementById('shortterm-content')?.offsetParent !== null) {
                 // Total Plant - Daily & Hourly (통합 페이지)
                 if (document.getElementById('shortterm-total-content')?.offsetParent !== null) {
-                    // 24시간 풍속 라인 차트 (중기예측 스타일)
-                    const windLabels = Array.from({length:24},(_,h)=>`${h}시`);
-                    const windBase = [2.5,2.0,1.8,2.2,3.5,4.5,6.5,8.5,9.5,10.0,10.5,10.2,9.8,10.0,9.5,9.0,8.5,7.5,6.5,5.5,4.5,3.5,3.0,2.0];
-                    const windData = windBase.map(w=>+(w+Math.random()*0.6-0.3).toFixed(1));
-                    const powerData = windData.map(w=>{const p=w<3?0.2:w<6?w*0.8:w<10?w*1.3:w*1.4;return +(p+Math.random()*0.5).toFixed(1);});
-                    charts.shorttermCombinedChart = new Chart(document.getElementById('shorttermCombinedChart')?.getContext('2d'), {
-                        type:'bar',
-                        data:{labels:windLabels,datasets:[
-                            {label:'발전량 (MWh)',data:powerData,backgroundColor:'rgba(147,197,253,0.7)',borderColor:'rgba(147,197,253,0.9)',borderWidth:1,yAxisID:'y',order:2},
-                            {label:'풍속 (m/s)',data:windData,type:'line',borderColor:'rgb(245,158,11)',backgroundColor:'transparent',tension:0.3,borderWidth:2,pointRadius:3,pointBackgroundColor:'rgb(245,158,11)',yAxisID:'y1',order:1}
-                        ]},
-                        options:{responsive:true,maintainAspectRatio:false,
-                            plugins:{legend:{display:true,position:'bottom'}},
-                            scales:{
-                                y:{position:'left',beginAtZero:true,title:{display:true,text:'MWh'}},
-                                y1:{position:'right',beginAtZero:true,title:{display:true,text:'m/s'},grid:{drawOnChartArea:false}}
+                    const windBase = [7.5,7.8,8.2,8.0,7.6,7.2,6.8,7.0,7.5,8.0,8.5,9.0,9.5,9.8,10.0,9.5,9.0,8.5,8.8,9.2,8.5,8.0,7.8,7.5];
+                    const genWind = () => windBase.map(w=>+Math.max(0.5,w+Math.random()*4-2).toFixed(1));
+                    const genPower = (wind) => wind.map(w=>{const p=w<3?0.2:w<6?w*0.8:w<10?w*1.3:w*1.4;return +Math.max(0,p+Math.random()*0.5).toFixed(1);});
+                    const sumGWh = arr => (arr.reduce((a,b)=>a+b,0)/1000).toFixed(1);
+                    const today = new Date(); today.setHours(0,0,0,0);
+                    const sel = new Date(shorttermDate.current); sel.setHours(0,0,0,0);
+                    const isToday = sel.getTime() === today.getTime();
+                    const isPast = sel < today;
+                    const kpiArea = document.getElementById('shorttermKpiArea');
+
+                    const dayBoundaryPlugin = {
+                        id:'dayBoundary',
+                        beforeDraw(chart){
+                            const ctx=chart.ctx, xScale=chart.scales.x, total=chart.data.labels.length;
+                            for(let i=24;i<total;i+=24){
+                                const x=xScale.getPixelForValue(i);
+                                ctx.save();ctx.strokeStyle='rgba(0,0,0,0.15)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+                                ctx.beginPath();ctx.moveTo(x,chart.chartArea.top);ctx.lineTo(x,chart.chartArea.bottom);ctx.stroke();ctx.restore();
                             }
                         }
-                    });
+                    };
+
+                    if (isPast) {
+                        // === 과거 날짜: 예측 vs 실측 비교 (72시간 = D+1,D+2,D+3) ===
+                        const fmtD = d => `${d.getMonth()+1}/${d.getDate()}`;
+                        const labels = [];
+                        for(let d=0;d<3;d++){const dt=new Date(sel);dt.setDate(dt.getDate()+d+1);for(let h=0;h<24;h++)labels.push(`${fmtD(dt)} ${h}시`);}
+
+                        // 예측 기간 중 오늘 자정까지만 실측 존재
+                        const fcstStart = new Date(sel); fcstStart.setDate(fcstStart.getDate()+1); fcstStart.setHours(0,0,0,0);
+                        const nowTs = Date.now();
+                        // 실측 가능 시간 수 (예측 시작 ~ 현재)
+                        const actualHours = Math.min(72, Math.max(0, Math.floor((today.getTime() - fcstStart.getTime())/(3600000))));
+
+                        const wFcst=[genWind(),genWind(),genWind()].flat();
+                        const wActualFull=wFcst.map(v=>+Math.max(0,v+(Math.random()*3-1.5)).toFixed(1));
+                        const pFcst=[genPower(wFcst.slice(0,24)),genPower(wFcst.slice(24,48)),genPower(wFcst.slice(48))].flat();
+                        const pActualFull=pFcst.map(v=>+Math.max(0,v+(Math.random()*2-1)).toFixed(1));
+
+                        // 실측: actualHours까지만, 나머지 null
+                        const wActual = wActualFull.map((v,i)=>i<actualHours?v:null);
+                        const pActual = pActualFull.map((v,i)=>i<actualHours?v:null);
+
+                        const cap = 384; // 정격용량 MWh (19.2MW * 20기)
+
+                        // 오차: 실측 있는 구간만 계산
+                        let windMAE = '—', powerNMAE = '—', actualPowerSum = '—';
+                        if (actualHours > 0) {
+                            windMAE = (wFcst.slice(0,actualHours).reduce((s,v,i)=>s+Math.abs(v-wActualFull[i]),0)/actualHours).toFixed(2);
+                            powerNMAE = ((pFcst.slice(0,actualHours).reduce((s,v,i)=>s+Math.abs(v-pActualFull[i]),0)/actualHours)/cap*100).toFixed(2);
+                            actualPowerSum = sumGWh(pActualFull.slice(0,actualHours));
+                        }
+                        const hasAllActual = actualHours >= 72;
+                        const actualNote = hasAllActual ? '' : ` (${actualHours}h/${72}h)`;
+
+                        document.getElementById('shorttermTotalTitle').textContent = `발전소 전체 — 예측 vs 실측 비교 (${formatDate(sel)} 기준)`;
+                        document.getElementById('shorttermWindTitle').textContent = `시간별 풍속 — 예측 vs 실측 (72시간)`;
+                        document.getElementById('shorttermPowerTitle').textContent = `시간별 발전량 — 예측 vs 실측 (72시간)`;
+
+                        kpiArea.innerHTML = `
+                            <div class="p-3 bg-blue-50 rounded-lg text-center border border-blue-200">
+                                <p class="text-xs text-gray-500">예측 발전량 합계</p>
+                                <p class="text-xl font-bold text-blue-700">${sumGWh(pFcst)} <span class="text-sm font-normal">GWh</span></p>
+                            </div>
+                            <div class="p-3 bg-green-50 rounded-lg text-center border border-green-200">
+                                <p class="text-xs text-gray-500">실측 발전량 합계${actualNote}</p>
+                                <p class="text-xl font-bold text-green-700">${actualHours>0?actualPowerSum:'—'} <span class="text-sm font-normal">GWh</span></p>
+                            </div>
+                            <div class="p-3 bg-white rounded-lg text-center border">
+                                <p class="text-xs text-gray-500">예측 오차${actualNote}</p>
+                                <div class="flex justify-around mt-1">
+                                    <div><p class="text-xs text-gray-400">풍속 MAE</p><p class="text-lg font-bold text-amber-600">${windMAE} <span class="text-xs font-normal">${windMAE!=='—'?'m/s':''}</span></p></div>
+                                    <div><p class="text-xs text-gray-400">발전량 nMAE</p><p class="text-lg font-bold text-red-600">${powerNMAE} <span class="text-xs font-normal">${powerNMAE!=='—'?'%':''}</span></p></div>
+                                </div>
+                            </div>`;
+
+                        const cOpts = {responsive:true,maintainAspectRatio:false,
+                            plugins:{legend:{display:true,position:'bottom',labels:{usePointStyle:true,pointStyle:'line'}}},
+                            scales:{x:{ticks:{maxTicksLimit:18,maxRotation:0,callback:function(v,i){return i%6===0?this.getLabelForValue(i):''}}}}};
+
+                        charts.shorttermWindChart = new Chart(document.getElementById('shorttermWindChart').getContext('2d'),{
+                            type:'line',plugins:[dayBoundaryPlugin],
+                            data:{labels,datasets:[
+                                {label:'실측 풍속',data:wActual,borderColor:'rgb(59,130,246)',backgroundColor:'rgba(59,130,246,0.08)',borderWidth:2,tension:0.3,fill:true,pointRadius:0,spanGaps:false},
+                                {label:'예측 풍속',data:wFcst,borderColor:'rgb(245,158,11)',borderDash:[5,3],borderWidth:2,tension:0.3,fill:false,pointRadius:0}
+                            ]},options:{...cOpts,scales:{...cOpts.scales,y:{beginAtZero:true,title:{display:true,text:'m/s'}}}}
+                        });
+                        charts.shorttermPowerChart = new Chart(document.getElementById('shorttermPowerChart').getContext('2d'),{
+                            type:'line',plugins:[dayBoundaryPlugin],
+                            data:{labels,datasets:[
+                                {label:'실측 발전량',data:pActual,borderColor:'rgb(16,185,129)',backgroundColor:'rgba(16,185,129,0.08)',borderWidth:2,tension:0.3,fill:true,pointRadius:0,spanGaps:false},
+                                {label:'예측 발전량',data:pFcst,borderColor:'rgb(239,68,68)',borderDash:[5,3],borderWidth:2,tension:0.3,fill:false,pointRadius:0}
+                            ]},options:{...cOpts,scales:{...cOpts.scales,y:{beginAtZero:true,title:{display:true,text:'MWh'}}}}
+                        });
+
+                    } else {
+                        // === 오늘 또는 미래: 72시간 예측 (내일 0시 ~ D+3 23시) ===
+                        const fmtD = d => `${d.getMonth()+1}/${d.getDate()}`;
+                        const labels = [];
+                        for(let d=0;d<3;d++){const dt=new Date(sel);dt.setDate(dt.getDate()+d+1);for(let h=0;h<24;h++)labels.push(`${fmtD(dt)} ${h}시`);}
+
+                        const wFcst = [genWind(),genWind(),genWind()].flat();
+                        const pFcst = [genPower(wFcst.slice(0,24)),genPower(wFcst.slice(24,48)),genPower(wFcst.slice(48))].flat();
+
+                        document.getElementById('shorttermTotalTitle').textContent = `발전소 전체 예측 (72시간)`;
+                        document.getElementById('shorttermWindTitle').textContent = `시간별 풍속 예측 (72시간)`;
+                        document.getElementById('shorttermPowerTitle').textContent = `시간별 발전량 예측 (72시간)`;
+
+                        const d1=pFcst.slice(0,24),d2=pFcst.slice(24,48),d3=pFcst.slice(48);
+                        const dt1=new Date(sel);dt1.setDate(dt1.getDate()+1);
+                        const dt2=new Date(sel);dt2.setDate(dt2.getDate()+2);
+                        const dt3=new Date(sel);dt3.setDate(dt3.getDate()+3);
+                        kpiArea.innerHTML = `
+                            <div class="p-3 bg-blue-50 rounded-lg text-center border border-blue-200">
+                                <p class="text-xs text-gray-500">${fmtD(dt1)} 예상 발전량</p>
+                                <p class="text-xl font-bold text-blue-700">${sumGWh(d1)} <span class="text-sm font-normal">GWh</span></p>
+                            </div>
+                            <div class="p-3 bg-blue-50 rounded-lg text-center border border-blue-200">
+                                <p class="text-xs text-gray-500">${fmtD(dt2)} 예상 발전량</p>
+                                <p class="text-xl font-bold text-blue-700">${sumGWh(d2)} <span class="text-sm font-normal">GWh</span></p>
+                            </div>
+                            <div class="p-3 bg-amber-50 rounded-lg text-center border border-amber-200">
+                                <p class="text-xs text-gray-500">${fmtD(dt3)} 예상 발전량</p>
+                                <p class="text-xl font-bold text-amber-700">${sumGWh(d3)} <span class="text-sm font-normal">GWh</span></p>
+                            </div>`;
+
+                        const cOpts = {responsive:true,maintainAspectRatio:false,
+                            plugins:{legend:{display:true,position:'bottom',labels:{usePointStyle:true,pointStyle:'line'}}},
+                            scales:{x:{ticks:{maxTicksLimit:18,maxRotation:0,callback:function(v,i){return i%6===0?this.getLabelForValue(i):''}}}}};
+
+                        charts.shorttermWindChart = new Chart(document.getElementById('shorttermWindChart').getContext('2d'),{
+                            type:'line',plugins:[dayBoundaryPlugin],
+                            data:{labels,datasets:[
+                                {label:'예측 풍속',data:wFcst,borderColor:'rgb(245,158,11)',borderWidth:2,tension:0.3,fill:false,pointRadius:0}
+                            ]},options:{...cOpts,scales:{...cOpts.scales,y:{beginAtZero:true,title:{display:true,text:'m/s'}}}}
+                        });
+                        charts.shorttermPowerChart = new Chart(document.getElementById('shorttermPowerChart').getContext('2d'),{
+                            type:'line',plugins:[dayBoundaryPlugin],
+                            data:{labels,datasets:[
+                                {label:'예측 발전량',data:pFcst,borderColor:'rgb(239,68,68)',borderWidth:2,tension:0.3,fill:false,pointRadius:0}
+                            ]},options:{...cOpts,scales:{...cOpts.scales,y:{beginAtZero:true,title:{display:true,text:'MWh'}}}}
+                        });
+                    }
                 }
-                // Per Turbine - 24시간 발전량+풍속 듀얼 차트 (20호기)
+                // Per Turbine - 72시간 발전량 차트 (20호기)
                 if (document.getElementById('shortterm-turbine-content')?.offsetParent !== null) {
-                    const hLabels = Array.from({length:24},(_,h)=>`${h}시`);
                     const TC = 20;
                     const turbineColors = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316','#84cc16','#e879f9','#14b8a6','#6366f1','#ec4899','#22c55e','#a855f7','#0ea5e9','#eab308','#d946ef','#64748b','#f43f5e','#2dd4bf'];
+                    const today2 = new Date(); today2.setHours(0,0,0,0);
+                    const sel2 = new Date(shorttermDate.current); sel2.setHours(0,0,0,0);
+                    const isPast2 = sel2 < today2;
+                    const fmtD2 = d => `${d.getMonth()+1}/${d.getDate()}`;
+
+                    // 72시간 라벨
+                    const tLabels = [];
+                    for(let d=0;d<3;d++){const dt=new Date(sel2);dt.setDate(dt.getDate()+d+1);for(let h=0;h<24;h++)tLabels.push(`${fmtD2(dt)} ${h}시`);}
+
+                    // 실측 가능 시간 (과거 모드)
+                    const tFcstStart = new Date(sel2); tFcstStart.setDate(tFcstStart.getDate()+1); tFcstStart.setHours(0,0,0,0);
+                    const tActualHours = isPast2 ? Math.min(72, Math.max(0, Math.floor((today2.getTime()-tFcstStart.getTime())/3600000))) : 0;
+
+                    const tDayBoundary = {
+                        id:'tDayBound',
+                        beforeDraw(chart){
+                            const ctx=chart.ctx,xS=chart.scales.x;
+                            [24,48].forEach(idx=>{const x=xS.getPixelForValue(idx);ctx.save();ctx.strokeStyle='rgba(0,0,0,0.12)';ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(x,chart.chartArea.top);ctx.lineTo(x,chart.chartArea.bottom);ctx.stroke();ctx.restore();});
+                        }
+                    };
+
+                    document.getElementById('shorttermTurbineTitle').textContent = isPast2
+                        ? `개별 터빈 — 예측 vs 실측 (${formatDate(sel2)} 기준, 72시간)`
+                        : `개별 터빈 발전량 예측 (72시간)`;
 
                     const grid = document.getElementById('shorttermTurbineDetailGrid');
                     if (grid) {
                         let html = '';
-                        for (let i = 1; i <= TC; i++) {
-                            html += `<div class="card"><h5 class="text-md font-semibold mb-3">WTG #${i} 상세 예측</h5><div class="chart-container h-[250px]"><canvas id="shorttermWtgDetail${i}"></canvas></div></div>`;
-                        }
+                        for (let i = 1; i <= TC; i++) html += `<div class="card"><h5 class="text-md font-semibold mb-3">WTG #${i}</h5><div class="chart-container h-[180px]"><canvas id="shorttermWtgDetail${i}"></canvas></div><div id="shorttermWtgWind${i}" class="mt-2"></div></div>`;
                         grid.innerHTML = html;
+
+                        const windBase2 = [7.5,7.8,8.2,8.0,7.6,7.2,6.8,7.0,7.5,8.0,8.5,9.0,9.5,9.8,10.0,9.5,9.0,8.5,8.8,9.2,8.5,8.0,7.8,7.5];
+                        const gW2 = () => windBase2.map(w=>+Math.max(0.5,w+Math.random()*4-2).toFixed(1));
+                        const gP2 = (wind) => wind.map(w=>{const p=w<3?0.1:w<6?w*0.2:w<10?w*0.2:w*0.22;return +Math.max(0,p+Math.random()*0.3).toFixed(1);});
+                        const wColor = s => s<3?'#87ceeb':s<6?'#3b82f6':s<10?'#10b981':s<15?'#f59e0b':'#ef4444';
+
                         for (let i = 1; i <= TC; i++) {
-                            const pwrD = generateRandomData(24, 15, 35);
-                            const windD = generateRandomData(24, 3, 15);
                             const c = turbineColors[i-1];
-                            charts[`shorttermWtgDetail${i}`] = new Chart(document.getElementById(`shorttermWtgDetail${i}`).getContext('2d'), {
-                                type: 'line',
-                                data: { labels: hLabels, datasets: [
-                                    { label: '발전량 (MW)', data: pwrD, borderColor: c, backgroundColor: c+'1a', tension: 0.3, fill: true, borderWidth: 2, yAxisID: 'y' },
-                                    { label: '풍속 (m/s)', data: windD, borderColor: 'rgba(100,100,100,0.6)', borderDash: [5,3], tension: 0.3, fill: false, borderWidth: 1.5, pointRadius: 2, yAxisID: 'y1' }
-                                ] },
-                                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { display: true, labels: { font: { size: 11 } } } }, scales: { y: { type: 'linear', position: 'left', title: { display: true, text: 'MW' }, beginAtZero: true }, y1: { type: 'linear', position: 'right', title: { display: true, text: 'm/s' }, beginAtZero: true, max: 20, grid: { drawOnChartArea: false } } } }
+                            const wF = [gW2(),gW2(),gW2()].flat();
+                            const pF = [gP2(wF.slice(0,24)),gP2(wF.slice(24,48)),gP2(wF.slice(48))].flat();
+                            const datasets = [];
+                            let wA = null;
+
+                            if (isPast2 && tActualHours > 0) {
+                                wA = wF.map((v,j)=>j<tActualHours?+Math.max(0.5,v+(Math.random()*3-1.5)).toFixed(1):null);
+                                const pA = pF.map((v,j)=>j<tActualHours?+Math.max(0,v+(Math.random()*0.6-0.3)).toFixed(1):null);
+                                datasets.push({label:'실측',data:pA,borderColor:c,backgroundColor:c+'15',borderWidth:2,tension:0.3,fill:true,pointRadius:0,spanGaps:false});
+                                datasets.push({label:'예측',data:pF,borderColor:c,borderDash:[5,3],borderWidth:1.5,tension:0.3,fill:false,pointRadius:0});
+                            } else {
+                                datasets.push({label:'예측',data:pF,borderColor:c,borderWidth:2,tension:0.3,fill:false,pointRadius:0});
+                            }
+
+                            charts[`shorttermWtgDetail${i}`] = new Chart(document.getElementById(`shorttermWtgDetail${i}`).getContext('2d'),{
+                                type:'line',plugins:[tDayBoundary],
+                                data:{labels:tLabels,datasets},
+                                options:{responsive:true,maintainAspectRatio:false,
+                                    interaction:{mode:'index',intersect:false},
+                                    plugins:{legend:{display:isPast2&&tActualHours>0,labels:{font:{size:10}}}},
+                                    scales:{x:{ticks:{maxTicksLimit:9,maxRotation:0,callback:function(v,j){return j%12===0?this.getLabelForValue(j):'';}}},y:{beginAtZero:true,title:{display:true,text:'MWh'}}}}
                             });
+
+                            // 풍속 컬러 바
+                            const windEl = document.getElementById(`shorttermWtgWind${i}`);
+                            if (windEl) {
+                                const renderBar = (label, data) => {
+                                    const segs = data.map((v,j) => v!==null ? `<div class="flex-1 h-full" style="background:${wColor(v)}" title="${tLabels[j]}: ${v} m/s"></div>` : `<div class="flex-1 h-full bg-gray-200"></div>`).join('');
+                                    return `<div class="flex items-center gap-1 mb-0.5"><span class="text-[9px] text-gray-500 w-8 shrink-0">${label}</span><div class="flex-1 flex h-3 rounded overflow-hidden">${segs}</div></div>`;
+                                };
+                                let barHtml = '<div class="text-[9px] text-gray-400 mb-1">풍속 (m/s)</div>';
+                                if (isPast2 && tActualHours > 0 && wA) {
+                                    barHtml += renderBar('실측', wA);
+                                }
+                                barHtml += renderBar('예측', wF);
+                                barHtml += `<div class="flex items-center gap-1 mt-1 text-[8px] text-gray-400"><span class="w-3 h-2 rounded" style="background:#87ceeb"></span>~3<span class="w-3 h-2 rounded" style="background:#3b82f6"></span>~6<span class="w-3 h-2 rounded" style="background:#10b981"></span>~10<span class="w-3 h-2 rounded" style="background:#f59e0b"></span>~15<span class="w-3 h-2 rounded" style="background:#ef4444"></span>15+</div>`;
+                                windEl.innerHTML = barHtml;
+                            }
                         }
                     }
                 }
@@ -246,12 +453,17 @@
             if (document.getElementById('s_2week-content')?.offsetParent !== null) { 
                 // Total Plant - Weekly & Daily (통합 페이지)
                 if (document.getElementById('2week-total-content')?.offsetParent !== null) {
+                    // 선택 날짜 기반 14일 라벨
+                    const twSel = new Date(twoWeekDate.current);
+                    const twFmtD = d => `${d.getMonth()+1}/${d.getDate()}`;
+                    const twDayLabels = Array.from({length:14},(_,i)=>{const dt=new Date(twSel);dt.setDate(dt.getDate()+i+1);return twFmtD(dt);});
+
                     // 일평균 차트
                     const dailyPowerData = generateRandomData(14, 720, 1440);
                     window._midDailyPower = dailyPowerData;
                     charts.twoWeekDailyTotalChart = new Chart(document.getElementById('twoWeekDailyTotalChart')?.getContext('2d'), {
                         type:'line',
-                        data:{labels:Array.from({length:14},(_,i)=>`D+${i+1}`), datasets:[
+                        data:{labels:twDayLabels, datasets:[
                             {label:'일일 총 발전량 (MWh)',data:dailyPowerData,borderColor:'rgb(245,158,11)',tension:0.1,fill:false},
                             {label:'정비 반영 발전량 (MWh)',data:[...dailyPowerData],borderColor:'rgb(239,68,68)',borderDash:[5,3],tension:0.1,fill:false,borderWidth:2,pointRadius:0,hidden:true}
                         ]},
@@ -259,7 +471,7 @@
                     });
 
                     // 중기예측 14일 기상 박스플롯 — 통합 (3개월 예측과 동일 방식)
-                    const midDayLabels = Array.from({length: 14}, (_, i) => `D+${i+1}`);
+                    const midDayLabels = twDayLabels;
                     const midWindPattern = [
                         {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
                         {range:[3,6],color:'rgba(59,130,246,0.6)',border:'rgb(59,130,246)'},
@@ -302,15 +514,21 @@
                     window._midDayLabels = midDayLabels;
                     window.updateMidBoxplot = function() {
                         if(charts.midCombinedBoxplot){charts.midCombinedBoxplot.destroy();delete charts.midCombinedBoxplot;}
-                        const sub = document.querySelector('input[name="midBoxplotSub"]:checked')?.value || 'none';
+                        const showTemp = document.getElementById('chkMidTemp2')?.checked;
+                        const showWave = document.getElementById('chkMidWave2')?.checked;
                         const datasets = [{label:'풍속 (m/s)',data:window._midWindData,backgroundColor:window._midWindColors,borderColor:window._midWindBorders,borderWidth:2,yAxisID:'y'}];
-                        const scales = {y:{position:'left',title:{display:true,text:'풍속 (m/s)'},beginAtZero:true}};
-                        if(sub==='temp'){
+                        const scales = {y:{position:'left',title:{display:true,text:'풍속 (m/s)'},min:0,max:30}};
+                        if(showTemp && showWave){
                             datasets.push({label:'기온 (℃)',data:window._midTempData,backgroundColor:'rgba(239,68,68,0.3)',borderColor:'rgb(239,68,68)',borderWidth:2,yAxisID:'y1'});
-                            scales.y1={position:'right',title:{display:true,text:'기온 (℃)'},grid:{drawOnChartArea:false}};
-                        } else if(sub==='wave'){
+                            datasets.push({label:'파고 (m)',data:window._midWaveData,backgroundColor:window._midWaveColors.map(c=>c.replace('0.6','0.3')),borderColor:window._midWaveBorders,borderWidth:2,yAxisID:'y2'});
+                            scales.y1={position:'right',title:{display:true,text:'기온 (℃)'},min:-10,max:40,grid:{drawOnChartArea:false}};
+                            scales.y2={position:'right',title:{display:true,text:'파고 (m)'},min:0,max:3.5,grid:{drawOnChartArea:false}};
+                        } else if(showTemp){
+                            datasets.push({label:'기온 (℃)',data:window._midTempData,backgroundColor:'rgba(239,68,68,0.3)',borderColor:'rgb(239,68,68)',borderWidth:2,yAxisID:'y1'});
+                            scales.y1={position:'right',title:{display:true,text:'기온 (℃)'},min:-10,max:40,grid:{drawOnChartArea:false}};
+                        } else if(showWave){
                             datasets.push({label:'파고 (m)',data:window._midWaveData,backgroundColor:window._midWaveColors.map(c=>c.replace('0.6','0.3')),borderColor:window._midWaveBorders,borderWidth:2,yAxisID:'y1'});
-                            scales.y1={position:'right',title:{display:true,text:'파고 (m)'},beginAtZero:true,grid:{drawOnChartArea:false}};
+                            scales.y1={position:'right',title:{display:true,text:'파고 (m)'},min:0,max:3.5,grid:{drawOnChartArea:false}};
                         }
                         charts.midCombinedBoxplot = new Chart(document.getElementById('midCombinedBoxplot').getContext('2d'),{
                             type:'boxplot',
@@ -326,7 +544,7 @@
                     const omEl = document.getElementById('midtermOmSummary');
                     if (omEl) {
                         const days = Array.from({length:14}, (_,i) => {
-                            const d = new Date(); d.setDate(d.getDate()+i+1);
+                            const d = new Date(twoWeekDate.current); d.setDate(d.getDate()+i+1);
                             const w = window._midWindData[i], t = window._midTempData[i], wv = window._midWaveData[i];
                             const windOk = w.median <= 10, waveOk = wv.median <= 1.5;
                             const tempOk = t.median >= 5 && t.median <= 30;
@@ -358,7 +576,9 @@
                 // Per Turbine (WTG #1 to #20) — Overview 3안 + 상세
                 if (document.getElementById('s_2week-content')?.offsetParent !== null) {
                     const TC = 20;
-                    const dLabels = Array.from({length: 14}, (_, i) => `D+${i+1}`);
+                    const twSel2 = new Date(twoWeekDate.current);
+                    const twFmtD2 = d => `${d.getMonth()+1}/${d.getDate()}`;
+                    const dLabels = Array.from({length:14},(_,i)=>{const dt=new Date(twSel2);dt.setDate(dt.getDate()+i+1);return twFmtD2(dt);});
                     // 날짜별 공통 풍황 팩터 (같은 날은 모든 터빈이 비슷한 경향)
                     const dayFactor = Array.from({length: 14}, (_, d) => {
                         const weekBase = d < 7 ? 1.0 : 0.95 + Math.random() * 0.1;
@@ -369,29 +589,25 @@
                     const tData = {};
                     for (let t = 1; t <= TC; t++) {
                         const perf = turbinePerf[t - 1];
-                        const daily = [], wind = [];
+                        const daily = [], wind = [], dailyDay = [], windDay = [];
                         for (let d = 0; d < 14; d++) {
                             const baseWind = 4 + dayFactor[d] * 6;
                             const tWind = parseFloat(Math.max(1, baseWind + (Math.random() - 0.5) * 2).toFixed(1));
                             wind.push(tWind);
-                            const power = Math.round(Math.max(10, tWind * 8 * perf * (1 + (Math.random() - 0.5) * 0.1)));
+                            // 3MW 터빈, 일간 최대 72MWh. 풍속 기반 이용률 계산
+                            const cf = tWind<3?0.02:tWind<6?0.1+tWind*0.03:tWind<10?0.25+tWind*0.04:tWind<15?0.6+tWind*0.015:0.85;
+                            const power = parseFloat(Math.min(72, Math.max(0, 72 * cf * perf * (0.95+Math.random()*0.1))).toFixed(1));
                             daily.push(power);
+                            // 08~18시 (10시간, 최대 30MWh)
+                            const dayWind = parseFloat(Math.max(1, tWind * (0.95 + Math.random()*0.1)).toFixed(1));
+                            windDay.push(dayWind);
+                            const dayPower = parseFloat(Math.min(30, power * (10/24) * (0.9 + Math.random()*0.2)).toFixed(1));
+                            dailyDay.push(dayPower);
                         }
-                        const w1 = daily.slice(0, 7).reduce((a, b) => a + b, 0);
-                        const w2 = daily.slice(7).reduce((a, b) => a + b, 0);
-                        tData[t] = { weekly: [w1, w2], daily, wind, total: daily.reduce((a, b) => a + b, 0) };
+                        const w1 = parseFloat(daily.slice(0, 7).reduce((a, b) => a + b, 0).toFixed(1));
+                        const w2 = parseFloat(daily.slice(7).reduce((a, b) => a + b, 0).toFixed(1));
+                        tData[t] = { weekly: [w1, w2], daily, wind, dailyDay, windDay, total: parseFloat(daily.reduce((a, b) => a + b, 0).toFixed(1)), totalDay: parseFloat(dailyDay.reduce((a,b)=>a+b,0).toFixed(1)) };
                     }
-                    const allVals = Object.values(tData).flatMap(d => d.daily);
-                    const gMin = Math.min(...allVals), gMax = Math.max(...allVals);
-                    const heatColor = (v, dayIdx) => {
-                        const dayVals = Object.values(tData).map(d => d.daily[dayIdx]);
-                        const dMin = Math.min(...dayVals), dMax = Math.max(...dayVals);
-                        const r = (v - dMin) / (dMax - dMin || 1);
-                        const palette = [[255,249,196],[200,230,201],[179,229,252],[129,212,250],[79,195,247]];
-                        const idx = Math.min(4, Math.floor(r * 5));
-                        const c = palette[idx];
-                        return `rgb(${c[0]},${c[1]},${c[2]})`;
-                    };
                     const windColor = (v) => v<3?'rgb(135,206,235)':v<6?'rgb(59,130,246)':v<10?'rgb(16,185,129)':v<15?'rgb(245,158,11)':'rgb(239,68,68)';
 
                     window.showTurbineDetail = (t) => {
@@ -419,8 +635,15 @@
                     };
 
                     // A안: 히트맵
-                    const renderHeatmap = (cid) => {
+                    const renderHeatmap = (cid, dailyKey='daily', windKey='wind', totalKey='total', maxMWh=72) => {
                         const c = document.getElementById(cid); if(!c) return;
+                        const step = maxMWh / 5;
+                        const palette = [[255,249,196],[200,230,201],[179,229,252],[129,212,250],[79,195,247]];
+                        const heatColorFn = (v) => {
+                            const idx = Math.min(4, Math.floor(v / step));
+                            const cl = palette[idx];
+                            return `rgb(${cl[0]},${cl[1]},${cl[2]})`;
+                        };
                         let h = '<div class="overflow-x-auto"><table class="w-full text-xs border-collapse"><thead><tr><th class="p-1 text-left sticky left-0 bg-white z-10">터빈</th>';
                         dLabels.forEach(l => { h += `<th class="p-1 text-center min-w-[44px]">${l}</th>`; });
                         h += '<th class="p-1 text-center min-w-[60px]">합계</th><th class="p-1 text-center min-w-[60px] text-red-500">손실</th></tr></thead><tbody>';
@@ -428,10 +651,10 @@
                         for (let t = 1; t <= TC; t++) {
                             const d = tData[t];
                             h += `<tr><td class="p-1 font-semibold sticky left-0 bg-white z-10 whitespace-nowrap cursor-pointer text-blue-600 hover:text-blue-800 hover:underline" onclick="showTurbineDetail(${t})">WTG #${t} <i class="fas fa-chevron-right text-[10px] ml-1"></i></td>`;
-                            d.daily.forEach((v,i) => { h += `<td class="p-1 text-center cursor-pointer hover:ring-2 hover:ring-blue-400 hover:rounded" data-mt-key="${t}_${i}" title="발전량: ${v} MWh / 풍속: ${d.wind[i]} m/s" onclick="openMaintenanceModal(${t},${i},${v},${d.wind[i]})"><div class="w-full rounded px-0.5 py-0.5 leading-tight" style="background:${heatColor(v,i)}"><div class="text-[10px] font-semibold text-gray-800">${v}</div><div class="text-[9px] text-gray-600">${d.wind[i]}</div></div></td>`; });
+                            d[dailyKey].forEach((v,i) => { h += `<td class="p-1 text-center cursor-pointer hover:ring-2 hover:ring-blue-400 hover:rounded" data-mt-key="${t}_${i}" title="발전량: ${v} MWh / 풍속: ${d[windKey][i]} m/s" onclick="openMaintenanceModal(${t},${i},${v},${d[windKey][i]})"><div class="w-full rounded px-0.5 py-0.5 leading-tight" style="background:${heatColorFn(v)}"><div class="text-[10px] font-semibold text-gray-800">${v}</div><div class="text-[9px] text-gray-600">${d[windKey][i]}</div></div></td>`; });
                             let loss = 0;
                             for (let i = 0; i < 14; i++) { const p = plans[`${t}_${i}`]; if(p){ const [sh,sm]=p.start.split(':').map(Number),[eh,em]=p.end.split(':').map(Number); loss+=Math.max(0,(eh+em/60)-(sh+sm/60))*5; } }
-                            h += `<td class="p-1 text-center font-semibold">${d.total}</td>`;
+                            h += `<td class="p-1 text-center font-semibold">${d[totalKey]}</td>`;
                             h += `<td class="p-1 text-center font-semibold text-red-500">${loss>0?`-${Math.round(loss)}`:''}</td></tr>`;
                         }
                         h += '</tbody></table></div>'; c.innerHTML = h;
@@ -467,10 +690,11 @@
                     };
 
                     renderHeatmap('heatmapA');
+                    renderHeatmap('heatmapDaytime','dailyDay','windDay','totalDay',30);
                     renderRanking('rankingA');
                     updateHeatmapMarkers();
                     updateMaintenanceLoss();
-                    window._reRenderHeatmap = () => { renderHeatmap('heatmapA'); updateHeatmapMarkers(); };
+                    window._reRenderHeatmap = () => { renderHeatmap('heatmapA'); renderHeatmap('heatmapDaytime','dailyDay','windDay','totalDay',30); updateHeatmapMarkers(); };
                 }
             }
             
@@ -994,6 +1218,13 @@
 
             // 정비 계획 모달
             window._maintenancePlans = JSON.parse(localStorage.getItem('maintenancePlans') || '{}');
+
+            window.switchHeatmap = function() {
+                const mode = document.querySelector('input[name="heatmapMode"]:checked')?.value || 'all';
+                document.getElementById('heatmapA').classList.toggle('hidden', mode !== 'all');
+                document.getElementById('heatmapDaytime').classList.toggle('hidden', mode !== 'daytime');
+                document.getElementById('heatmapLegendMax').textContent = mode === 'all' ? '72 MWh' : '30 MWh';
+            };
 
             window.openMaintenanceModal = function(turbine, dayIdx, power, wind) {
                 const d = new Date(); d.setDate(d.getDate() + dayIdx + 1);

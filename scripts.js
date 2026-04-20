@@ -428,7 +428,7 @@
                         for (let t = 1; t <= TC; t++) {
                             const d = tData[t];
                             h += `<tr><td class="p-1 font-semibold sticky left-0 bg-white z-10 whitespace-nowrap cursor-pointer text-blue-600 hover:text-blue-800 hover:underline" onclick="showTurbineDetail(${t})">WTG #${t} <i class="fas fa-chevron-right text-[10px] ml-1"></i></td>`;
-                            d.daily.forEach((v,i) => { h += `<td class="p-1 text-center cursor-pointer hover:ring-2 hover:ring-blue-400 hover:rounded" data-mt-key="${t}_${i}" title="발전량: ${v} MWh / 풍속: ${d.wind[i]} m/s" onclick="openMaintenanceModal(${t},${i},${v},${d.wind[i]})"><div class="w-full h-6 rounded" style="background:${heatColor(v,i)}"></div></td>`; });
+                            d.daily.forEach((v,i) => { h += `<td class="p-1 text-center cursor-pointer hover:ring-2 hover:ring-blue-400 hover:rounded" data-mt-key="${t}_${i}" title="발전량: ${v} MWh / 풍속: ${d.wind[i]} m/s" onclick="openMaintenanceModal(${t},${i},${v},${d.wind[i]})"><div class="w-full rounded px-0.5 py-0.5 leading-tight" style="background:${heatColor(v,i)}"><div class="text-[10px] font-semibold text-gray-800">${v}</div><div class="text-[9px] text-gray-600">${d.wind[i]}</div></div></td>`; });
                             let loss = 0;
                             for (let i = 0; i < 14; i++) { const p = plans[`${t}_${i}`]; if(p){ const [sh,sm]=p.start.split(':').map(Number),[eh,em]=p.end.split(':').map(Number); loss+=Math.max(0,(eh+em/60)-(sh+sm/60))*5; } }
                             h += `<td class="p-1 text-center font-semibold">${d.total}</td>`;

@@ -1,6 +1,18 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+        .om-tab-btn {
+            color: #6b7280;
+            background-color: #f3f4f6;
+        }
+        .om-tab-btn:hover {
+            background-color: #e5e7eb;
+            color: #2563eb;
+        }
+        .om-tab-btn.active {
+            background-color: #2563eb;
+            color: white;
+        }
         .sidebar-item {
             transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
         }

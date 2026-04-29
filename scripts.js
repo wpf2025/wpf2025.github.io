@@ -753,15 +753,21 @@
                     window._longWeekLabels = weekLabels;
                     window.updateLongBoxplot = function() {
                         if(charts.longCombinedBoxplot){charts.longCombinedBoxplot.destroy();delete charts.longCombinedBoxplot;}
-                        const sub = document.querySelector('input[name="longBoxplotSub"]:checked')?.value || 'none';
+                        const showTemp = document.getElementById('chkLongTemp')?.checked;
+                        const showWave = document.getElementById('chkLongWave')?.checked;
                         const datasets = [{label:'풍속 (m/s)',data:window._longWindData,backgroundColor:window._longWindColors,borderColor:window._longWindBorders,borderWidth:2,yAxisID:'y'}];
-                        const scales = {y:{position:'left',title:{display:true,text:'풍속 (m/s)'},beginAtZero:true}};
-                        if(sub==='temp'){
+                        const scales = {y:{position:'left',title:{display:true,text:'풍속 (m/s)'},min:0,max:30}};
+                        if(showTemp && showWave){
                             datasets.push({label:'기온 (℃)',data:window._longTempData,backgroundColor:'rgba(239,68,68,0.3)',borderColor:'rgb(239,68,68)',borderWidth:2,yAxisID:'y1'});
-                            scales.y1={position:'right',title:{display:true,text:'기온 (℃)'},grid:{drawOnChartArea:false}};
-                        } else if(sub==='wave'){
+                            datasets.push({label:'파고 (m)',data:window._longWaveData,backgroundColor:window._longWaveColors.map(c=>c.replace('0.6','0.3')),borderColor:window._longWaveBorders,borderWidth:2,yAxisID:'y2'});
+                            scales.y1={position:'right',title:{display:true,text:'기온 (℃)'},min:-10,max:40,grid:{drawOnChartArea:false}};
+                            scales.y2={position:'right',title:{display:true,text:'파고 (m)'},min:0,max:3.5,grid:{drawOnChartArea:false}};
+                        } else if(showTemp){
+                            datasets.push({label:'기온 (℃)',data:window._longTempData,backgroundColor:'rgba(239,68,68,0.3)',borderColor:'rgb(239,68,68)',borderWidth:2,yAxisID:'y1'});
+                            scales.y1={position:'right',title:{display:true,text:'기온 (℃)'},min:-10,max:40,grid:{drawOnChartArea:false}};
+                        } else if(showWave){
                             datasets.push({label:'파고 (m)',data:window._longWaveData,backgroundColor:window._longWaveColors.map(c=>c.replace('0.6','0.3')),borderColor:window._longWaveBorders,borderWidth:2,yAxisID:'y1'});
-                            scales.y1={position:'right',title:{display:true,text:'파고 (m)'},beginAtZero:true,grid:{drawOnChartArea:false}};
+                            scales.y1={position:'right',title:{display:true,text:'파고 (m)'},min:0,max:3.5,grid:{drawOnChartArea:false}};
                         }
                         charts.longCombinedBoxplot = new Chart(document.getElementById('longCombinedBoxplot').getContext('2d'),{
                             type:'boxplot',
@@ -777,211 +783,126 @@
             }
 
             // Details Chart
-            if (document.getElementById('details-content')?.offsetParent !== null) {
-                charts.probabilityDistributionChart = createChart(document.getElementById('probabilityDistributionChart')?.getContext('2d'), 'bar',
-                    ['낮음', '보통', '높음', '매우 높음'],
-                    [{ label: '발전량 확률 (%)', data: [15, 45, 30, 10], backgroundColor: 'rgba(234, 179, 8, 0.6)'}]
-                );
-            }
+            // details 섹션 제거됨
         };
         
         document.addEventListener('DOMContentLoaded', () => {
             const sidebarItems = document.querySelectorAll('.sidebar-item');
-            const contentSections = document.querySelectorAll('.content-section');
             const mainTitle = document.getElementById('main-title');
-            // setActiveSection 함수 내에서 '2week' 클릭시 터빈별 예측(div id="2week-turbine-content")이 기본 노출되도록 수정
-            const setActiveSection = (targetId) => {
-                const activeSidebarItem = document.querySelector(`.sidebar-item[data-target="${targetId}"]`);
-                if (activeSidebarItem) {
-                    mainTitle.textContent = activeSidebarItem.textContent.trim();
-                }
-        
-                contentSections.forEach(section => {
-                    const isTargetSection = section.id === `${targetId}-content` || section.id === `s_${targetId}-content`;
-                    section.classList.toggle('hidden', !isTargetSection);
-                });
-        
-                // 단기예측이면 발전소 전체 예측 탭 활성화
-                if (targetId === 'shortterm') {
-                    // 메인탭: 발전소 전체 예측 탭(id="shortterm-total-tab") 클릭 효과
-                    const mainTabs = document.querySelectorAll('#shorttermMainTabs .tab-button');
-                    mainTabs.forEach(tab => {
-                        tab.classList.remove('active');
-                        tab.setAttribute('aria-selected', 'false');
-                    });
-                    const totalTab = document.getElementById('shortterm-total-tab');
-                    if (totalTab) {
-                        totalTab.classList.add('active');
-                        totalTab.setAttribute('aria-selected', 'true');
-                    }
-        
-                    // 모든 main-tab-panel 숨김, 발전소 전체 예측만 노출
-                    const mainTabPanels = document.querySelectorAll('#shortterm-content .main-tab-panel');
-                    mainTabPanels.forEach(panel => {
-                        panel.classList.add('hidden');
-                    });
-                    const totalPanel = document.getElementById('shortterm-total-content');
-                    if (totalPanel) {
-                        totalPanel.classList.remove('hidden');
-                    }
-                }
-        
-                // 2주 예측이면 발전소 전체 예측 탭 활성화
-                if (targetId === '2week') {
-                    // 메인탭: 발전소 전체 예측 탭(id="2week-total-tab") 클릭 효과
-                    const mainTabs = document.querySelectorAll('#twoWeekMainTabs .tab-button');
-                    mainTabs.forEach(tab => {
-                        tab.classList.remove('active');
-                        tab.setAttribute('aria-selected', 'false');
-                    });
-                    const totalTab = document.getElementById('2week-total-tab');
-                    if (totalTab) {
-                        totalTab.classList.add('active');
-                        totalTab.setAttribute('aria-selected', 'true');
-                    }
-        
-                    // 모든 main-tab-panel 숨김, 발전소 전체 예측만 노출
-                    const mainTabPanels = document.querySelectorAll('#s_2week-content .main-tab-panel');
-                    mainTabPanels.forEach(panel => {
-                        panel.classList.add('hidden');
-                    });
-                    const totalPanel = document.getElementById('2week-total-content');
-                    if (totalPanel) {
-                        totalPanel.classList.remove('hidden');
-                    }
-                }
-                
-                // 장기예측은 3개월 예측만 있으므로 별도 처리 불필요
-        
+
+            // ===== 페이지 전환: 홈 vs O&M 상세 =====
+            const showHome = () => {
+                document.getElementById('home-content').classList.remove('hidden');
+                document.getElementById('om-detail-content').classList.add('hidden');
+                mainTitle.textContent = 'Home';
+                sidebarItems.forEach(i => i.classList.remove('active'));
+                document.querySelector('.sidebar-item[data-target="home"]')?.classList.add('active');
                 initChartsForCurrentView();
             };
 
+            const showOmDetail = (tab = 'overview') => {
+                document.getElementById('home-content').classList.add('hidden');
+                document.getElementById('om-detail-content').classList.remove('hidden');
+                mainTitle.textContent = 'O&M 발전소 현황';
+                sidebarItems.forEach(i => i.classList.remove('active'));
+                document.querySelector('.sidebar-item[data-target="om-detail"]')?.classList.add('active');
+                switchOmTab(tab);
+            };
+
+            // ===== O&M 탭 전환 =====
+            const switchOmTab = (tab) => {
+                // 탭 버튼 활성화
+                document.querySelectorAll('.om-tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.omTab === tab);
+                });
+                // 패널 전환
+                document.querySelectorAll('.om-tab-panel').forEach(p => p.classList.add('hidden'));
+                const panel = document.getElementById(`om-${tab}`);
+                if (panel) panel.classList.remove('hidden');
+
+                // 하루전/2주 기본 탭 초기화
+                if (tab === 'shortterm') {
+                    document.querySelectorAll('#shorttermMainTabs .tab-button').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+                    document.getElementById('shortterm-total-tab')?.classList.add('active');
+                    document.getElementById('shortterm-total-tab')?.setAttribute('aria-selected','true');
+                    document.querySelectorAll('#shortterm-content .main-tab-panel').forEach(p => p.classList.add('hidden'));
+                    document.getElementById('shortterm-total-content')?.classList.remove('hidden');
+                }
+                if (tab === '2week') {
+                    document.querySelectorAll('#twoWeekMainTabs .tab-button').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+                    document.getElementById('2week-total-tab')?.classList.add('active');
+                    document.getElementById('2week-total-tab')?.setAttribute('aria-selected','true');
+                    document.querySelectorAll('#s_2week-content .main-tab-panel').forEach(p => p.classList.add('hidden'));
+                    document.getElementById('2week-total-content')?.classList.remove('hidden');
+                }
+
+                initChartsForCurrentView();
+            };
+
+            // O&M 탭 버튼 클릭
+            document.querySelectorAll('.om-tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => switchOmTab(btn.dataset.omTab));
+            });
+
+            // ← 전체 버튼
+            document.getElementById('omBackBtn')?.addEventListener('click', showHome);
+
+            // 메인 홈에서 O&M 상세로 이동
+            window.navigateToOmDetail = (plant) => {
+                const sel = document.getElementById('omPlantSelect');
+                if (sel) sel.value = plant;
+                showOmDetail('overview');
+            };
+
+            // 사이드바 클릭
             sidebarItems.forEach(item => {
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
                     sidebarItems.forEach(i => i.classList.remove('active'));
                     item.classList.add('active');
-                    const targetId = item.getAttribute('data-target');
-                    setActiveSection(targetId);
+                    const target = item.dataset.target;
+                    if (target === 'home') { showHome(); return; }
+                    if (target === 'om-detail') { showOmDetail('overview'); return; }
+                    // 다른 메뉴는 placeholder (향후 구현)
+                    mainTitle.textContent = item.textContent.trim();
                 });
             });
 
+            // 로고 클릭 → 홈
+            document.getElementById('logo-link')?.addEventListener('click', (e) => { e.preventDefault(); showHome(); });
+
+            // 초기 화면: 홈
+            showHome();
+
+            // 오늘 기상예보 초기화
+            initTodayWeather();
+
             const setupTabs = (tabContainerSelector, parentOfPanelsSelector, panelChildClassName, defaultActiveIndex = 0) => {
-                console.log('setupTabs called:', tabContainerSelector, parentOfPanelsSelector, panelChildClassName);
                 const tabs = document.querySelectorAll(`${tabContainerSelector} [role="tab"]`);
                 const panelParentElement = document.querySelector(parentOfPanelsSelector);
-                
-                console.log('Found tabs:', tabs.length, 'Panel parent:', panelParentElement);
-                
-                if (!panelParentElement) {
-                    console.warn(`Tab panel parent container not found: ${parentOfPanelsSelector}`);
-                    return;
-                }
+                if (!panelParentElement) return;
                 const panels = Array.from(panelParentElement.children).filter(child => child.classList.contains(panelChildClassName));
-                console.log('Found panels:', panels.length);
-
-                if (tabs.length === 0) {
-                    // console.warn(`No tabs found for container: ${tabContainerSelector}`);
-                    return;
-                }
-                // It's okay if panels are not found for sub-tabs if the main tab is not active yet.
-                // Only warn if panels are missing for the main tab container itself.
-                if (panels.length === 0 && parentOfPanelsSelector === '#s_2week-content') { 
-                    // console.warn(`No panels found with class '${panelChildClassName}' in parent '${parentOfPanelsSelector}' for main tabs.`);
-                }
-
-                tabs.forEach((tab, index) => {
+                if (tabs.length === 0) return;
+                tabs.forEach((tab) => {
                     tab.addEventListener('click', (e) => {
-                        e.preventDefault(); 
-                        console.log('Tab clicked:', tab.id, 'Target:', tab.getAttribute('data-tabs-target'));
-                        
-                        tabs.forEach(t => {
-                            t.classList.remove('active');
-                            t.setAttribute('aria-selected', 'false');
-                        });
-                        tab.classList.add('active');
-                        tab.setAttribute('aria-selected', 'true');
-
-                        panels.forEach(panel => {
-                            panel.classList.add('hidden');
-                        });
-                        const targetPanelId = tab.getAttribute('data-tabs-target');
-                        const targetPanel = document.getElementById(targetPanelId.replace('#',''));
-                        if (targetPanel) {
-                            targetPanel.classList.remove('hidden');
-                            console.log('Panel shown:', targetPanelId);
-                        } else {
-                            console.log('Panel not found:', targetPanelId);
-                        }
-
-                        // 단기예측 터빈별 예측 탭 클릭 시 일평균 예측 서브탭 활성화
-                        if (tab.id === 'shortterm-turbine-tab') {
-                            // 서브탭 초기화
-                            const subTabs = document.querySelectorAll('#shorttermSubTabsTurbine .sub-tab-button');
-                            subTabs.forEach(subTab => {
-                                subTab.classList.remove('active');
-                                subTab.setAttribute('aria-selected', 'false');
-                            });
-                            
-                            // 일평균 예측 서브탭 활성화
-                            const dailyTab = document.getElementById('shortterm-daily-turbine-tab');
-                            if (dailyTab) {
-                                dailyTab.classList.add('active');
-                                dailyTab.setAttribute('aria-selected', 'true');
-                            }
-                            
-                            // 서브탭 패널 초기화
-                            const subPanels = document.querySelectorAll('#shorttermSubTabsTurbineContent .sub-tab-panel-item');
-                            subPanels.forEach(panel => {
-                                panel.classList.add('hidden');
-                            });
-                            
-                            // 일평균 예측 패널 활성화
-                            const dailyPanel = document.getElementById('shortterm-daily-turbine');
-                            if (dailyPanel) {
-                                dailyPanel.classList.remove('hidden');
-                            }
-                        }
-
-                        // 중기예측 터빈별 예측 탭 클릭 시 기본 설정
-                        if (tab.id === '2week-turbine-tab') {
-                            // 터빈별 예측 탭이 활성화될 때 차트 초기화를 위해 약간의 지연 후 차트 생성
-                            setTimeout(() => {
-                                initChartsForCurrentView();
-                            }, 100);
-                        }
-
-                        // 중기예측 정비 스케줄 최적화 탭 클릭 시 기본 설정
-                        if (tab.id === '2week-maintenance-tab') {
-                            // 정비 스케줄 탭이 활성화될 때 차트 초기화를 위해 약간의 지연 후 차트 생성
-                            setTimeout(() => {
-                                initChartsForCurrentView();
-                            }, 100);
-                        }
-
+                        e.preventDefault();
+                        tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+                        tab.classList.add('active'); tab.setAttribute('aria-selected', 'true');
+                        panels.forEach(panel => panel.classList.add('hidden'));
+                        const targetPanel = document.getElementById(tab.getAttribute('data-tabs-target').replace('#',''));
+                        if (targetPanel) targetPanel.classList.remove('hidden');
                         initChartsForCurrentView();
                     });
                 });
-                
                 if (tabs.length > defaultActiveIndex) {
                     tabs.forEach((tab, index) => {
-                        const isActive = (index === defaultActiveIndex);
-                        tab.classList.toggle('active', isActive);
-                        tab.setAttribute('aria-selected', isActive.toString());
-                        
-                        const targetPanelId = tab.getAttribute('data-tabs-target');
-                        const panelToShow = panels.find(p => p.id === targetPanelId.substring(1));
-                        panels.forEach(p => { // Make sure all panels are handled
-                            if (p === panelToShow) {
-                                p.classList.remove('hidden');
-                            } else {
-                                p.classList.add('hidden');
-                            }
-                        });
+                        tab.classList.toggle('active', index === defaultActiveIndex);
+                        tab.setAttribute('aria-selected', (index === defaultActiveIndex).toString());
                     });
+                    panels.forEach((p, index) => p.classList.toggle('hidden', index !== defaultActiveIndex));
                 }
             };
-            
+
             console.log('Setting up tabs...');
             setupTabs('#twoWeekMainTabs', '#s_2week-content', 'main-tab-panel', 0); 
             setupTabs('#shorttermMainTabs', '#shortterm-content', 'main-tab-panel', 0);
@@ -1041,19 +962,7 @@
                 });
             }
 
-            // 로고 클릭 시 메인화면(개요)으로 이동
-            const logoLink = document.getElementById('logo-link');
-            logoLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                setActiveSection('overview');
-            });
-
-            const initialTarget = 'overview';
-            document.querySelector(`.sidebar-item[data-target="${initialTarget}"]`).classList.add('active');
-            setActiveSection(initialTarget);
-            
-            // 오늘 기상예보 초기화
-            initTodayWeather();
+            // (로고 클릭 + 초기화는 위 showHome/navigateToOmDetail에서 처리)
 
             // 중기 박스플롯은 updateMidBoxplot()으로 통합 (initChartsForCurrentView 내에서 정의)
 
@@ -1076,7 +985,6 @@
                 panel.classList.remove('hidden');
                 setTimeout(() => {
                     createModalCharts(weekNumber);
-                    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }, 50);
             };
             
@@ -1148,8 +1056,6 @@
                     </div>`;
 
                 panel.classList.remove('hidden');
-                panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
                 const windspeedColors2 = windData.map(speed => {
                     if (speed < 3) return 'rgba(239, 68, 68, 0.8)';
                     else if (speed < 6) return 'rgba(245, 158, 11, 0.8)';

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="version" content="1.7.0">
+    <meta name="version" content="1.8.0">
     <title>O&M을 위한 풍력 예측 서비스</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -19,51 +19,151 @@
             <div class="p-6 text-xl font-semibold text-white border-b border-gray-700">
                 <a href="#" class="flex items-center hover:text-blue-300 transition-colors duration-200" id="logo-link">
                     <i class="fas fa-wind mr-2 flex-shrink-0"></i>
-                    <span class="leading-tight">O&M을 위한<br>풍력 예측 서비스</span>
+                    <span class="leading-tight">WPF Forecast</span>
                 </a>
             </div>
-            <nav class="flex-1 mt-4">
-                <a href="#" class="sidebar-item active block py-3 px-6" data-target="overview">
-                    <i class="fas fa-tachometer-alt mr-3 w-5 text-center"></i><span data-i18n="sidebar.overview">서남해해상풍력</span>
+            <nav class="flex-1 mt-4 overflow-y-auto">
+                <a href="#" class="sidebar-item active block py-3 px-6" data-target="home">
+                    <i class="fas fa-home mr-3 w-5 text-center"></i>Home
                 </a>
-                <a href="#" class="sidebar-item block py-3 px-6" data-target="shortterm">
-                    <i class="fas fa-clock mr-3 w-5 text-center"></i><span data-i18n="sidebar.shortterm">하루전예측</span>
+                <a href="#" class="sidebar-item block py-3 px-6" data-target="om-detail">
+                    <i class="fas fa-wind mr-3 w-5 text-center"></i>O&M 발전소
                 </a>
-                <a href="#" class="sidebar-item block py-3 px-6" data-target="2week">
-                    <i class="fas fa-calendar-week mr-3 w-5 text-center"></i><span data-i18n="sidebar.midterm">2주예측</span>
+                <a href="#" class="sidebar-item block py-3 px-6" data-target="source">
+                    <i class="fas fa-database mr-3 w-5 text-center"></i>Source 관리
                 </a>
-                <a href="#" class="sidebar-item block py-3 px-6" data-target="longterm">
-                    <i class="fas fa-calendar-alt mr-3 w-5 text-center"></i><span data-i18n="sidebar.longterm">3개월예측</span>
+                <a href="#" class="sidebar-item block py-3 px-6" data-target="model">
+                    <i class="fas fa-brain mr-3 w-5 text-center"></i>Model 관리
+                    <i class="fas fa-chevron-down text-xs ml-auto"></i>
                 </a>
-                <a href="#" class="sidebar-item block py-3 px-6" data-target="details">
-                    <i class="fas fa-info-circle mr-3 w-5 text-center"></i><span data-i18n="sidebar.details">상세 정보</span>
+                <a href="#" class="sidebar-item block py-3 px-6" data-target="forecast">
+                    <i class="fas fa-chart-line mr-3 w-5 text-center"></i>예측 관리
+                    <i class="fas fa-chevron-down text-xs ml-auto"></i>
+                </a>
+                <a href="#" class="sidebar-item block py-3 px-6" data-target="interface">
+                    <i class="fas fa-exchange-alt mr-3 w-5 text-center"></i>Interface 관리
+                </a>
+                <a href="#" class="sidebar-item block py-3 px-6" data-target="monitoring">
+                    <i class="fas fa-desktop mr-3 w-5 text-center"></i>모니터링
+                    <i class="fas fa-chevron-down text-xs ml-auto"></i>
+                </a>
+                <a href="#" class="sidebar-item block py-3 px-6" data-target="approval">
+                    <i class="fas fa-check-circle mr-3 w-5 text-center"></i>승인 관리
+                </a>
+                <a href="#" class="sidebar-item block py-3 px-6" data-target="system">
+                    <i class="fas fa-cog mr-3 w-5 text-center"></i>시스템 관리
+                    <i class="fas fa-chevron-down text-xs ml-auto"></i>
                 </a>
             </nav>
-            <div class="p-4 border-t border-gray-700">
-                <p class="text-xs text-gray-400">버전 1.7.0</p>
+            <div class="p-4 border-t border-gray-700 flex items-center gap-3">
+                <div class="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center"><i class="fas fa-user text-sm"></i></div>
+                <div><p class="text-sm font-semibold">관리자</p><p class="text-xs text-gray-400">Last : 2026-04-29 09:00</p></div>
+                <i class="fas fa-sign-out-alt ml-auto text-gray-400 hover:text-white cursor-pointer"></i>
             </div>
         </aside>
 
         <main class="flex-1 flex flex-col overflow-hidden">
-            <header class="bg-white shadow-md p-4 flex justify-between items-center">
-                <h1 id="main-title" class="text-xl font-semibold text-gray-700">서남해해상풍력</h1>
-                <div class="flex items-center space-x-4">
-                    <button class="text-gray-500 hover:text-blue-600 relative">
-                        <i class="fas fa-bell fa-lg"></i>
-                        <span class="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">2</span>
-                    </button>
-                    <button id="langToggle" class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                        <i class="fas fa-language mr-1"></i>
-                        <span id="langText">EN</span>
-                    </button>
-                    <div class="flex items-center">
-                        <span class="text-sm text-gray-700">사용자명</span>
-                    </div>
-                </div>
-            </header>
-
+            <h1 id="main-title" class="hidden"></h1>
             <div class="flex-1 p-6 overflow-y-auto">
-                <section id="overview-content" class="content-section">
+
+                <!-- ===== 메인 홈 대시보드 ===== -->
+                <section id="home-content" class="content-section">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        <!-- 서버 자원 현황 -->
+                        <div class="card">
+                            <h3 class="text-lg font-semibold mb-4"><i class="fas fa-server mr-2 text-gray-600"></i>서버 자원 현황</h3>
+                            <div class="grid grid-cols-3 gap-4 text-center">
+                                <div><div class="w-20 h-20 mx-auto rounded-full border-4 border-green-400 flex items-center justify-center"><span class="text-xl font-bold text-green-600">23%</span></div><p class="mt-2 text-sm text-gray-500">CPU</p></div>
+                                <div><div class="w-20 h-20 mx-auto rounded-full border-4 border-purple-400 flex items-center justify-center"><span class="text-xl font-bold text-purple-600">61%</span></div><p class="mt-2 text-sm text-gray-500">MEMORY</p></div>
+                                <div><div class="w-20 h-20 mx-auto rounded-full border-4 border-cyan-400 flex items-center justify-center"><span class="text-xl font-bold text-cyan-600">45%</span></div><p class="mt-2 text-sm text-gray-500">DISK</p></div>
+                            </div>
+                        </div>
+                        <!-- 모델 학습/추론 -->
+                        <div class="card">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-semibold"><i class="fas fa-brain mr-2 text-gray-600"></i>모델 학습/추론</h3>
+                                <a href="#" class="text-sm text-blue-600 hover:underline">상세 →</a>
+                            </div>
+                            <div class="grid grid-cols-4 gap-4 text-center">
+                                <div><p class="text-3xl font-bold text-gray-800">9</p><p class="text-xs text-gray-500">등록 모델</p></div>
+                                <div><p class="text-3xl font-bold text-gray-800">12</p><p class="text-xs text-gray-500">실행 TASK</p></div>
+                                <div><p class="text-3xl font-bold text-gray-800">2h</p><p class="text-xs text-gray-500">최근 학습</p></div>
+                                <div><p class="text-3xl font-bold text-red-500">3</p><p class="text-xs text-gray-500">승인 대기</p></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- O&M 발전소 현황 -->
+                    <div class="card mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold"><i class="fas fa-wind mr-2 text-blue-600"></i>O&M 발전소 현황</h3>
+                            <a href="#" class="text-sm text-blue-600 hover:underline" onclick="event.preventDefault();navigateToOmDetail('서남해')">상세 →</a>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                            <div class="bg-gray-50 rounded-xl p-5 border hover:shadow-md transition-shadow cursor-pointer" onclick="navigateToOmDetail('서남해')">
+                                <div class="flex justify-between items-center mb-3"><h4 class="font-bold text-gray-800">서남해해상풍력</h4><span class="text-sm text-gray-400">60MW</span></div>
+                                <div class="grid grid-cols-3 gap-2 text-center">
+                                    <div><p class="text-xs text-gray-500">평균 풍속</p><p class="text-lg font-bold text-blue-700">8.9 m/s</p></div>
+                                    <div><p class="text-xs text-gray-500">D+1 예측</p><p class="text-lg font-bold text-gray-800">969 MWh</p></div>
+                                    <div><p class="text-xs text-gray-500">2주 예측</p><p class="text-lg font-bold text-gray-800">5.7 GWh</p></div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-5 border hover:shadow-md transition-shadow cursor-pointer" onclick="navigateToOmDetail('월정')">
+                                <div class="flex justify-between items-center mb-3"><h4 class="font-bold text-gray-800">월정육상풍력</h4><span class="text-sm text-gray-400">3MW</span></div>
+                                <div class="grid grid-cols-3 gap-2 text-center">
+                                    <div><p class="text-xs text-gray-500">평균 풍속</p><p class="text-lg font-bold text-blue-700">5.2 m/s</p></div>
+                                    <div><p class="text-xs text-gray-500">D+1 예측</p><p class="text-lg font-bold text-gray-800">28 MWh</p></div>
+                                    <div><p class="text-xs text-gray-500">2주 예측</p><p class="text-lg font-bold text-gray-800">0.3 GWh</p></div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-5 border hover:shadow-md transition-shadow cursor-pointer" onclick="navigateToOmDetail('탐라')">
+                                <div class="flex justify-between items-center mb-3"><h4 class="font-bold text-gray-800">탐라해상풍력</h4><span class="text-sm text-gray-400">30MW</span></div>
+                                <div class="grid grid-cols-3 gap-2 text-center">
+                                    <div><p class="text-xs text-gray-500">평균 풍속</p><p class="text-lg font-bold text-blue-700">6.9 m/s</p></div>
+                                    <div><p class="text-xs text-gray-500">D+1 예측</p><p class="text-lg font-bold text-gray-800">292 MWh</p></div>
+                                    <div><p class="text-xs text-gray-500">2주 예측</p><p class="text-lg font-bold text-gray-800">1.9 GWh</p></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- VPP 예측 현황 -->
+                    <div class="card">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold"><i class="fas fa-chart-line mr-2 text-green-600"></i>VPP 예측 현황</h3>
+                            <a href="#" class="text-sm text-blue-600 hover:underline">상세 →</a>
+                        </div>
+                        <table class="w-full text-sm">
+                            <thead><tr class="border-b"><th class="text-left py-2 text-gray-500">발전소</th><th class="text-center py-2 text-gray-500">MAE DA</th><th class="text-center py-2 text-gray-500">MAE RT</th><th class="text-center py-2 text-gray-500">NMAE DA</th><th class="text-center py-2 text-gray-500">NMAE RT</th><th class="text-center py-2 text-gray-500">수집</th><th class="text-center py-2 text-gray-500">전송</th></tr></thead>
+                            <tbody>
+                                <tr class="border-b hover:bg-gray-50 cursor-pointer"><td class="py-3 font-semibold">월정육상풍력 →</td><td class="text-center">2.96 m/s</td><td class="text-center">1.67 m/s</td><td class="text-center">5.1 %</td><td class="text-center">4.7 %</td><td class="text-center text-green-500">✓</td><td class="text-center text-green-500">✓</td></tr>
+                                <tr class="hover:bg-gray-50 cursor-pointer"><td class="py-3 font-semibold">탐라해상풍력 →</td><td class="text-center">1.10 m/s</td><td class="text-center">1.74 m/s</td><td class="text-center">6.0 %</td><td class="text-center">4.6 %</td><td class="text-center text-green-500">✓</td><td class="text-center text-green-500">✓</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- ===== O&M 상세 페이지 래퍼 ===== -->
+                <section id="om-detail-content" class="content-section hidden">
+                    <!-- 상단 네비게이션 바 -->
+                    <div class="flex items-center gap-3 mb-4 bg-white rounded-lg shadow-sm p-2">
+                        <button id="omBackBtn" class="px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                            <i class="fas fa-arrow-left mr-1"></i> 전체
+                        </button>
+                        <select id="omPlantSelect" class="px-3 py-2 text-sm font-semibold border rounded-lg bg-white">
+                            <option value="서남해">서남해 ▽</option>
+                            <option value="월정">월정 ▽</option>
+                            <option value="탐라">탐라 ▽</option>
+                        </select>
+                        <div class="flex-1 flex gap-1 ml-2">
+                            <button class="om-tab-btn px-4 py-2 text-sm font-semibold rounded-lg transition-colors active" data-om-tab="overview">Overview</button>
+                            <button class="om-tab-btn px-4 py-2 text-sm font-semibold rounded-lg transition-colors" data-om-tab="shortterm">하루 전 예측</button>
+                            <button class="om-tab-btn px-4 py-2 text-sm font-semibold rounded-lg transition-colors" data-om-tab="2week">2주 예측</button>
+                            <button class="om-tab-btn px-4 py-2 text-sm font-semibold rounded-lg transition-colors" data-om-tab="longterm">3개월 예측</button>
+                        </div>
+                    </div>
+
+                    <!-- O&M 탭 콘텐츠: Overview (기존 overview-content) -->
+                    <div id="om-overview" class="om-tab-panel">
+                <section id="overview-content">
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="lg:col-span-2 space-y-6">
                             <div class="card">
@@ -116,8 +216,11 @@
                         </div>
                     </div>
                 </section>
+                    </div><!-- /om-overview -->
 
-                <section id="shortterm-content" class="content-section hidden">
+                    <!-- O&M 탭 콘텐츠: 하루전 예측 -->
+                    <div id="om-shortterm" class="om-tab-panel hidden">
+                <section id="shortterm-content">
                     <div class="flex items-center justify-between mb-2">
                         <h2 class="section-title mb-0">하루전 예측</h2>
                         <div class="flex items-center gap-2">
@@ -165,8 +268,11 @@
                     </div>
 
                 </section>
+                    </div><!-- /om-shortterm -->
 
-                <section id="s_2week-content" class="content-section hidden">
+                    <!-- O&M 탭 콘텐츠: 2주 예측 -->
+                    <div id="om-2week" class="om-tab-panel hidden">
+                <section id="s_2week-content">
                     <div class="flex items-center justify-between mb-2">
                         <h2 class="section-title mb-0">2주 예측</h2>
                         <div class="flex items-center gap-2">
@@ -300,21 +406,23 @@
                     </div>
 
                 </section>
+                    </div><!-- /om-2week -->
 
-                <section id="longterm-content" class="content-section hidden">
+                    <!-- O&M 탭 콘텐츠: 3개월 예측 -->
+                    <div id="om-longterm" class="om-tab-panel hidden">
+                <section id="longterm-content">
                     <h2 class="section-title">3개월 예측</h2>
                     
                     <div id="longterm-3month-content" class="main-tab-panel">
                         
                         <!-- 기상 예측 섹션 -->
                         <div class="card mb-6">
-                            <h4 class="text-lg font-semibold mb-4">기상 예측 (12주)</h4>
+                            <h4 class="text-lg font-semibold mb-4">기상 예측 (3개월)</h4>
                             <p class="text-sm text-gray-600 mb-2">각 주차를 클릭하면 해당 주의 상세 기상 분포를 확인할 수 있습니다.</p>
                             <div class="flex gap-4 mb-4">
-                                <label class="inline-flex items-center text-sm"><input type="checkbox" checked disabled class="mr-1 text-blue-600">풍속 (좌축)</label>
-                                <label class="inline-flex items-center text-sm"><input type="radio" name="longBoxplotSub" value="none" checked class="mr-1 text-blue-600" onchange="updateLongBoxplot()">단독</label>
-                                <label class="inline-flex items-center text-sm"><input type="radio" name="longBoxplotSub" value="temp" class="mr-1 text-blue-600" onchange="updateLongBoxplot()">+ 기온 (우축)</label>
-                                <label class="inline-flex items-center text-sm"><input type="radio" name="longBoxplotSub" value="wave" class="mr-1 text-blue-600" onchange="updateLongBoxplot()">+ 파고 (우축)</label>
+                                <label class="inline-flex items-center text-sm"><input type="checkbox" checked disabled class="mr-1 text-blue-600">풍속 (좌축, 0~30 m/s)</label>
+                                <label class="inline-flex items-center text-sm"><input type="checkbox" id="chkLongTemp" class="mr-1 text-blue-600" onchange="updateLongBoxplot()">기온 (-10~40°C)</label>
+                                <label class="inline-flex items-center text-sm"><input type="checkbox" id="chkLongWave" class="mr-1 text-blue-600" onchange="updateLongBoxplot()">파고 (0~3.5 m)</label>
                             </div>
                             
                             <div class="mb-6">
@@ -371,28 +479,9 @@
                         
                     </div>
                 </section>
+                    </div><!-- /om-longterm -->
 
-
-                <section id="details-content" class="content-section hidden">
-                    <h2 class="section-title">상세 정보 및 신뢰도</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="card">
-                            <h3 class="text-xl font-semibold mb-3">예측 확률 분포 (예시)</h3>
-                            <p class="mb-2 text-sm">확인할 기간 선택: <select class="text-sm p-1 border rounded-md"><option>다음 주</option><option>다음 달</option></select></p>
-                            <div class="chart-container h-[250px]"><canvas id="probabilityDistributionChart"></canvas></div>
-                        </div>
-                        <div class="card">
-                            <h3 class="text-xl font-semibold mb-3">데이터 소스 및 모델 정보</h3>
-                            <ul class="list-disc list-inside text-sm space-y-1 text-gray-700">
-                                <li>기상 예측 모델: GFS, ECMWF (앙상블)</li>
-                                <li>과거 데이터 기간: 2015년 ~ 현재</li>
-                                <li>예측 모델: LSTM 기반 시계열 모델 v2.1.2</li>
-                                <li>주요 가정: 터빈 가용률 95% 이상</li>
-                                <li>최근 업데이트: 2025-05-30 13:00 KST</li>
-                            </ul>
-                        </div>
-                    </div>
-                </section>
+                </section><!-- /om-detail-content -->
             </div>
         </main>
     </div>

@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2026-04-29
+
+### Changed — 메뉴 구조 재편
+- **사이드바 변경**: O&M 전용 메뉴 → WPF 시스템 전체 메뉴 (Home, Source 관리, Model 관리, 예측 관리, Interface 관리, 모니터링, 승인 관리, 시스템 관리)
+- **사이드바 하단**: 관리자 프로필 + 로그아웃 버튼 추가
+
+### Added — 메인 홈 대시보드
+- **서버 자원 현황**: CPU / MEMORY / DISK 사용률 표시
+- **모델 학습/추론**: 등록 모델 수, 실행 TASK, 최근 학습, 승인 대기
+- **O&M 발전소 현황**: 서남해/월정/탐라 3개 발전소 카드 (평균 풍속, D+1 예측, 2주 예측)
+  - 카드 클릭 또는 `상세 →` 클릭 시 O&M 상세 페이지로 이동
+- **VPP 예측 현황**: 발전소별 MAE DA/RT, NMAE DA/RT, 수집/전송 상태 테이블
+
+### Added — O&M 상세 페이지
+- **상단 네비게이션 바**: `← 전체` (홈 복귀) + 발전소 드롭다운 (서남해/월정/탐라) + Overview / 하루 전 예측 / 2주 예측 / 3개월 예측 탭
+- 기존 서남해해상풍력, 하루전예측, 2주예측, 3개월예측 페이지를 O&M 상세 탭으로 이동
+
+### Removed
+- 기존 메인 헤더 (O&M 상세 페이지 자체 헤더로 대체)
+- 상세 정보 페이지 (details-content) 제거
+- O&M 상세 페이지 상단 우측 알림/언어/사용자 정보 제거
+
+### Changed
+- **3개월 기상 박스플롯**: 라디오(단독/+기온/+파고) → 체크박스 자유 조합 (2주예측과 동일)
+  - Y축 범위 고정: 풍속 0~30, 기온 -10~40, 파고 0~3.5
+  - 3축 동시 표시 지원
+- **3개월 기상 예측 타이틀**: "기상 예측 (12주)" → "기상 예측 (3개월)"
+- **박스플롯 클릭 시 스크롤 유지**: 2주/3개월 예측 모두 상세 패널 열릴 때 스크롤 위치 유지
+
 ## [1.7.0] - 2026-04-20
 
 ### Added — 하루전예측

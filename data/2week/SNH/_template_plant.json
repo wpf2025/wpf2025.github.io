@@ -1,0 +1,21 @@
+{
+  "forecast_date": "YYYY-MM-DD",
+  "plant": "서남해",
+  "period": { "start": "YYYY-MM-DD", "end": "YYYY-MM-DD" },
+  "weather": {
+    "hourly": {
+      "wind_speed": "[[24개 float m/s], ...14일] (14x24 배열)",
+      "temperature": "[[24개 float °C], ...14일] (14x24 배열)",
+      "wave_height": "[[24개 float m], ...14일] (14x24 배열)"
+    },
+    "daily_stats": {
+      "wind_speed": "[{min, q1, median, q3, max}, ...14개]",
+      "temperature": "[{min, q1, median, q3, max}, ...14개]",
+      "wave_height": "[{min, q1, median, q3, max}, ...14개]"
+    }
+  },
+  "power": {
+    "daily_total": "[14개 int MWh] (발전소 전체 일 총 발전량)",
+    "weekly_total": "[2개 int MWh] (1주차, 2주차 합산)"
+  }
+}

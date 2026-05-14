@@ -1,4 +1,23 @@
         // ==================== 풍력 발전량 예측 시스템 v1.3.4 ====================
+
+        // ==================== 2주 예측 데이터 로더 ====================
+        const loadTwoWeekData = async (plant, date) => {
+            const plantCode = {'서남해':'SNH','월정':'WJ','탐라':'TR'}[plant] || plant;
+            const base = `data/2week/${plantCode}/${date}`;
+            try {
+                const [plantRes, turbinesRes] = await Promise.all([
+                    fetch(`${base}_plant.json`),
+                    fetch(`${base}_turbines.json`)
+                ]);
+                if (!plantRes.ok || !turbinesRes.ok) return null;
+                const plantData = await plantRes.json();
+                const turbinesData = await turbinesRes.json();
+                return { plant: plantData, turbines: turbinesData };
+            } catch (e) {
+                return null;
+            }
+        };
+
         // 기상 기준 상수
         const WEATHER_THRESHOLDS = {
             windSpeed: { 
@@ -192,7 +211,7 @@
             destroyAllCharts(); 
 
             // Overview Charts - Turbine Map
-            if (document.getElementById('turbineMap') && !document.getElementById('turbineMap')._leaflet_id) {
+            if (document.getElementById('overview-content')?.offsetParent !== null && document.getElementById('turbineMap') && !document.getElementById('turbineMap')._leaflet_id) {
                 const map = L.map('turbineMap').setView([35.485, 126.317], 10);
                 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '© Esri', maxZoom: 18 }).addTo(map);
                 const turbines = [[35.489977,126.340817],[35.484832,126.334644],[35.479686,126.328472],[35.474539,126.322300],[35.469392,126.316130],[35.493631,126.333218],[35.488485,126.327045],[35.483338,126.320874],[35.478191,126.314702],[35.473044,126.308532],[35.497284,126.325619],[35.492137,126.319446],[35.486990,126.313275],[35.481844,126.307104],[35.476696,126.300934],[35.500937,126.318019],[35.495768,126.311821],[35.490642,126.305675],[35.485495,126.299504],[35.480348,126.293335]];
@@ -458,60 +477,7 @@
                     const twFmtD = d => `${d.getMonth()+1}/${d.getDate()}`;
                     const twDayLabels = Array.from({length:14},(_,i)=>{const dt=new Date(twSel);dt.setDate(dt.getDate()+i+1);return twFmtD(dt);});
 
-                    // 일평균 차트
-                    const dailyPowerData = generateRandomData(14, 720, 1440);
-                    window._midDailyPower = dailyPowerData;
-                    charts.twoWeekDailyTotalChart = new Chart(document.getElementById('twoWeekDailyTotalChart')?.getContext('2d'), {
-                        type:'line',
-                        data:{labels:twDayLabels, datasets:[
-                            {label:'일일 총 발전량 (MWh)',data:dailyPowerData,borderColor:'rgb(245,158,11)',tension:0.1,fill:false},
-                            {label:'정비 반영 발전량 (MWh)',data:[...dailyPowerData],borderColor:'rgb(239,68,68)',borderDash:[5,3],tension:0.1,fill:false,borderWidth:2,pointRadius:0,hidden:true}
-                        ]},
-                        options:{...defaultChartOptions,plugins:{legend:{display:true}}}
-                    });
-
-                    // 중기예측 14일 기상 박스플롯 — 통합 (3개월 예측과 동일 방식)
-                    const midDayLabels = twDayLabels;
-                    const midWindPattern = [
-                        {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
-                        {range:[3,6],color:'rgba(59,130,246,0.6)',border:'rgb(59,130,246)'},
-                        {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
-                        {range:[10,15],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
-                        {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
-                        {range:[0,3],color:'rgba(135,206,235,0.6)',border:'rgb(135,206,235)'},
-                        {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
-                        {range:[15,22],color:'rgba(239,68,68,0.6)',border:'rgb(239,68,68)'},
-                        {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
-                        {range:[3,6],color:'rgba(59,130,246,0.6)',border:'rgb(59,130,246)'},
-                        {range:[10,15],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
-                        {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
-                        {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
-                        {range:[3,6],color:'rgba(59,130,246,0.6)',border:'rgb(59,130,246)'}
-                    ];
-                    const midWavePattern = [
-                        {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
-                        {range:[0.3,0.7],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
-                        {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
-                        {range:[1.4,2.2],color:'rgba(239,68,68,0.6)',border:'rgb(239,68,68)'},
-                        {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
-                        {range:[0.3,0.7],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
-                        {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
-                        {range:[2.0,3.2],color:'rgba(220,38,127,0.6)',border:'rgb(220,38,127)'},
-                        {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
-                        {range:[1.4,2.2],color:'rgba(239,68,68,0.6)',border:'rgb(239,68,68)'},
-                        {range:[0.1,0.4],color:'rgba(34,197,94,0.6)',border:'rgb(34,197,94)'},
-                        {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
-                        {range:[0.3,0.7],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
-                        {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'}
-                    ];
-                    window._midWindData = midWindPattern.map(p=>generateBoxplotData(p.range[0],p.range[1]));
-                    window._midWindColors = midWindPattern.map(p=>p.color);
-                    window._midWindBorders = midWindPattern.map(p=>p.border);
-                    window._midTempData = midDayLabels.map(()=>generateBoxplotData(5,25));
-                    window._midWaveData = midWavePattern.map(p=>generateBoxplotData(p.range[0],p.range[1]));
-                    window._midWaveColors = midWavePattern.map(p=>p.color);
-                    window._midWaveBorders = midWavePattern.map(p=>p.border);
-                    window._midDayLabels = midDayLabels;
+                    // updateMidBoxplot 함수 정의
                     window.updateMidBoxplot = function() {
                         if(charts.midCombinedBoxplot){charts.midCombinedBoxplot.destroy();delete charts.midCombinedBoxplot;}
                         const showTemp = document.getElementById('chkMidTemp2')?.checked;
@@ -538,40 +504,125 @@
                                 scales,plugins:{legend:{display:datasets.length>1}}}
                         });
                     };
-                    updateMidBoxplot();
 
-                    // 14일 O&M 가능 여부 요약 테이블
-                    const omEl = document.getElementById('midtermOmSummary');
-                    if (omEl) {
-                        const days = Array.from({length:14}, (_,i) => {
-                            const d = new Date(twoWeekDate.current); d.setDate(d.getDate()+i+1);
-                            const w = window._midWindData[i], t = window._midTempData[i], wv = window._midWaveData[i];
-                            const windOk = w.median <= 10, waveOk = wv.median <= 1.5;
-                            const tempOk = t.median >= 5 && t.median <= 30;
-                            const status = (windOk && waveOk && tempOk) ? 'good' : (windOk && waveOk) ? 'warning' : 'danger';
-                            return {label:`D+${i+1}`, date:d, status, wind:w.median, temp:t.median, wave:wv.median};
+                    // 실데이터 로드 시도
+                    const plantName = document.getElementById('omPlantSelect')?.value || '서남해';
+                    const dateStr = formatDate(twoWeekDate.current);
+                    loadTwoWeekData(plantName, dateStr).then(realData => {
+                        if (realData && realData.plant) {
+                            const pd = realData.plant;
+                            window._twoWeekRealData = realData;
+                            window._midDailyPower = pd.power.daily_total;
+                            window._midWindData = pd.weather.daily_stats.wind_speed;
+                            window._midWindColors = pd.weather.daily_stats.wind_speed.map(s => {const m=s.median; return m<3?'rgba(135,206,235,0.6)':m<6?'rgba(59,130,246,0.6)':m<10?'rgba(16,185,129,0.6)':m<15?'rgba(245,158,11,0.6)':'rgba(239,68,68,0.6)';});
+                            window._midWindBorders = window._midWindColors.map(c=>c.replace('0.6','1'));
+                            window._midTempData = pd.weather.daily_stats.temperature;
+                            window._midWaveData = pd.weather.daily_stats.wave_height;
+                            window._midWaveColors = pd.weather.daily_stats.wave_height.map(s => {const m=s.median; return m<0.8?'rgba(16,185,129,0.6)':m<1.5?'rgba(245,158,11,0.6)':'rgba(239,68,68,0.6)';});
+                            window._midWaveBorders = window._midWaveColors.map(c=>c.replace('0.6','1'));
+                            window._midHourlyData = pd.weather.hourly;
+                            window._isRealData = true;
+                        } else {
+                            // fallback: 랜덤 생성
+                            window._twoWeekRealData = null;
+                            window._isRealData = false;
+                            const midWindPattern = [
+                                {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                                {range:[3,6],color:'rgba(59,130,246,0.6)',border:'rgb(59,130,246)'},
+                                {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                                {range:[10,15],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                                {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                                {range:[0,3],color:'rgba(135,206,235,0.6)',border:'rgb(135,206,235)'},
+                                {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                                {range:[15,22],color:'rgba(239,68,68,0.6)',border:'rgb(239,68,68)'},
+                                {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                                {range:[3,6],color:'rgba(59,130,246,0.6)',border:'rgb(59,130,246)'},
+                                {range:[10,15],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                                {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                                {range:[6,10],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                                {range:[3,6],color:'rgba(59,130,246,0.6)',border:'rgb(59,130,246)'}
+                            ];
+                            const midWavePattern = [
+                                {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                                {range:[0.3,0.7],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                                {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                                {range:[1.4,2.2],color:'rgba(239,68,68,0.6)',border:'rgb(239,68,68)'},
+                                {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                                {range:[0.3,0.7],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                                {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                                {range:[2.0,3.2],color:'rgba(220,38,127,0.6)',border:'rgb(220,38,127)'},
+                                {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                                {range:[1.4,2.2],color:'rgba(239,68,68,0.6)',border:'rgb(239,68,68)'},
+                                {range:[0.1,0.4],color:'rgba(34,197,94,0.6)',border:'rgb(34,197,94)'},
+                                {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'},
+                                {range:[0.3,0.7],color:'rgba(16,185,129,0.6)',border:'rgb(16,185,129)'},
+                                {range:[0.8,1.5],color:'rgba(245,158,11,0.6)',border:'rgb(245,158,11)'}
+                            ];
+                            window._midDailyPower = generateRandomData(14, 720, 1440);
+                            window._midWindData = midWindPattern.map(p=>generateBoxplotData(p.range[0],p.range[1]));
+                            window._midWindColors = midWindPattern.map(p=>p.color);
+                            window._midWindBorders = midWindPattern.map(p=>p.border);
+                            window._midTempData = twDayLabels.map(()=>generateBoxplotData(5,25));
+                            window._midWaveData = midWavePattern.map(p=>generateBoxplotData(p.range[0],p.range[1]));
+                            window._midWaveColors = midWavePattern.map(p=>p.color);
+                            window._midWaveBorders = midWavePattern.map(p=>p.border);
+                        }
+                        window._midDayLabels = twDayLabels;
+
+                        // 데이터 상태 배지 업데이트
+                        const badge = document.getElementById('twoWeekDataBadge');
+                        if (badge) {
+                            if (window._isRealData) {
+                                badge.textContent = '예측 데이터';
+                                badge.className = 'text-xs px-2 py-1 rounded-full ml-2 align-middle bg-blue-100 text-blue-700 font-bold';
+                            } else {
+                                badge.textContent = 'SAMPLE';
+                                badge.className = 'text-xs px-2 py-1 rounded-full ml-2 align-middle bg-red-100 text-red-600 font-bold';
+                            }
+                        }
+
+                        // 발전량 차트
+                        const dailyPowerData = window._midDailyPower;
+                        charts.twoWeekDailyTotalChart = new Chart(document.getElementById('twoWeekDailyTotalChart')?.getContext('2d'), {
+                            type:'line',
+                            data:{labels:twDayLabels, datasets:[
+                                {label:'일일 총 발전량 (MWh)',data:dailyPowerData,borderColor:'rgb(245,158,11)',tension:0.1,fill:false},
+                                {label:'정비 반영 발전량 (MWh)',data:[...dailyPowerData],borderColor:'rgb(239,68,68)',borderDash:[5,3],tension:0.1,fill:false,borderWidth:2,pointRadius:0,hidden:true}
+                            ]},
+                            options:{...defaultChartOptions,plugins:{legend:{display:true}}}
                         });
-                        const statusBg = {good:'bg-green-100 text-green-800',warning:'bg-yellow-100 text-yellow-800',danger:'bg-red-100 text-red-800'};
-                        const statusIcon = {good:'🟢',warning:'🟡',danger:'🔴'};
-                        const statusLabel = {good:'가능',warning:'조건부',danger:'불가'};
-                        const fmt = d => `${d.getMonth()+1}/${d.getDate()}`;
-                        omEl.innerHTML = `
-                            <h5 class="text-md font-semibold mb-3"><i class="fas fa-check-circle mr-2 text-blue-600"></i>14일 O&M 가능 여부 요약</h5>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-xs border-collapse">
-                                    <thead><tr class="bg-gray-50">
-                                        <th class="px-2 py-2 text-left text-gray-500 min-w-[50px]">일자</th>
-                                        ${days.map(d=>`<th class="px-1 py-2 text-center min-w-[52px]">${d.label}<br><span class="text-gray-400 font-normal">${fmt(d.date)}</span></th>`).join('')}
-                                    </tr></thead>
-                                    <tbody>
-                                        <tr><td class="px-2 py-2 font-semibold text-gray-600">종합</td>${days.map(d=>`<td class="px-1 py-2 text-center"><span class="inline-block px-2 py-1 rounded-full text-xs font-bold ${statusBg[d.status]}">${statusIcon[d.status]}</span></td>`).join('')}</tr>
-                                        <tr><td class="px-2 py-1 text-gray-500"><i class="fas fa-wind mr-1"></i>풍속</td>${days.map(d=>`<td class="px-1 py-1 text-center font-semibold ${d.wind<=10?'text-blue-600':'text-red-500'}">${d.wind<=10?'✓':'✗'}</td>`).join('')}</tr>
-                                        <tr><td class="px-2 py-1 text-gray-500"><i class="fas fa-thermometer-half mr-1"></i>기온</td>${days.map(d=>`<td class="px-1 py-1 text-center font-semibold ${(d.temp>=5&&d.temp<=30)?'text-blue-600':'text-red-500'}">${(d.temp>=5&&d.temp<=30)?'✓':'✗'}</td>`).join('')}</tr>
-                                        <tr><td class="px-2 py-1 text-gray-500"><i class="fas fa-water mr-1"></i>파고</td>${days.map(d=>`<td class="px-1 py-1 text-center font-semibold ${d.wave<=1.5?'text-blue-600':'text-red-500'}">${d.wave<=1.5?'✓':'✗'}</td>`).join('')}</tr>
-                                    </tbody>
-                                </table>
-                            </div>`;
-                    }
+
+                        // 박스플롯
+                        updateMidBoxplot();
+
+                        // O&M 요약
+                        const omEl = document.getElementById('midtermOmSummary');
+                        if (omEl) {
+                            const days = Array.from({length:14}, (_,i) => {
+                                const d = new Date(twoWeekDate.current); d.setDate(d.getDate()+i+1);
+                                const w = window._midWindData[i], t2 = window._midTempData[i], wv = window._midWaveData[i];
+                                const wMed = w.median !== undefined ? w.median : w;
+                                const tMed = t2.median !== undefined ? t2.median : t2;
+                                const wvMed = wv.median !== undefined ? wv.median : wv;
+                                const windOk = wMed <= 10, waveOk = wvMed <= 1.5, tempOk = tMed >= 5 && tMed <= 30;
+                                const status = (windOk && waveOk && tempOk) ? 'good' : (windOk && waveOk) ? 'warning' : 'danger';
+                                return {label:`D+${i+1}`, date:d, status, wind:wMed, temp:tMed, wave:wvMed};
+                            });
+                            const statusBg = {good:'bg-green-100 text-green-800',warning:'bg-yellow-100 text-yellow-800',danger:'bg-red-100 text-red-800'};
+                            const statusIcon = {good:'🟢',warning:'🟡',danger:'🔴'};
+                            const fmt = d => `${d.getMonth()+1}/${d.getDate()}`;
+                            omEl.innerHTML = `
+                                <h5 class="text-md font-semibold mb-3"><i class="fas fa-check-circle mr-2 text-blue-600"></i>14일 O&M 가능 여부 요약</h5>
+                                <div class="overflow-x-auto"><table class="w-full text-xs border-collapse"><thead><tr class="bg-gray-50"><th class="px-2 py-2 text-left text-gray-500 min-w-[50px]">일자</th>${days.map(d=>`<th class="px-1 py-2 text-center min-w-[52px]">${d.label}<br><span class="text-gray-400 font-normal">${fmt(d.date)}</span></th>`).join('')}</tr></thead><tbody>
+                                <tr><td class="px-2 py-2 font-semibold text-gray-600">종합</td>${days.map(d=>`<td class="px-1 py-2 text-center"><span class="inline-block px-2 py-1 rounded-full text-xs font-bold ${statusBg[d.status]}">${statusIcon[d.status]}</span></td>`).join('')}</tr>
+                                <tr><td class="px-2 py-1 text-gray-500"><i class="fas fa-wind mr-1"></i>풍속</td>${days.map(d=>`<td class="px-1 py-1 text-center font-semibold ${d.wind<=10?'text-blue-600':'text-red-500'}">${d.wind<=10?'✓':'✗'}</td>`).join('')}</tr>
+                                <tr><td class="px-2 py-1 text-gray-500"><i class="fas fa-thermometer-half mr-1"></i>기온</td>${days.map(d=>`<td class="px-1 py-1 text-center font-semibold ${(d.temp>=5&&d.temp<=30)?'text-blue-600':'text-red-500'}">${(d.temp>=5&&d.temp<=30)?'✓':'✗'}</td>`).join('')}</tr>
+                                <tr><td class="px-2 py-1 text-gray-500"><i class="fas fa-water mr-1"></i>파고</td>${days.map(d=>`<td class="px-1 py-1 text-center font-semibold ${d.wave<=1.5?'text-blue-600':'text-red-500'}">${d.wave<=1.5?'✓':'✗'}</td>`).join('')}</tr>
+                                </tbody></table></div>`;
+                        }
+                        // 정비 손실 업데이트
+                        if (typeof updateMaintenanceLoss === 'function') updateMaintenanceLoss();
+                    });
                 }
                 // Per Turbine (WTG #1 to #20) — Overview 3안 + 상세
                 if (document.getElementById('s_2week-content')?.offsetParent !== null) {
@@ -579,34 +630,53 @@
                     const twSel2 = new Date(twoWeekDate.current);
                     const twFmtD2 = d => `${d.getMonth()+1}/${d.getDate()}`;
                     const dLabels = Array.from({length:14},(_,i)=>{const dt=new Date(twSel2);dt.setDate(dt.getDate()+i+1);return twFmtD2(dt);});
-                    // 날짜별 공통 풍황 팩터 (같은 날은 모든 터빈이 비슷한 경향)
-                    const dayFactor = Array.from({length: 14}, (_, d) => {
-                        const weekBase = d < 7 ? 1.0 : 0.95 + Math.random() * 0.1;
-                        return weekBase * (0.7 + Math.random() * 0.6);
-                    });
-                    // 터빈별 성능 계수 (일부 터빈이 지속적으로 높거나 낮음)
-                    const turbinePerf = Array.from({length: TC}, () => 0.85 + Math.random() * 0.3);
+
                     const tData = {};
-                    for (let t = 1; t <= TC; t++) {
-                        const perf = turbinePerf[t - 1];
-                        const daily = [], wind = [], dailyDay = [], windDay = [];
-                        for (let d = 0; d < 14; d++) {
-                            const baseWind = 4 + dayFactor[d] * 6;
-                            const tWind = parseFloat(Math.max(1, baseWind + (Math.random() - 0.5) * 2).toFixed(1));
-                            wind.push(tWind);
-                            // 3MW 터빈, 일간 최대 72MWh. 풍속 기반 이용률 계산
-                            const cf = tWind<3?0.02:tWind<6?0.1+tWind*0.03:tWind<10?0.25+tWind*0.04:tWind<15?0.6+tWind*0.015:0.85;
-                            const power = parseFloat(Math.min(72, Math.max(0, 72 * cf * perf * (0.95+Math.random()*0.1))).toFixed(1));
-                            daily.push(power);
-                            // 08~18시 (10시간, 최대 30MWh)
-                            const dayWind = parseFloat(Math.max(1, tWind * (0.95 + Math.random()*0.1)).toFixed(1));
-                            windDay.push(dayWind);
-                            const dayPower = parseFloat(Math.min(30, power * (10/24) * (0.9 + Math.random()*0.2)).toFixed(1));
-                            dailyDay.push(dayPower);
+                    const realTurbines = window._twoWeekRealData?.turbines?.turbines;
+
+                    if (realTurbines && Object.keys(realTurbines).length >= TC) {
+                        // 실데이터에서 터빈별 데이터 생성
+                        for (let t = 1; t <= TC; t++) {
+                            const key = 'WTG' + String(t).padStart(2,'0');
+                            const td = realTurbines[key];
+                            const daily = [], wind = [], dailyDay = [], windDay = [];
+                            for (let d = 0; d < 14; d++) {
+                                const dayPower = td.hourly.power[d].reduce((a,b)=>a+b,0);
+                                const dayWind = +(td.hourly.wind_speed[d].reduce((a,b)=>a+b,0)/24).toFixed(1);
+                                daily.push(+dayPower.toFixed(1));
+                                wind.push(dayWind);
+                                // 08~18시 (index 8~17)
+                                const omPower = td.hourly.power[d].slice(8,18).reduce((a,b)=>a+b,0);
+                                const omWind = +(td.hourly.wind_speed[d].slice(8,18).reduce((a,b)=>a+b,0)/10).toFixed(1);
+                                dailyDay.push(+omPower.toFixed(1));
+                                windDay.push(omWind);
+                            }
+                            const w1 = +daily.slice(0,7).reduce((a,b)=>a+b,0).toFixed(1);
+                            const w2 = +daily.slice(7).reduce((a,b)=>a+b,0).toFixed(1);
+                            tData[t] = { weekly:[w1,w2], daily, wind, dailyDay, windDay, total:+daily.reduce((a,b)=>a+b,0).toFixed(1), totalDay:+dailyDay.reduce((a,b)=>a+b,0).toFixed(1) };
                         }
-                        const w1 = parseFloat(daily.slice(0, 7).reduce((a, b) => a + b, 0).toFixed(1));
-                        const w2 = parseFloat(daily.slice(7).reduce((a, b) => a + b, 0).toFixed(1));
-                        tData[t] = { weekly: [w1, w2], daily, wind, dailyDay, windDay, total: parseFloat(daily.reduce((a, b) => a + b, 0).toFixed(1)), totalDay: parseFloat(dailyDay.reduce((a,b)=>a+b,0).toFixed(1)) };
+                    } else {
+                        // fallback: 랜덤 생성
+                        const dayFactor = Array.from({length:14},(_,d)=>(d<7?1.0:0.95+Math.random()*0.1)*(0.7+Math.random()*0.6));
+                        const turbinePerf = Array.from({length:TC},()=>0.85+Math.random()*0.3);
+                        for (let t = 1; t <= TC; t++) {
+                            const perf = turbinePerf[t-1];
+                            const daily=[],wind=[],dailyDay=[],windDay=[];
+                            for (let d=0;d<14;d++) {
+                                const baseWind=4+dayFactor[d]*6;
+                                const tWind=+Math.max(1,baseWind+(Math.random()-0.5)*2).toFixed(1);
+                                wind.push(tWind);
+                                const cf=tWind<3?0.02:tWind<6?0.1+tWind*0.03:tWind<10?0.25+tWind*0.04:tWind<15?0.6+tWind*0.015:0.85;
+                                const power=+Math.min(72,Math.max(0,72*cf*perf*(0.95+Math.random()*0.1))).toFixed(1);
+                                daily.push(power);
+                                const dW=+Math.max(1,tWind*(0.95+Math.random()*0.1)).toFixed(1);
+                                windDay.push(dW);
+                                dailyDay.push(+Math.min(30,power*(10/24)*(0.9+Math.random()*0.2)).toFixed(1));
+                            }
+                            const w1=+daily.slice(0,7).reduce((a,b)=>a+b,0).toFixed(1);
+                            const w2=+daily.slice(7).reduce((a,b)=>a+b,0).toFixed(1);
+                            tData[t]={weekly:[w1,w2],daily,wind,dailyDay,windDay,total:+daily.reduce((a,b)=>a+b,0).toFixed(1),totalDay:+dailyDay.reduce((a,b)=>a+b,0).toFixed(1)};
+                        }
                     }
                     const windColor = (v) => v<3?'rgb(135,206,235)':v<6?'rgb(59,130,246)':v<10?'rgb(16,185,129)':v<15?'rgb(245,158,11)':'rgb(239,68,68)';
 

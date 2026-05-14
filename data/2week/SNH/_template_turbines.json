@@ -1,0 +1,16 @@
+{
+  "forecast_date": "YYYY-MM-DD",
+  "plant": "서남해",
+  "period": { "start": "YYYY-MM-DD", "end": "YYYY-MM-DD" },
+  "turbines": {
+    "WTG01": {
+      "hourly": {
+        "power": "[[24개 float MWh], ...14일] (14x24 배열, 호기당 시간별 발전량)",
+        "wind_speed": "[[24개 float m/s], ...14일] (14x24 배열, 호기당 시간별 풍속)"
+      }
+    },
+    "WTG02": "... (동일 구조)",
+    "...": "...",
+    "WTG20": "... (동일 구조)"
+  }
+}

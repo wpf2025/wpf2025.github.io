@@ -64,10 +64,12 @@
             const q1 = min + range * 0.25;
             const median = min + range * 0.5;
             const q3 = min + range * 0.75;
+            const mean = min + range * (0.45 + Math.random() * 0.1);
             return {
                 min: min + Math.random() * range * 0.1,
                 q1: q1 + (Math.random() - 0.5) * range * 0.1,
                 median: median + (Math.random() - 0.5) * range * 0.1,
+                mean: mean,
                 q3: q3 + (Math.random() - 0.5) * range * 0.1,
                 max: max - Math.random() * range * 0.1
             };

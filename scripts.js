@@ -1317,7 +1317,7 @@
                 if (basePower && adjEl) {
                     const totalBase = basePower.reduce((a,b)=>a+b,0);
                     const adjusted = totalBase - totalLoss;
-                    document.getElementById('maintenanceAdjustedValue').textContent = `${(adjusted/1000).toFixed(1)} GWh`;
+                    document.getElementById('maintenanceAdjustedValue').textContent = `${adjusted.toFixed(0)} MWh`;
                     adjEl.classList.remove('hidden');
                 }
                 // 정비 내역 요약

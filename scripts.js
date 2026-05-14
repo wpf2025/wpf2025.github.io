@@ -725,7 +725,9 @@
                             h += `<tr><td class="p-1 font-semibold sticky left-0 bg-white z-10 whitespace-nowrap cursor-pointer text-blue-600 hover:text-blue-800 hover:underline" onclick="showTurbineDetail(${t})">WTG #${t} <i class="fas fa-chevron-right text-[10px] ml-1"></i></td>`;
                             d[dailyKey].forEach((v,i) => { h += `<td class="p-1 text-center cursor-pointer hover:ring-2 hover:ring-blue-400 hover:rounded" data-mt-key="${t}_${i}" title="발전량: ${v} MWh / 풍속: ${d[windKey][i]} m/s" onclick="openMaintenanceModal(${t},${i},${v},${d[windKey][i]})"><div class="w-full rounded px-0.5 py-0.5 leading-tight" style="background:${heatColorFn(v)}"><div class="text-[10px] font-semibold text-gray-800">${v}</div><div class="text-[9px] text-gray-600">${d[windKey][i]}</div></div></td>`; });
                             let loss = 0;
-                            for (let i = 0; i < 14; i++) { const p = plans[`${t}_${i}`]; if(p){ const [sh,sm]=p.start.split(':').map(Number),[eh,em]=p.end.split(':').map(Number); loss+=Math.max(0,(eh+em/60)-(sh+sm/60))*5; } }
+                            const rtKey = 'WTG'+String(t).padStart(2,'0');
+                            const rtData = window._twoWeekRealData?.turbines?.turbines?.[rtKey];
+                            for (let i = 0; i < 14; i++) { const p = plans[`${t}_${i}`]; if(p){ const [sh,sm]=p.start.split(':').map(Number),[eh,em]=p.end.split(':').map(Number); if(rtData&&rtData.hourly.power[i]){for(let hh=Math.floor(sh+sm/60);hh<Math.min(Math.ceil(eh+em/60),24);hh++)loss+=rtData.hourly.power[i][hh];}else{loss+=Math.max(0,(eh+em/60)-(sh+sm/60))*5;} } }
                             h += `<td class="p-1 text-center font-semibold">${d[totalKey]}</td>`;
                             h += `<td class="p-1 text-center font-semibold text-red-500">${loss>0?`-${Math.round(loss)}`:''}</td></tr>`;
                         }
@@ -1280,11 +1282,25 @@
                     const p = plans[k];
                     const [t, d] = k.split('_').map(Number);
                     const [sh,sm] = p.start.split(':').map(Number), [eh,em] = p.end.split(':').map(Number);
-                    const hours = Math.max(0, (eh+em/60)-(sh+sm/60));
-                    const loss = hours * 5;
+                    const startH = Math.floor(sh + sm/60), endH = Math.ceil(eh + em/60);
+                    let loss = 0;
+                    const turbineKey = 'WTG' + String(t).padStart(2,'0');
+                    const realTurbines = window._twoWeekRealData?.turbines?.turbines;
+                    if (realTurbines && realTurbines[turbineKey] && d >= 0 && d < 14) {
+                        // 실데이터: 해당 시간대 실제 발전량 합산 (MWh)
+                        const hourlyPower = realTurbines[turbineKey].hourly.power[d];
+                        for (let h = startH; h < Math.min(endH, 24); h++) loss += hourlyPower[h] * 1000; // MWh→kWh→다시 kW*h 단위 맞춤
+                        loss = loss; // 이미 MWh 단위 (hourlyPower는 MWh)
+                        loss = 0;
+                        for (let h = startH; h < Math.min(endH, 24); h++) loss += hourlyPower[h];
+                    } else {
+                        // fallback: 시간 × 고정 값
+                        const hours = Math.max(0, (eh+em/60)-(sh+sm/60));
+                        loss = hours * 5;
+                    }
                     if (d >= 0 && d < 14) dailyLoss[d] += loss;
                     totalLoss += loss;
-                    planList.push({t,d,type:p.type,start:p.start,end:p.end,loss:Math.round(loss)});
+                    planList.push({t,d,type:p.type,start:p.start,end:p.end,loss:+loss.toFixed(1)});
                 });
                 // 손실 KPI
                 document.getElementById('maintenanceLossValue').textContent = `${Math.round(totalLoss)} MWh`;

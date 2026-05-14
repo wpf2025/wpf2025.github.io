@@ -585,6 +585,13 @@
 
                         // 발전량 차트
                         const dailyPowerData = window._midDailyPower;
+                        // 주간 KPI 업데이트
+                        const w1Total = dailyPowerData.slice(0,7).reduce((a,b)=>a+b,0);
+                        const w2Total = dailyPowerData.slice(7).reduce((a,b)=>a+b,0);
+                        const kw1 = document.getElementById('kpiWeek1');
+                        const kw2 = document.getElementById('kpiWeek2');
+                        if(kw1) kw1.innerHTML = `${w1Total.toFixed(0)} <span class="text-base">MWh</span>`;
+                        if(kw2) kw2.innerHTML = `${w2Total.toFixed(0)} <span class="text-base">MWh</span>`;
                         charts.twoWeekDailyTotalChart = new Chart(document.getElementById('twoWeekDailyTotalChart')?.getContext('2d'), {
                             type:'line',
                             data:{labels:twDayLabels, datasets:[

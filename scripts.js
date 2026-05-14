@@ -1073,21 +1073,29 @@
             window.showMidtermWeatherDetail = function(dayIndex) {
                 const panel = document.getElementById('midtermWeatherInline');
                 const title = document.getElementById('midtermModalTitle');
-                const today = new Date();
-                const targetDate = new Date(today);
-                targetDate.setDate(targetDate.getDate() + dayIndex);
+                const targetDate = new Date(twoWeekDate.current);
+                targetDate.setDate(targetDate.getDate() + dayIndex + 1);
                 title.textContent = `D+${dayIndex+1} 상세 기상 정보 (${targetDate.toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'short'})})`;
 
+                // 실데이터 있으면 hourly에서 가져오기, 없으면 랜덤
+                const realHourly = window._midHourlyData;
                 const hours = Array.from({length:24},(_,h)=>{
-                    const data = generateHourlyWeatherData(h);
-                    const wind = parseFloat(data.windSpeed);
-                    const wave = parseFloat(data.waveHeight);
-                    const temp = parseFloat(data.temp);
+                    let wind, wave, temp2;
+                    if (realHourly) {
+                        wind = realHourly.wind_speed[dayIndex][h];
+                        temp2 = realHourly.temperature[dayIndex][h];
+                        wave = realHourly.wave_height[dayIndex][h];
+                    } else {
+                        const data = generateHourlyWeatherData(h);
+                        wind = parseFloat(data.windSpeed);
+                        temp2 = parseFloat(data.temp);
+                        wave = parseFloat(data.waveHeight);
+                    }
                     const windOk = wind <= 10;
                     const waveOk = wave <= 1.5;
-                    const tempOk = temp >= 5 && temp <= 30;
+                    const tempOk = temp2 >= 5 && temp2 <= 30;
                     const omStatus = (windOk && waveOk && tempOk) ? 'good' : (windOk && waveOk) ? 'warning' : 'danger';
-                    return {...data, omStatus};
+                    return {hour:h, windSpeed:wind, temp:temp2, waveHeight:wave, omStatus};
                 });
 
                 const hourHeaders = hours.map(h=>`<th class="text-center text-xs px-2 py-3 min-w-[44px]">${h.hour}시</th>`).join('');

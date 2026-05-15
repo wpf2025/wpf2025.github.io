@@ -304,6 +304,9 @@
                                 <label class="inline-flex items-center text-sm"><input type="checkbox" checked disabled class="mr-1 text-blue-600">풍속 (좌축, 0~30 m/s)</label>
                                 <label class="inline-flex items-center text-sm"><input type="checkbox" id="chkMidTemp2" class="mr-1 text-blue-600" onchange="updateMidBoxplot()">기온 (-10~40°C)</label>
                                 <label class="inline-flex items-center text-sm"><input type="checkbox" id="chkMidWave2" class="mr-1 text-blue-600" onchange="updateMidBoxplot()">파고 (0~3.5 m)</label>
+                                <span class="border-l border-gray-300 mx-2"></span>
+                                <label class="inline-flex items-center text-sm"><input type="radio" name="midTimeRange" value="all" checked class="mr-1 text-blue-600" onchange="updateMidBoxplot()">일간 전체 (0~24시)</label>
+                                <label class="inline-flex items-center text-sm"><input type="radio" name="midTimeRange" value="om" class="mr-1 text-blue-600" onchange="updateMidBoxplot()">O&amp;M 시간 (08~18시)</label>
                             </div>
                             <div class="mb-6">
                                 <div class="chart-container h-[350px]"><canvas id="midCombinedBoxplot"></canvas></div>

@@ -479,23 +479,49 @@
                     const twFmtD = d => `${d.getMonth()+1}/${d.getDate()}`;
                     const twDayLabels = Array.from({length:14},(_,i)=>{const dt=new Date(twSel);dt.setDate(dt.getDate()+i+1);return twFmtD(dt);});
 
+                    // 시간대별 stats 계산 헬퍼
+                    const calcStatsFromHourly = (hourlyArr, startH, endH) => {
+                        return hourlyArr.map(day => {
+                            const slice = day.slice(startH, endH);
+                            const s = [...slice].sort((a,b)=>a-b);
+                            const n = s.length;
+                            return {min:+s[0].toFixed(2),q1:+s[Math.floor(n*0.25)].toFixed(2),median:+s[Math.floor(n*0.5)].toFixed(2),mean:+(slice.reduce((a,b)=>a+b,0)/n).toFixed(2),q3:+s[Math.floor(n*0.75)].toFixed(2),max:+s[n-1].toFixed(2)};
+                        });
+                    };
+
                     // updateMidBoxplot 함수 정의
                     window.updateMidBoxplot = function() {
                         if(charts.midCombinedBoxplot){charts.midCombinedBoxplot.destroy();delete charts.midCombinedBoxplot;}
                         const showTemp = document.getElementById('chkMidTemp2')?.checked;
                         const showWave = document.getElementById('chkMidWave2')?.checked;
-                        const datasets = [{label:'풍속 (m/s)',data:window._midWindData,backgroundColor:window._midWindColors,borderColor:window._midWindBorders,borderWidth:2,yAxisID:'y'}];
+                        const timeRange = document.querySelector('input[name="midTimeRange"]:checked')?.value || 'all';
+
+                        // 시간대에 따라 데이터 선택
+                        let windData = window._midWindData, tempData = window._midTempData, waveData = window._midWaveData;
+                        let windColors = window._midWindColors, windBorders = window._midWindBorders;
+                        let waveColors = window._midWaveColors, waveBorders = window._midWaveBorders;
+                        if (timeRange === 'om' && window._midHourlyData) {
+                            windData = calcStatsFromHourly(window._midHourlyData.wind_speed, 8, 18);
+                            tempData = calcStatsFromHourly(window._midHourlyData.temperature, 8, 18);
+                            waveData = calcStatsFromHourly(window._midHourlyData.wave_height, 8, 18);
+                            windColors = windData.map(s=>{const m=s.median;return m<3?'rgba(135,206,235,0.6)':m<6?'rgba(59,130,246,0.6)':m<10?'rgba(16,185,129,0.6)':m<15?'rgba(245,158,11,0.6)':'rgba(239,68,68,0.6)';});
+                            windBorders = windColors.map(c=>c.replace('0.6','1'));
+                            waveColors = waveData.map(s=>{const m=s.median;return m<0.8?'rgba(16,185,129,0.6)':m<1.5?'rgba(245,158,11,0.6)':'rgba(239,68,68,0.6)';});
+                            waveBorders = waveColors.map(c=>c.replace('0.6','1'));
+                        }
+
+                        const datasets = [{label:'풍속 (m/s)',data:windData,backgroundColor:windColors,borderColor:windBorders,borderWidth:2,yAxisID:'y'}];
                         const scales = {y:{position:'left',title:{display:true,text:'풍속 (m/s)'},min:0,max:30}};
                         if(showTemp && showWave){
-                            datasets.push({label:'기온 (℃)',data:window._midTempData,backgroundColor:'rgba(239,68,68,0.3)',borderColor:'rgb(239,68,68)',borderWidth:2,yAxisID:'y1'});
-                            datasets.push({label:'파고 (m)',data:window._midWaveData,backgroundColor:window._midWaveColors.map(c=>c.replace('0.6','0.3')),borderColor:window._midWaveBorders,borderWidth:2,yAxisID:'y2'});
+                            datasets.push({label:'기온 (℃)',data:tempData,backgroundColor:'rgba(239,68,68,0.3)',borderColor:'rgb(239,68,68)',borderWidth:2,yAxisID:'y1'});
+                            datasets.push({label:'파고 (m)',data:waveData,backgroundColor:waveColors.map(c=>c.replace('0.6','0.3')),borderColor:waveBorders,borderWidth:2,yAxisID:'y2'});
                             scales.y1={position:'right',title:{display:true,text:'기온 (℃)'},min:-10,max:40,grid:{drawOnChartArea:false}};
                             scales.y2={position:'right',title:{display:true,text:'파고 (m)'},min:0,max:3.5,grid:{drawOnChartArea:false}};
                         } else if(showTemp){
-                            datasets.push({label:'기온 (℃)',data:window._midTempData,backgroundColor:'rgba(239,68,68,0.3)',borderColor:'rgb(239,68,68)',borderWidth:2,yAxisID:'y1'});
+                            datasets.push({label:'기온 (℃)',data:tempData,backgroundColor:'rgba(239,68,68,0.3)',borderColor:'rgb(239,68,68)',borderWidth:2,yAxisID:'y1'});
                             scales.y1={position:'right',title:{display:true,text:'기온 (℃)'},min:-10,max:40,grid:{drawOnChartArea:false}};
                         } else if(showWave){
-                            datasets.push({label:'파고 (m)',data:window._midWaveData,backgroundColor:window._midWaveColors.map(c=>c.replace('0.6','0.3')),borderColor:window._midWaveBorders,borderWidth:2,yAxisID:'y1'});
+                            datasets.push({label:'파고 (m)',data:waveData,backgroundColor:waveColors.map(c=>c.replace('0.6','0.3')),borderColor:waveBorders,borderWidth:2,yAxisID:'y1'});
                             scales.y1={position:'right',title:{display:true,text:'파고 (m)'},min:0,max:3.5,grid:{drawOnChartArea:false}};
                         }
                         charts.midCombinedBoxplot = new Chart(document.getElementById('midCombinedBoxplot').getContext('2d'),{
@@ -607,9 +633,16 @@
                         // O&M 요약
                         const omEl = document.getElementById('midtermOmSummary');
                         if (omEl) {
+                            const omTimeRange = document.querySelector('input[name="midTimeRange"]:checked')?.value || 'all';
+                            let omWind = window._midWindData, omTemp = window._midTempData, omWave = window._midWaveData;
+                            if (omTimeRange === 'om' && window._midHourlyData) {
+                                omWind = calcStatsFromHourly(window._midHourlyData.wind_speed, 8, 18);
+                                omTemp = calcStatsFromHourly(window._midHourlyData.temperature, 8, 18);
+                                omWave = calcStatsFromHourly(window._midHourlyData.wave_height, 8, 18);
+                            }
                             const days = Array.from({length:14}, (_,i) => {
                                 const d = new Date(twoWeekDate.current); d.setDate(d.getDate()+i+1);
-                                const w = window._midWindData[i], t2 = window._midTempData[i], wv = window._midWaveData[i];
+                                const w = omWind[i], t2 = omTemp[i], wv = omWave[i];
                                 const wMed = w.median !== undefined ? w.median : w;
                                 const tMed = t2.median !== undefined ? t2.median : t2;
                                 const wvMed = wv.median !== undefined ? wv.median : wv;

@@ -1142,8 +1142,12 @@
                     return {hour:h, windSpeed:wind, temp:temp2, waveHeight:wave, omStatus};
                 });
 
-                const hourHeaders = hours.map(h=>`<th class="text-center text-xs px-2 py-3 min-w-[44px]">${h.hour}시</th>`).join('');
-                const statusRow = hours.map(h=>`<td class="text-center p-2"><div class="w-full h-5 rounded ${STATUS_COLORS[h.omStatus]}"></div></td>`).join('');
+                // 시간대 필터 적용
+                const midTimeRangeVal = document.querySelector('input[name="midTimeRange"]:checked')?.value || 'all';
+                const filteredHours = midTimeRangeVal === 'om' ? hours.filter(h => h.hour >= 8 && h.hour < 18) : hours;
+
+                const hourHeaders = filteredHours.map(h=>`<th class="text-center text-xs px-2 py-3 min-w-[44px]">${h.hour}시</th>`).join('');
+                const statusRow = filteredHours.map(h=>`<td class="text-center p-2"><div class="w-full h-5 rounded ${STATUS_COLORS[h.omStatus]}"></div></td>`).join('');
 
                 const vars = [
                     {key:'windSpeed',label:'풍속',icon:'fa-wind',criteria:'≤ 10m/s',good:v=>v<=10},
@@ -1152,14 +1156,14 @@
                     {key:'waveHeight',label:'파고',icon:'fa-water',criteria:'≤ 1.5m',good:v=>v<=1.5}
                 ];
                 const varRows = vars.map(v=>{
-                    const cells = hours.map(h=>{
+                    const cells = filteredHours.map(h=>{
                         const val = parseFloat(h[v.key]);
                         return `<td class="text-center p-2"><span class="text-lg font-bold ${v.good(val)?'text-blue-600':'text-gray-400'}" title="${val.toFixed(1)}">${v.good(val)?'✓':'✗'}</span></td>`;
                     }).join('');
                     return `<tr><td class="sticky-col font-semibold text-gray-700 text-sm whitespace-nowrap px-3 py-3"><i class="fas ${v.icon} mr-1"></i>${v.label} <span class="text-xs text-gray-400">(${v.criteria})</span></td>${cells}</tr>`;
                 }).join('');
 
-                const windData = hours.map(h=>parseFloat(h.windSpeed));
+                const windData = filteredHours.map(h=>parseFloat(h.windSpeed));
 
                 if (charts.midtermHourlyWindChart) { charts.midtermHourlyWindChart.destroy(); delete charts.midtermHourlyWindChart; }
 
@@ -1189,7 +1193,7 @@
                     charts.midtermHourlyWindChart = new Chart(document.getElementById('midtermHourlyWindChart').getContext('2d'), {
                     type: 'line',
                     data: {
-                        labels: hours.map(h=>`${h.hour}시`),
+                        labels: filteredHours.map(h=>`${h.hour}시`),
                         datasets: [{
                             label: '풍속 (m/s)',
                             data: windData,

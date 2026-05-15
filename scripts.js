@@ -513,12 +513,12 @@
                         const datasets = [{label:'풍속 (m/s)',data:windData,backgroundColor:windColors,borderColor:windBorders,borderWidth:2,yAxisID:'y'}];
                         const scales = {y:{position:'left',title:{display:true,text:'풍속 (m/s)'},min:0,max:30}};
                         if(showTemp && showWave){
-                            datasets.push({label:'기온 (℃)',data:tempData,backgroundColor:'rgba(239,68,68,0.3)',borderColor:'rgb(239,68,68)',borderWidth:2,yAxisID:'y1'});
+                            const tempColors=tempData.map(s=>{const m=s.median!==undefined?s.median:s;return m<=5?'rgba(59,130,246,0.6)':m>=30?'rgba(239,68,68,0.6)':'rgba(16,185,129,0.6)';});datasets.push({label:'기온 (℃)',data:tempData,backgroundColor:tempColors.map(c=>c.replace('0.6','0.3')),borderColor:tempColors.map(c=>c.replace('0.6','1')),borderWidth:2,yAxisID:'y1'});
                             datasets.push({label:'파고 (m)',data:waveData,backgroundColor:waveColors.map(c=>c.replace('0.6','0.3')),borderColor:waveBorders,borderWidth:2,yAxisID:'y2'});
                             scales.y1={position:'right',title:{display:true,text:'기온 (℃)'},min:-10,max:40,grid:{drawOnChartArea:false}};
                             scales.y2={position:'right',title:{display:true,text:'파고 (m)'},min:0,max:3.5,grid:{drawOnChartArea:false}};
                         } else if(showTemp){
-                            datasets.push({label:'기온 (℃)',data:tempData,backgroundColor:'rgba(239,68,68,0.3)',borderColor:'rgb(239,68,68)',borderWidth:2,yAxisID:'y1'});
+                            const tempColors=tempData.map(s=>{const m=s.median!==undefined?s.median:s;return m<=5?'rgba(59,130,246,0.6)':m>=30?'rgba(239,68,68,0.6)':'rgba(16,185,129,0.6)';});datasets.push({label:'기온 (℃)',data:tempData,backgroundColor:tempColors.map(c=>c.replace('0.6','0.3')),borderColor:tempColors.map(c=>c.replace('0.6','1')),borderWidth:2,yAxisID:'y1'});
                             scales.y1={position:'right',title:{display:true,text:'기온 (℃)'},min:-10,max:40,grid:{drawOnChartArea:false}};
                         } else if(showWave){
                             datasets.push({label:'파고 (m)',data:waveData,backgroundColor:waveColors.map(c=>c.replace('0.6','0.3')),borderColor:waveBorders,borderWidth:2,yAxisID:'y1'});
@@ -872,12 +872,12 @@
                         const datasets = [{label:'풍속 (m/s)',data:window._longWindData,backgroundColor:window._longWindColors,borderColor:window._longWindBorders,borderWidth:2,yAxisID:'y'}];
                         const scales = {y:{position:'left',title:{display:true,text:'풍속 (m/s)'},min:0,max:30}};
                         if(showTemp && showWave){
-                            datasets.push({label:'기온 (℃)',data:window._longTempData,backgroundColor:'rgba(239,68,68,0.3)',borderColor:'rgb(239,68,68)',borderWidth:2,yAxisID:'y1'});
+                            const ltColors=window._longTempData.map(s=>{const m=s.median!==undefined?s.median:s;return m<=5?'rgba(59,130,246,0.6)':m>=30?'rgba(239,68,68,0.6)':'rgba(16,185,129,0.6)';});datasets.push({label:'기온 (℃)',data:window._longTempData,backgroundColor:ltColors.map(c=>c.replace('0.6','0.3')),borderColor:ltColors.map(c=>c.replace('0.6','1')),borderWidth:2,yAxisID:'y1'});
                             datasets.push({label:'파고 (m)',data:window._longWaveData,backgroundColor:window._longWaveColors.map(c=>c.replace('0.6','0.3')),borderColor:window._longWaveBorders,borderWidth:2,yAxisID:'y2'});
                             scales.y1={position:'right',title:{display:true,text:'기온 (℃)'},min:-10,max:40,grid:{drawOnChartArea:false}};
                             scales.y2={position:'right',title:{display:true,text:'파고 (m)'},min:0,max:3.5,grid:{drawOnChartArea:false}};
                         } else if(showTemp){
-                            datasets.push({label:'기온 (℃)',data:window._longTempData,backgroundColor:'rgba(239,68,68,0.3)',borderColor:'rgb(239,68,68)',borderWidth:2,yAxisID:'y1'});
+                            const ltColors=window._longTempData.map(s=>{const m=s.median!==undefined?s.median:s;return m<=5?'rgba(59,130,246,0.6)':m>=30?'rgba(239,68,68,0.6)':'rgba(16,185,129,0.6)';});datasets.push({label:'기온 (℃)',data:window._longTempData,backgroundColor:ltColors.map(c=>c.replace('0.6','0.3')),borderColor:ltColors.map(c=>c.replace('0.6','1')),borderWidth:2,yAxisID:'y1'});
                             scales.y1={position:'right',title:{display:true,text:'기온 (℃)'},min:-10,max:40,grid:{drawOnChartArea:false}};
                         } else if(showWave){
                             datasets.push({label:'파고 (m)',data:window._longWaveData,backgroundColor:window._longWaveColors.map(c=>c.replace('0.6','0.3')),borderColor:window._longWaveBorders,borderWidth:2,yAxisID:'y1'});

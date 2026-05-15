@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2026-05-15
+
+### Added — 2주 예측 실데이터 연동
+- **JSON 파일 기반 데이터 로드**: `data/2week/{발전소코드}/{날짜}_plant.json`, `{날짜}_turbines.json`
+- **데이터 로더**: `loadTwoWeekData(plant, date)` — fetch 성공 시 실데이터, 404 시 랜덤 fallback
+- **발전소 탭 연동**: 박스플롯(daily_stats), 발전량 차트(power.daily_total), O&M 요약 모두 실데이터 반영
+- **터빈별 탭 연동**: hourly.power 일합산 → 히트맵, hourly.wind_speed 일평균 → 풍속, 08~18시 슬라이싱 → O&M 시간대
+- **데이터 상태 배지**: 실데이터 시 파란 "예측 데이터", fallback 시 빨간 "SAMPLE"
+- **주간 총 발전량 KPI**: 하드코딩 → 실데이터 기반 동적 업데이트
+- **정비 손실 계산**: 고정값(5MW/h) → 실제 터빈별 시간대 발전량 기반 계산
+- **CSV→JSON 변환**: DA14_NWP/Power/Turbine CSV에서 plant.json, turbines.json 자동 생성
+- **발전소 코드**: 서남해=SNH, 월정=WJ, 탐라=TR (한글 경로 제거)
+
+### Added — 기상 예측 O&M 시간대 선택
+- **시간대 라디오 버튼**: 일간 전체(0~24시) / O&M 시간(08~18시) 선택
+- **박스플롯**: O&M 시간 선택 시 hourly[8:18] 슬라이싱하여 stats 재계산
+- **O&M 요약 테이블**: 동일 시간대 필터 적용
+- **일자별 상세 패널**: O&M 시간 선택 시 08~17시만 표시
+
+### Changed
+- **기온 박스플롯 색상**: 단일 빨간색 → median 기준 (≤5°C Blue, 5~30°C Green, ≥30°C Red)
+- **정비 반영 예상 단위**: GWh → MWh로 통일
+
 ## [1.8.0] - 2026-04-29
 
 ### Changed — 메뉴 구조 재편

@@ -471,7 +471,7 @@
             }
 
             // 2 Week Forecast Charts
-            if (document.getElementById('s_2week-content')?.offsetParent !== null) { 
+            if (document.getElementById('om-2week') && !document.getElementById('om-2week').classList.contains('hidden')) { 
                 // Total Plant - Weekly & Daily (통합 페이지)
                 if (document.getElementById('2week-total-content') && !document.getElementById('2week-total-content').classList.contains('hidden')) {
                     // 선택 날짜 기반 14일 라벨

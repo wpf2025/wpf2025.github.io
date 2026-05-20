@@ -164,6 +164,8 @@
                 const diff = Math.round((today - sel) / 86400000);
                 const tag = diff === 0 ? ' (오늘)' : diff === 1 ? ' (어제)' : diff > 1 ? ` (${diff}일 전)` : '';
                 label.textContent = formatDate(d) + tag;
+                const picker = document.getElementById('twoWeekDatePicker');
+                if (picker) picker.value = formatDate(d);
             }
         };
         const formatDate = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;

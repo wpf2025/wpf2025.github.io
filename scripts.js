@@ -673,8 +673,21 @@
                     const twFmtD2 = d => `${d.getMonth()+1}/${d.getDate()}`;
                     const dLabels = Array.from({length:14},(_,i)=>{const dt=new Date(twSel2);dt.setDate(dt.getDate()+i+1);return twFmtD2(dt);});
 
-                    const tData = {};
-                    const realTurbines = window._twoWeekRealData?.turbines?.turbines;
+                    const plantName2 = document.getElementById('omPlantSelect')?.value || '서남해';
+                    const dateStr2 = formatDate(twoWeekDate.current);
+                    loadTwoWeekData(plantName2, dateStr2).then(realData => {
+                        if (realData) { window._twoWeekRealData = realData; window._isRealData = true; }
+                        else { window._twoWeekRealData = null; window._isRealData = false; }
+
+                        // 배지 업데이트
+                        const badge = document.getElementById('twoWeekDataBadge');
+                        if (badge) {
+                            if (window._isRealData) { badge.textContent='예측 데이터'; badge.className='text-xs px-2 py-1 rounded-full ml-2 align-middle bg-blue-100 text-blue-700 font-bold'; }
+                            else { badge.textContent='SAMPLE'; badge.className='text-xs px-2 py-1 rounded-full ml-2 align-middle bg-red-100 text-red-600 font-bold'; }
+                        }
+
+                        const tData = {};
+                        const realTurbines = window._twoWeekRealData?.turbines?.turbines;
 
                     if (realTurbines && Object.keys(realTurbines).length >= TC) {
                         // 실데이터에서 터빈별 데이터 생성
@@ -809,6 +822,7 @@
                     updateHeatmapMarkers();
                     updateMaintenanceLoss();
                     window._reRenderHeatmap = () => { renderHeatmap('heatmapA'); renderHeatmap('heatmapDaytime','dailyDay','windDay','totalDay',30); updateHeatmapMarkers(); };
+                    }); // end loadTwoWeekData.then
                 }
             }
             

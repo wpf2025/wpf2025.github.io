@@ -667,7 +667,7 @@
                     });
                 }
                 // Per Turbine (WTG #1 to #20) — Overview 3안 + 상세
-                if (document.getElementById('s_2week-content')?.offsetParent !== null) {
+                if (document.getElementById('2week-turbine-content') && !document.getElementById('2week-turbine-content').classList.contains('hidden')) {
                     const TC = 20;
                     const twSel2 = new Date(twoWeekDate.current);
                     const twFmtD2 = d => `${d.getMonth()+1}/${d.getDate()}`;

@@ -782,7 +782,7 @@
                             const rtData = window._twoWeekRealData?.turbines?.turbines?.[rtKey];
                             for (let i = 0; i < 14; i++) { const p = plans[`${t}_${i}`]; if(p){ const [sh,sm]=p.start.split(':').map(Number),[eh,em]=p.end.split(':').map(Number); if(rtData&&rtData.hourly.power[i]){for(let hh=Math.floor(sh+sm/60);hh<Math.min(Math.ceil(eh+em/60),24);hh++)loss+=rtData.hourly.power[i][hh];}else{loss+=Math.max(0,(eh+em/60)-(sh+sm/60))*5;} } }
                             h += `<td class="p-1 text-center font-semibold">${d[totalKey]}</td>`;
-                            h += `<td class="p-1 text-center font-semibold text-red-500">${loss>0?`-${Math.round(loss)}`:''}</td></tr>`;
+                            h += `<td class="p-1 text-center font-semibold text-red-500">${loss>0?`-${loss.toFixed(1)}`:''}</td></tr>`;
                         }
                         h += '</tbody></table></div>'; c.innerHTML = h;
                     };

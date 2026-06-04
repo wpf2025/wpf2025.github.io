@@ -266,13 +266,13 @@
                     };
 
                     if (isPast) {
-                        // === 과거 날짜: 예측 vs 실측 비교 (72시간 = D+1,D+2,D+3) ===
+                        // === 과거 날짜: 예측 vs 실측 비교 (72시간 = D+0,D+1,D+2) ===
                         const fmtD = d => `${d.getMonth()+1}/${d.getDate()}`;
                         const labels = [];
-                        for(let d=0;d<3;d++){const dt=new Date(sel);dt.setDate(dt.getDate()+d+1);for(let h=0;h<24;h++)labels.push(`${fmtD(dt)} ${h}시`);}
+                        for(let d=0;d<3;d++){const dt=new Date(sel);dt.setDate(dt.getDate()+d);for(let h=0;h<24;h++)labels.push(`${fmtD(dt)} ${h}시`);}
 
                         // 예측 기간 중 오늘 자정까지만 실측 존재
-                        const fcstStart = new Date(sel); fcstStart.setDate(fcstStart.getDate()+1); fcstStart.setHours(0,0,0,0);
+                        const fcstStart = new Date(sel); fcstStart.setHours(0,0,0,0);
                         const nowTs = Date.now();
                         // 실측 가능 시간 수 (예측 시작 ~ 현재)
                         const actualHours = Math.min(72, Math.max(0, Math.floor((today.getTime() - fcstStart.getTime())/(3600000))));
@@ -339,10 +339,10 @@
                         });
 
                     } else {
-                        // === 오늘 또는 미래: 72시간 예측 (내일 0시 ~ D+3 23시) ===
+                        // === 오늘 또는 미래: 72시간 예측 (당일 0시 ~ D+2 23시) ===
                         const fmtD = d => `${d.getMonth()+1}/${d.getDate()}`;
                         const labels = [];
-                        for(let d=0;d<3;d++){const dt=new Date(sel);dt.setDate(dt.getDate()+d+1);for(let h=0;h<24;h++)labels.push(`${fmtD(dt)} ${h}시`);}
+                        for(let d=0;d<3;d++){const dt=new Date(sel);dt.setDate(dt.getDate()+d);for(let h=0;h<24;h++)labels.push(`${fmtD(dt)} ${h}시`);}
 
                         const wFcst = [genWind(),genWind(),genWind()].flat();
                         const pFcst = [genPower(wFcst.slice(0,24)),genPower(wFcst.slice(24,48)),genPower(wFcst.slice(48))].flat();
@@ -352,9 +352,9 @@
                         document.getElementById('shorttermPowerTitle').textContent = `시간별 발전량 예측 (72시간)`;
 
                         const d1=pFcst.slice(0,24),d2=pFcst.slice(24,48),d3=pFcst.slice(48);
-                        const dt1=new Date(sel);dt1.setDate(dt1.getDate()+1);
-                        const dt2=new Date(sel);dt2.setDate(dt2.getDate()+2);
-                        const dt3=new Date(sel);dt3.setDate(dt3.getDate()+3);
+                        const dt1=new Date(sel);dt1.setDate(dt1.getDate()+0);
+                        const dt2=new Date(sel);dt2.setDate(dt2.getDate()+1);
+                        const dt3=new Date(sel);dt3.setDate(dt3.getDate()+2);
                         kpiArea.innerHTML = `
                             <div class="p-3 bg-blue-50 rounded-lg text-center border border-blue-200">
                                 <p class="text-xs text-gray-500">${fmtD(dt1)} 예상 발전량</p>
@@ -398,10 +398,10 @@
 
                     // 72시간 라벨
                     const tLabels = [];
-                    for(let d=0;d<3;d++){const dt=new Date(sel2);dt.setDate(dt.getDate()+d+1);for(let h=0;h<24;h++)tLabels.push(`${fmtD2(dt)} ${h}시`);}
+                    for(let d=0;d<3;d++){const dt=new Date(sel2);dt.setDate(dt.getDate()+d);for(let h=0;h<24;h++)tLabels.push(`${fmtD2(dt)} ${h}시`);}
 
                     // 실측 가능 시간 (과거 모드)
-                    const tFcstStart = new Date(sel2); tFcstStart.setDate(tFcstStart.getDate()+1); tFcstStart.setHours(0,0,0,0);
+                    const tFcstStart = new Date(sel2); tFcstStart.setHours(0,0,0,0);
                     const tActualHours = isPast2 ? Math.min(72, Math.max(0, Math.floor((today2.getTime()-tFcstStart.getTime())/3600000))) : 0;
 
                     const tDayBoundary = {

@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **탭 이름 변경**: "하루 전 예측" → "단기 예측" (3일 예측 의미 명확화)
+- **단기예측 시작 날짜 변경**: D+1~D+3 → D+0~D+2 (오늘부터 72시간 예측)
 - **터빈별 히트맵**: 손실 발전량 소수점 1자리 표시
 
 ### Fixed

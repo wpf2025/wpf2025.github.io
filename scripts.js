@@ -479,7 +479,7 @@
                     // 선택 날짜 기반 14일 라벨
                     const twSel = new Date(twoWeekDate.current);
                     const twFmtD = d => `${d.getMonth()+1}/${d.getDate()}`;
-                    const twDayLabels = Array.from({length:14},(_,i)=>{const dt=new Date(twSel);dt.setDate(dt.getDate()+i+1);return twFmtD(dt);});
+                    const twDayLabels = Array.from({length:14},(_,i)=>{const dt=new Date(twSel);dt.setDate(dt.getDate()+i);return twFmtD(dt);});
 
                     // 시간대별 stats 계산 헬퍼
                     const calcStatsFromHourly = (hourlyArr, startH, endH) => {
@@ -643,7 +643,7 @@
                                 omWave = calcStatsFromHourly(window._midHourlyData.wave_height, 8, 18);
                             }
                             const days = Array.from({length:14}, (_,i) => {
-                                const d = new Date(twoWeekDate.current); d.setDate(d.getDate()+i+1);
+                                const d = new Date(twoWeekDate.current); d.setDate(d.getDate()+i);
                                 const w = omWind[i], t2 = omTemp[i], wv = omWave[i];
                                 const wMed = w.median !== undefined ? w.median : w;
                                 const tMed = t2.median !== undefined ? t2.median : t2;
@@ -673,7 +673,7 @@
                     const TC = 20;
                     const twSel2 = new Date(twoWeekDate.current);
                     const twFmtD2 = d => `${d.getMonth()+1}/${d.getDate()}`;
-                    const dLabels = Array.from({length:14},(_,i)=>{const dt=new Date(twSel2);dt.setDate(dt.getDate()+i+1);return twFmtD2(dt);});
+                    const dLabels = Array.from({length:14},(_,i)=>{const dt=new Date(twSel2);dt.setDate(dt.getDate()+i);return twFmtD2(dt);});
 
                     const plantName2 = document.getElementById('omPlantSelect')?.value || '서남해';
                     const dateStr2 = formatDate(twoWeekDate.current);
@@ -1015,7 +1015,7 @@
                 const todayTasks = [];
                 Object.keys(plans).forEach(key => {
                     const [turbine, dayIdx] = key.split('_').map(Number);
-                    const d = new Date(); d.setDate(d.getDate() + dayIdx + 1);
+                    const d = new Date(); d.setDate(d.getDate() + dayIdx);
                     const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
                     if (dateStr === todayStr) {
                         todayTasks.push({turbine, ...plans[key]});
@@ -1166,8 +1166,8 @@
                 const panel = document.getElementById('midtermWeatherInline');
                 const title = document.getElementById('midtermModalTitle');
                 const targetDate = new Date(twoWeekDate.current);
-                targetDate.setDate(targetDate.getDate() + dayIndex + 1);
-                title.textContent = `D+${dayIndex+1} 상세 기상 정보 (${targetDate.toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'short'})})`;
+                targetDate.setDate(targetDate.getDate() + dayIndex);
+                title.textContent = `D+${dayIndex} 상세 기상 정보 (${targetDate.toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'short'})})`;
 
                 // 실데이터 있으면 hourly에서 가져오기, 없으면 랜덤
                 const realHourly = window._midHourlyData;
@@ -1307,7 +1307,7 @@
             };
 
             window.openMaintenanceModal = function(turbine, dayIdx, power, wind) {
-                const d = new Date(); d.setDate(d.getDate() + dayIdx + 1);
+                const d = new Date(); d.setDate(d.getDate() + dayIdx);
                 const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
                 document.getElementById('mtModalTurbine').textContent = `WTG #${turbine}`;
                 document.getElementById('mtModalDate').textContent = dateStr;

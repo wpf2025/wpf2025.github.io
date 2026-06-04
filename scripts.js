@@ -1007,6 +1007,38 @@
             // 오늘 기상예보 초기화
             initTodayWeather();
 
+            // 오늘 예정작업 표시
+            window.loadTodayMaintenance = function() {
+                const plans = JSON.parse(localStorage.getItem('maintenancePlans') || '{}');
+                const today = new Date();
+                const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+                const todayTasks = [];
+                Object.keys(plans).forEach(key => {
+                    const [turbine, dayIdx] = key.split('_').map(Number);
+                    const d = new Date(); d.setDate(d.getDate() + dayIdx + 1);
+                    const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                    if (dateStr === todayStr) {
+                        todayTasks.push({turbine, ...plans[key]});
+                    }
+                });
+                const el = document.getElementById('todayMaintenanceList');
+                if (!el) return;
+                if (!todayTasks.length) {
+                    el.innerHTML = '<p class="text-gray-400 text-center py-2"><i class="fas fa-check-circle text-green-400 mr-1"></i>오늘 예정된 작업이 없습니다</p>';
+                    return;
+                }
+                todayTasks.sort((a,b) => a.start.localeCompare(b.start));
+                el.innerHTML = todayTasks.map(t => `<div class="flex items-center justify-between py-1.5 border-b border-gray-100 last:border-0">
+                    <div class="flex items-center gap-2">
+                        <span class="inline-block w-2 h-2 rounded-full bg-orange-400"></span>
+                        <span class="font-semibold text-gray-700">WTG #${t.turbine}</span>
+                        <span class="text-gray-500">${t.type}</span>
+                    </div>
+                    <span class="text-xs text-gray-500">${t.start}~${t.end}</span>
+                </div>`).join('');
+            };
+            loadTodayMaintenance();
+
             const setupTabs = (tabContainerSelector, parentOfPanelsSelector, panelChildClassName, defaultActiveIndex = 0) => {
                 const tabs = document.querySelectorAll(`${tabContainerSelector} [role="tab"]`);
                 const panelParentElement = document.querySelector(parentOfPanelsSelector);
@@ -1304,6 +1336,7 @@
                 updateMaintenanceLoss();
                 if (typeof window._reRenderHeatmap === 'function') window._reRenderHeatmap();
                 else updateHeatmapMarkers();
+                if (typeof loadTodayMaintenance === 'function') loadTodayMaintenance();
             };
 
             window.saveMaintenancePlan = function() {
@@ -1319,6 +1352,7 @@
                 updateMaintenanceLoss();
                 if (typeof window._reRenderHeatmap === 'function') window._reRenderHeatmap();
                 else updateHeatmapMarkers();
+                if (typeof loadTodayMaintenance === 'function') loadTodayMaintenance();
             };
 
             window.updateMaintenanceLoss = function() {

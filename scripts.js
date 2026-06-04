@@ -150,7 +150,7 @@
         
         let charts = {}; 
 
-        // 하루전 예측 날짜 선택
+        // 단기 예측 날짜 선택
         const shorttermDate = { current: new Date() };
 
         // 2주 예측 날짜 선택
@@ -950,7 +950,7 @@
                 const panel = document.getElementById(`om-${tab}`);
                 if (panel) panel.classList.remove('hidden');
 
-                // 하루전/2주 기본 탭 초기화
+                // 단기/2주 기본 탭 초기화
                 if (tab === 'shortterm') {
                     document.querySelectorAll('#shorttermMainTabs .tab-button').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
                     document.getElementById('shortterm-total-tab')?.classList.add('active');

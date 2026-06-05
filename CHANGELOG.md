@@ -14,6 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 발전량: 굵은 보라색 실선, 피크 시간대(≥15MW) 포인트 강조 (결과 = 주인공)
   - 풍속(원인) → 발전량(결과) 인과관계가 시각적으로 직관적
 
+### Added
+- **Overview 2주 발전량 예측 섹션**: 오늘 차트 아래에 주간 발전량 예측 추가
+  - 주간 총 발전량 KPI (1주차/2주차)
+  - 14일 일일 총 발전량 라인 차트 (오렌지색 area fill)
+  - 오늘 기준 2주 예측 실데이터 로드 시도, 없으면 랜덤 fallback
+  - "상세 →" 클릭 시 2주 예측 탭으로 이동
+
 ### Fixed
 - **Overview 차트 미표시 버그**: 가시성 체크를 offsetParent → classList.contains('hidden') 기반으로 수정
 

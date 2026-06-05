@@ -215,7 +215,9 @@
             destroyAllCharts(); 
 
             // Overview Charts - Turbine Map
-            if (document.getElementById('overview-content')?.offsetParent !== null && document.getElementById('turbineMap') && !document.getElementById('turbineMap')._leaflet_id) {
+            const omDetailVisible = document.getElementById('om-detail-content') && !document.getElementById('om-detail-content').classList.contains('hidden');
+            const omOverviewVisible = omDetailVisible && document.getElementById('om-overview') && !document.getElementById('om-overview').classList.contains('hidden');
+            if (omOverviewVisible && document.getElementById('turbineMap') && !document.getElementById('turbineMap')._leaflet_id) {
                 const map = L.map('turbineMap').setView([35.485, 126.317], 10);
                 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '© Esri', maxZoom: 18 }).addTo(map);
                 const turbines = [[35.489977,126.340817],[35.484832,126.334644],[35.479686,126.328472],[35.474539,126.322300],[35.469392,126.316130],[35.493631,126.333218],[35.488485,126.327045],[35.483338,126.320874],[35.478191,126.314702],[35.473044,126.308532],[35.497284,126.325619],[35.492137,126.319446],[35.486990,126.313275],[35.481844,126.307104],[35.476696,126.300934],[35.500937,126.318019],[35.495768,126.311821],[35.490642,126.305675],[35.485495,126.299504],[35.480348,126.293335]];
@@ -223,13 +225,15 @@
             }
 
             // Overview Charts
-            if (document.getElementById('overview-content')?.offsetParent !== null) {
+            if (omOverviewVisible) {
                 // 오늘 풍속 예측 및 발전량 (듀얼 축 통합 차트)
+                const ovCanvas = document.getElementById('overviewCombinedChart');
+                if (ovCanvas) {
                 const ovLabels = Array.from({length:24},(_,h)=>`${h}시`);
                 const ovWind = Array.from({length:24},()=>+(3+Math.random()*12).toFixed(1));
                 const ovPower = generateRandomData(24, 2, 19.2);
                 const ovWindColors = ovWind.map(s => s<3?'rgba(135,206,235,0.8)':s<6?'rgba(59,130,246,0.8)':s<10?'rgba(16,185,129,0.8)':s<15?'rgba(245,158,11,0.8)':'rgba(239,68,68,0.8)');
-                charts.overviewCombinedChart = new Chart(document.getElementById('overviewCombinedChart').getContext('2d'), {
+                charts.overviewCombinedChart = new Chart(ovCanvas.getContext('2d'), {
                     type:'bar',
                     data:{
                         labels:ovLabels,
@@ -296,6 +300,7 @@
                         }
                     }
                 });
+                }
             }
 
             // Short-term Forecast Charts (3 days)

@@ -1488,6 +1488,7 @@
                 if (typeof window._reRenderHeatmap === 'function') window._reRenderHeatmap();
                 else updateHeatmapMarkers();
                 if (typeof loadTodayMaintenance === 'function') loadTodayMaintenance();
+                if (typeof loadWeeklyMaintenance === 'function') loadWeeklyMaintenance();
             };
 
             window.saveMaintenancePlan = function() {
@@ -1504,6 +1505,7 @@
                 if (typeof window._reRenderHeatmap === 'function') window._reRenderHeatmap();
                 else updateHeatmapMarkers();
                 if (typeof loadTodayMaintenance === 'function') loadTodayMaintenance();
+                if (typeof loadWeeklyMaintenance === 'function') loadWeeklyMaintenance();
             };
 
             window.updateMaintenanceLoss = function() {

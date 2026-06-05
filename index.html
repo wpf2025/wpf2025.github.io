@@ -212,7 +212,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- 2행: 2주 발전량 예측 / 주간 예정작업+발전소 위치 -->
+                    <!-- 2행: 2주 발전량 예측 (주간 예정작업 포함) / 발전소 위치 -->
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="lg:col-span-2">
                             <div class="card mb-0 h-full">
@@ -233,6 +233,11 @@
                                                 <p id="ovKpiWeek2" class="kpi-value text-3xl">— <span class="text-base">MWh</span></p>
                                             </div>
                                         </div>
+                                        <!-- 주간 예정작업 -->
+                                        <div class="mt-6">
+                                            <h5 class="text-md font-semibold mb-3"><i class="fas fa-calendar-week text-blue-500 mr-1"></i>주간 예정작업</h5>
+                                            <div id="weeklyMaintenanceList" class="text-sm text-gray-500">불러오는 중...</div>
+                                        </div>
                                     </div>
                                     <div class="lg:col-span-3">
                                         <h5 class="text-md font-semibold mb-3">일일 총 발전량 (14일)</h5>
@@ -241,14 +246,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="lg:col-span-1 flex flex-col gap-6">
-                            <div class="card mb-0">
-                                <h2 class="section-title"><i class="fas fa-calendar-week text-blue-500 mr-1"></i>주간 예정작업</h2>
-                                <div id="weeklyMaintenanceList" class="text-sm text-gray-500">불러오는 중...</div>
-                            </div>
-                            <div class="card mb-0 flex-1">
+                        <div class="lg:col-span-1">
+                            <div class="card mb-0 h-full">
                                 <h2 class="section-title">발전소 위치</h2>
-                                <div id="turbineMap" class="w-full h-[250px] rounded-lg border"></div>
+                                <div id="turbineMap" class="w-full h-[350px] rounded-lg border"></div>
                             </div>
                         </div>
                     </div>

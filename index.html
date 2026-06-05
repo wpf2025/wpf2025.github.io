@@ -217,31 +217,29 @@
                         <div class="lg:col-span-2">
                             <div class="card mb-0 h-full">
                                 <div class="flex items-center justify-between mb-4">
-                                    <h2 class="section-title mb-0">2주 발전량 예측</h2>
+                                    <h2 class="section-title mb-0">2주 예측</h2>
                                     <button class="text-sm text-blue-600 hover:underline" onclick="document.querySelector('.om-tab-btn[data-om-tab=&quot;2week&quot;]').click()">상세 →</button>
                                 </div>
-                                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                                <!-- 차트: 풍속 area + 발전량 line (오늘 차트와 동일 스타일) -->
+                                <div class="chart-container h-[240px]"><canvas id="overviewWeeklyChart"></canvas></div>
+                                <!-- 하단: KPI(좌) + 주간 예정작업(우) -->
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4 pt-4 border-t border-gray-100">
                                     <div>
                                         <h5 class="text-md font-semibold mb-3">주간 총 발전량</h5>
-                                        <div class="space-y-4">
-                                            <div class="p-4 bg-blue-50 rounded-lg">
-                                                <p class="kpi-label">1주차 예상 발전량</p>
-                                                <p id="ovKpiWeek1" class="kpi-value text-3xl">— <span class="text-base">MWh</span></p>
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div class="p-3 bg-blue-50 rounded-lg text-center">
+                                                <p class="kpi-label">1주차</p>
+                                                <p id="ovKpiWeek1" class="text-xl font-bold text-blue-800">— <span class="text-sm font-normal">MWh</span></p>
                                             </div>
-                                            <div class="p-4 bg-blue-50 rounded-lg">
-                                                <p class="kpi-label">2주차 예상 발전량</p>
-                                                <p id="ovKpiWeek2" class="kpi-value text-3xl">— <span class="text-base">MWh</span></p>
+                                            <div class="p-3 bg-blue-50 rounded-lg text-center">
+                                                <p class="kpi-label">2주차</p>
+                                                <p id="ovKpiWeek2" class="text-xl font-bold text-blue-800">— <span class="text-sm font-normal">MWh</span></p>
                                             </div>
-                                        </div>
-                                        <!-- 주간 예정작업 -->
-                                        <div class="mt-6">
-                                            <h5 class="text-md font-semibold mb-3"><i class="fas fa-calendar-week text-blue-500 mr-1"></i>주간 예정작업</h5>
-                                            <div id="weeklyMaintenanceList" class="text-sm text-gray-500">불러오는 중...</div>
                                         </div>
                                     </div>
-                                    <div class="lg:col-span-3">
-                                        <h5 class="text-md font-semibold mb-3">일일 총 발전량 (14일)</h5>
-                                        <div class="chart-container h-[220px]"><canvas id="overviewWeeklyChart"></canvas></div>
+                                    <div>
+                                        <h5 class="text-md font-semibold mb-3"><i class="fas fa-calendar-week text-blue-500 mr-1"></i>주간 예정작업</h5>
+                                        <div id="weeklyMaintenanceList" class="text-sm text-gray-500">불러오는 중...</div>
                                     </div>
                                 </div>
                             </div>

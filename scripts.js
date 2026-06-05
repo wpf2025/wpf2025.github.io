@@ -314,7 +314,7 @@
                 });
                 }
 
-                // 2주 발전량 예측 (Overview용)
+                // 2주 예측 (Overview용 — 풍속 area + 발전량 line)
                 const ovWeeklyCanvas = document.getElementById('overviewWeeklyChart');
                 if (ovWeeklyCanvas) {
                     const ovToday = new Date();
@@ -325,11 +325,14 @@
                     const ovPlant = document.getElementById('omPlantSelect')?.value || '서남해';
                     const ovDateStr = formatDate(ovToday);
                     loadTwoWeekData(ovPlant, ovDateStr).then(realData => {
-                        let ovDailyPower;
+                        let ovDailyPower, ovDailyWind;
                         if (realData && realData.plant && realData.plant.power) {
                             ovDailyPower = realData.plant.power.daily_total;
+                            // 일간 평균 풍속: daily_stats의 median 값 사용
+                            ovDailyWind = realData.plant.weather.daily_stats.wind_speed.map(s => s.median !== undefined ? s.median : s);
                         } else {
                             ovDailyPower = generateRandomData(14, 720, 1440);
+                            ovDailyWind = generateRandomData(14, 4, 14, 1);
                         }
 
                         // KPI 업데이트
@@ -337,17 +340,63 @@
                         const ovW2 = ovDailyPower.slice(7).reduce((a,b)=>a+b,0);
                         const ovKw1 = document.getElementById('ovKpiWeek1');
                         const ovKw2 = document.getElementById('ovKpiWeek2');
-                        if(ovKw1) ovKw1.innerHTML = `${ovW1.toFixed(0)} <span class="text-base">MWh</span>`;
-                        if(ovKw2) ovKw2.innerHTML = `${ovW2.toFixed(0)} <span class="text-base">MWh</span>`;
+                        if(ovKw1) ovKw1.innerHTML = `${ovW1.toFixed(0)} <span class="text-sm font-normal">MWh</span>`;
+                        if(ovKw2) ovKw2.innerHTML = `${ovW2.toFixed(0)} <span class="text-sm font-normal">MWh</span>`;
 
-                        // 일일 발전량 차트
+                        // 풍속 area + 발전량 line 듀얼 축 차트
                         if (!charts.overviewWeeklyChart) {
-                            charts.overviewWeeklyChart = new Chart(ovWeeklyCanvas.getContext('2d'), {
+                            const wkCtx = ovWeeklyCanvas.getContext('2d');
+                            const wkGradient = wkCtx.createLinearGradient(0, 0, 0, 240);
+                            wkGradient.addColorStop(0, 'rgba(59, 130, 246, 0.2)');
+                            wkGradient.addColorStop(1, 'rgba(59, 130, 246, 0.02)');
+
+                            charts.overviewWeeklyChart = new Chart(wkCtx, {
                                 type:'line',
                                 data:{labels:ovDayLabels, datasets:[
-                                    {label:'일일 총 발전량 (MWh)',data:ovDailyPower,borderColor:'rgb(245,158,11)',backgroundColor:'rgba(245,158,11,0.08)',tension:0.1,fill:true,pointRadius:3,pointBackgroundColor:'rgb(245,158,11)'}
+                                    {
+                                        label:'일간 평균 풍속 (m/s)',
+                                        data:ovDailyWind,
+                                        borderColor:'rgba(59, 130, 246, 0.7)',
+                                        backgroundColor:wkGradient,
+                                        tension:0.3,
+                                        fill:true,
+                                        borderWidth:1.5,
+                                        pointRadius:0,
+                                        yAxisID:'yWind',
+                                        order:2
+                                    },
+                                    {
+                                        label:'일일 총 발전량 (MWh)',
+                                        data:ovDailyPower,
+                                        borderColor:'rgb(99, 102, 241)',
+                                        backgroundColor:'rgba(99, 102, 241, 0.1)',
+                                        tension:0.3,
+                                        fill:false,
+                                        borderWidth:2.5,
+                                        pointRadius:3,
+                                        pointBackgroundColor:'rgb(99, 102, 241)',
+                                        yAxisID:'yPower',
+                                        order:1
+                                    }
                                 ]},
-                                options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,title:{display:true,text:'MWh'}}}}
+                                options:{
+                                    responsive:true,
+                                    maintainAspectRatio:false,
+                                    interaction:{mode:'index',intersect:false},
+                                    plugins:{legend:{display:true,position:'top',labels:{font:{size:11}}}},
+                                    scales:{
+                                        yWind:{
+                                            type:'linear',position:'left',beginAtZero:true,max:20,
+                                            title:{display:true,text:'풍속 (m/s)',font:{size:11}},
+                                            grid:{color:'rgba(0,0,0,0.04)'}
+                                        },
+                                        yPower:{
+                                            type:'linear',position:'right',beginAtZero:true,
+                                            title:{display:true,text:'발전량 (MWh)',font:{size:11}},
+                                            grid:{drawOnChartArea:false}
+                                        }
+                                    }
+                                }
                             });
                         }
                     });

@@ -17,13 +17,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **Overview 2주 발전량 예측 섹션**: 오늘 차트 아래에 주간 발전량 예측 추가
   - 주간 총 발전량 KPI (1주차/2주차)
-  - 14일 일일 총 발전량 라인 차트 (오렌지색 area fill)
+  - 14일 풍속 area + 발전량 line 듀얼 축 차트 (오늘 차트와 동일 스타일)
+  - 일간 평균 풍속(좌축) + 일일 총 발전량(우축) 동시 표시
   - 오늘 기준 2주 예측 실데이터 로드 시도, 없으면 랜덤 fallback
   - "상세 →" 클릭 시 2주 예측 탭으로 이동
 - **Overview 주간 예정작업**: 내일~7일 이내 정비 계획을 날짜/요일, 터빈, 유형, 시간대로 표시
 - **Overview 2행 그리드 레이아웃**: 좌우 열 높이 정렬
   - 1행: 오늘 풍속+발전량 (좌) / 오늘 예정작업 + 기상예보 (우)
-  - 2행: 2주 발전량 예측 (좌) / 주간 예정작업 + 발전소 위치 (우)
+  - 2행: 2주 예측 차트+KPI+주간작업 (좌) / 발전소 위치 (우)
 
 ### Fixed
 - **Overview 차트 미표시 버그**: 가시성 체크를 offsetParent → classList.contains('hidden') 기반으로 수정

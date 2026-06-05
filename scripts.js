@@ -224,19 +224,78 @@
 
             // Overview Charts
             if (document.getElementById('overview-content')?.offsetParent !== null) {
-                // 오늘 시간별 풍속 (중기예측 스타일)
+                // 오늘 풍속 예측 및 발전량 (듀얼 축 통합 차트)
                 const ovLabels = Array.from({length:24},(_,h)=>`${h}시`);
                 const ovWind = Array.from({length:24},()=>+(3+Math.random()*12).toFixed(1));
+                const ovPower = generateRandomData(24, 2, 19.2);
                 const ovWindColors = ovWind.map(s => s<3?'rgba(135,206,235,0.8)':s<6?'rgba(59,130,246,0.8)':s<10?'rgba(16,185,129,0.8)':s<15?'rgba(245,158,11,0.8)':'rgba(239,68,68,0.8)');
-                charts.overviewWindChart = new Chart(document.getElementById('overviewWindChart').getContext('2d'), {
-                    type:'line', data:{labels:ovLabels,datasets:[{label:'풍속 (m/s)',data:ovWind,borderColor:'rgb(59,130,246)',backgroundColor:'rgba(59,130,246,0.1)',tension:0.3,fill:true,borderWidth:2,pointBackgroundColor:ovWindColors,pointBorderColor:ovWindColors,pointRadius:4}]},
-                    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true}},scales:{y:{beginAtZero:true,max:20,title:{display:true,text:'풍속 (m/s)'},grid:{color:function(ctx){const v=ctx.tick.value;if(v===3)return'rgba(135,206,235,0.5)';if(v===6)return'rgba(59,130,246,0.5)';if(v===10)return'rgba(16,185,129,0.5)';if(v===15)return'rgba(239,68,68,0.5)';return'rgba(0,0,0,0.1)'}}}}}
+                charts.overviewCombinedChart = new Chart(document.getElementById('overviewCombinedChart').getContext('2d'), {
+                    type:'bar',
+                    data:{
+                        labels:ovLabels,
+                        datasets:[
+                            {
+                                label:'발전량 (MW)',
+                                data:ovPower,
+                                backgroundColor:'rgba(99, 102, 241, 0.5)',
+                                borderColor:'rgba(99, 102, 241, 0.8)',
+                                borderWidth:1,
+                                yAxisID:'yPower',
+                                order:2
+                            },
+                            {
+                                label:'풍속 (m/s)',
+                                type:'line',
+                                data:ovWind,
+                                borderColor:'rgb(59,130,246)',
+                                backgroundColor:'rgba(59,130,246,0.05)',
+                                tension:0.3,
+                                fill:false,
+                                borderWidth:2,
+                                pointBackgroundColor:ovWindColors,
+                                pointBorderColor:ovWindColors,
+                                pointRadius:4,
+                                yAxisID:'yWind',
+                                order:1
+                            }
+                        ]
+                    },
+                    options:{
+                        responsive:true,
+                        maintainAspectRatio:false,
+                        interaction:{mode:'index',intersect:false},
+                        plugins:{
+                            legend:{display:true,position:'top'},
+                            tooltip:{mode:'index',intersect:false}
+                        },
+                        scales:{
+                            yWind:{
+                                type:'linear',
+                                position:'left',
+                                beginAtZero:true,
+                                max:20,
+                                title:{display:true,text:'풍속 (m/s)'},
+                                grid:{
+                                    color:function(ctx){
+                                        const v=ctx.tick.value;
+                                        if(v===3)return'rgba(135,206,235,0.5)';
+                                        if(v===6)return'rgba(59,130,246,0.5)';
+                                        if(v===10)return'rgba(16,185,129,0.5)';
+                                        if(v===15)return'rgba(239,68,68,0.5)';
+                                        return'rgba(0,0,0,0.05)';
+                                    }
+                                }
+                            },
+                            yPower:{
+                                type:'linear',
+                                position:'right',
+                                beginAtZero:true,
+                                title:{display:true,text:'발전량 (MW)'},
+                                grid:{drawOnChartArea:false}
+                            }
+                        }
+                    }
                 });
-                // 오늘 시간별 발전량
-                charts.hourlyPatternChart = createChart(document.getElementById('hourlyPatternChart')?.getContext('2d'), 'bar',
-                    ovLabels,
-                    [{ label: '시간별 예상 발전량 (MW)', data: generateRandomData(24, 2, 19.2), backgroundColor: 'rgba(99, 102, 241, 0.6)'}]
-                );
             }
 
             // Short-term Forecast Charts (3 days)

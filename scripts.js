@@ -1154,6 +1154,42 @@
             };
             loadTodayMaintenance();
 
+            // 주간 예정작업 표시
+            window.loadWeeklyMaintenance = function() {
+                const plans = JSON.parse(localStorage.getItem('maintenancePlans') || '{}');
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                const weekTasks = [];
+                Object.keys(plans).forEach(key => {
+                    const [turbine, dayIdx] = key.split('_').map(Number);
+                    const d = new Date(); d.setDate(d.getDate() + dayIdx);
+                    d.setHours(0,0,0,0);
+                    const diffDays = Math.round((d - today) / 86400000);
+                    if (diffDays >= 1 && diffDays <= 7) {
+                        const dateLabel = `${d.getMonth()+1}/${d.getDate()}`;
+                        const dayNames = ['일','월','화','수','목','금','토'];
+                        weekTasks.push({turbine, date: d, dateLabel, dayName: dayNames[d.getDay()], diffDays, ...plans[key]});
+                    }
+                });
+                const el = document.getElementById('weeklyMaintenanceList');
+                if (!el) return;
+                if (!weekTasks.length) {
+                    el.innerHTML = '<p class="text-gray-400 text-center py-2"><i class="fas fa-check-circle text-green-400 mr-1"></i>이번 주 예정된 작업이 없습니다</p>';
+                    return;
+                }
+                weekTasks.sort((a,b) => a.diffDays - b.diffDays || a.start.localeCompare(b.start));
+                el.innerHTML = weekTasks.map(t => `<div class="flex items-center justify-between py-1.5 border-b border-gray-100 last:border-0">
+                    <div class="flex items-center gap-2">
+                        <span class="inline-block w-2 h-2 rounded-full bg-blue-400"></span>
+                        <span class="text-xs text-gray-400">${t.dateLabel}(${t.dayName})</span>
+                        <span class="font-semibold text-gray-700">WTG #${t.turbine}</span>
+                        <span class="text-gray-500">${t.type}</span>
+                    </div>
+                    <span class="text-xs text-gray-500">${t.start}~${t.end}</span>
+                </div>`).join('');
+            };
+            loadWeeklyMaintenance();
+
             const setupTabs = (tabContainerSelector, parentOfPanelsSelector, panelChildClassName, defaultActiveIndex = 0) => {
                 const tabs = document.querySelectorAll(`${tabContainerSelector} [role="tab"]`);
                 const panelParentElement = document.querySelector(parentOfPanelsSelector);

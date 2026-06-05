@@ -164,45 +164,20 @@
                     <!-- O&M 탭 콘텐츠: Overview (기존 overview-content) -->
                     <div id="om-overview" class="om-tab-panel">
                 <section id="overview-content">
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="lg:col-span-2 space-y-6">
-                            <div class="card">
+                    <!-- 1행: 오늘 풍속+발전량 / 오늘 예정작업+기상예보 -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <div class="lg:col-span-2">
+                            <div class="card mb-0 h-full">
                                 <h2 class="section-title">오늘 풍속 예측 및 발전량</h2>
                                 <div class="chart-container h-[320px]"><canvas id="overviewCombinedChart"></canvas></div>
                             </div>
-                            <!-- 주간 발전량 예측 (2주 예측 데이터 연동) -->
-                            <div class="card">
-                                <div class="flex items-center justify-between mb-4">
-                                    <h2 class="section-title mb-0">2주 발전량 예측</h2>
-                                    <button class="text-sm text-blue-600 hover:underline" onclick="document.querySelector('.om-tab-btn[data-om-tab=&quot;2week&quot;]').click()">상세 →</button>
-                                </div>
-                                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                                    <div>
-                                        <h5 class="text-md font-semibold mb-3">주간 총 발전량</h5>
-                                        <div class="space-y-4">
-                                            <div class="p-4 bg-blue-50 rounded-lg">
-                                                <p class="kpi-label">1주차 예상 발전량</p>
-                                                <p id="ovKpiWeek1" class="kpi-value text-3xl">— <span class="text-base">MWh</span></p>
-                                            </div>
-                                            <div class="p-4 bg-blue-50 rounded-lg">
-                                                <p class="kpi-label">2주차 예상 발전량</p>
-                                                <p id="ovKpiWeek2" class="kpi-value text-3xl">— <span class="text-base">MWh</span></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="lg:col-span-3">
-                                        <h5 class="text-md font-semibold mb-3">일일 총 발전량 (14일)</h5>
-                                        <div class="chart-container h-[220px]"><canvas id="overviewWeeklyChart"></canvas></div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
-                        <div class="lg:col-span-1 space-y-6">
-                            <div class="card">
+                        <div class="lg:col-span-1 flex flex-col gap-6">
+                            <div class="card mb-0">
                                 <h2 class="section-title"><i class="fas fa-wrench text-orange-500 mr-1"></i>오늘 예정작업</h2>
                                 <div id="todayMaintenanceList" class="text-sm text-gray-500">불러오는 중...</div>
                             </div>
-                            <div class="card">
+                            <div class="card mb-0 flex-1">
                                 <h2 class="section-title">오늘 기상예보</h2>
                                 <div class="mb-4">
                                     <div class="flex items-center justify-between mb-2">
@@ -235,9 +210,45 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card">
+                        </div>
+                    </div>
+                    <!-- 2행: 2주 발전량 예측 / 주간 예정작업+발전소 위치 -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2">
+                            <div class="card mb-0 h-full">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h2 class="section-title mb-0">2주 발전량 예측</h2>
+                                    <button class="text-sm text-blue-600 hover:underline" onclick="document.querySelector('.om-tab-btn[data-om-tab=&quot;2week&quot;]').click()">상세 →</button>
+                                </div>
+                                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                                    <div>
+                                        <h5 class="text-md font-semibold mb-3">주간 총 발전량</h5>
+                                        <div class="space-y-4">
+                                            <div class="p-4 bg-blue-50 rounded-lg">
+                                                <p class="kpi-label">1주차 예상 발전량</p>
+                                                <p id="ovKpiWeek1" class="kpi-value text-3xl">— <span class="text-base">MWh</span></p>
+                                            </div>
+                                            <div class="p-4 bg-blue-50 rounded-lg">
+                                                <p class="kpi-label">2주차 예상 발전량</p>
+                                                <p id="ovKpiWeek2" class="kpi-value text-3xl">— <span class="text-base">MWh</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="lg:col-span-3">
+                                        <h5 class="text-md font-semibold mb-3">일일 총 발전량 (14일)</h5>
+                                        <div class="chart-container h-[220px]"><canvas id="overviewWeeklyChart"></canvas></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-1 flex flex-col gap-6">
+                            <div class="card mb-0">
+                                <h2 class="section-title"><i class="fas fa-calendar-week text-blue-500 mr-1"></i>주간 예정작업</h2>
+                                <div id="weeklyMaintenanceList" class="text-sm text-gray-500">불러오는 중...</div>
+                            </div>
+                            <div class="card mb-0 flex-1">
                                 <h2 class="section-title">발전소 위치</h2>
-                                <div id="turbineMap" class="w-full h-[300px] rounded-lg border"></div>
+                                <div id="turbineMap" class="w-full h-[250px] rounded-lg border"></div>
                             </div>
                         </div>
                     </div>

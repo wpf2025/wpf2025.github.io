@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 14일 일일 총 발전량 라인 차트 (오렌지색 area fill)
   - 오늘 기준 2주 예측 실데이터 로드 시도, 없으면 랜덤 fallback
   - "상세 →" 클릭 시 2주 예측 탭으로 이동
+- **Overview 주간 예정작업**: 내일~7일 이내 정비 계획을 날짜/요일, 터빈, 유형, 시간대로 표시
+- **Overview 2행 그리드 레이아웃**: 좌우 열 높이 정렬
+  - 1행: 오늘 풍속+발전량 (좌) / 오늘 예정작업 + 기상예보 (우)
+  - 2행: 2주 발전량 예측 (좌) / 주간 예정작업 + 발전소 위치 (우)
 
 ### Fixed
 - **Overview 차트 미표시 버그**: 가시성 체크를 offsetParent → classList.contains('hidden') 기반으로 수정

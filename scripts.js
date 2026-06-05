@@ -226,40 +226,52 @@
 
             // Overview Charts
             if (omOverviewVisible) {
-                // 오늘 풍속 예측 및 발전량 (듀얼 축 통합 차트)
+                // 오늘 풍속 예측 및 발전량 (풍속 area + 발전량 line)
                 const ovCanvas = document.getElementById('overviewCombinedChart');
                 if (ovCanvas) {
                 const ovLabels = Array.from({length:24},(_,h)=>`${h}시`);
                 const ovWind = Array.from({length:24},()=>+(3+Math.random()*12).toFixed(1));
                 const ovPower = generateRandomData(24, 2, 19.2);
-                const ovWindColors = ovWind.map(s => s<3?'rgba(135,206,235,0.8)':s<6?'rgba(59,130,246,0.8)':s<10?'rgba(16,185,129,0.8)':s<15?'rgba(245,158,11,0.8)':'rgba(239,68,68,0.8)');
-                charts.overviewCombinedChart = new Chart(ovCanvas.getContext('2d'), {
-                    type:'bar',
+
+                // 풍속 구간별 area 배경색 생성 (gradient 효과)
+                const windAreaCtx = ovCanvas.getContext('2d');
+                const windGradient = windAreaCtx.createLinearGradient(0, 0, 0, 320);
+                windGradient.addColorStop(0, 'rgba(59, 130, 246, 0.25)');
+                windGradient.addColorStop(1, 'rgba(59, 130, 246, 0.02)');
+
+                // 발전량 포인트 색상 (피크 강조)
+                const powerPointColors = ovPower.map(p => p >= 15 ? 'rgba(99, 102, 241, 1)' : 'rgba(99, 102, 241, 0.6)');
+
+                charts.overviewCombinedChart = new Chart(windAreaCtx, {
+                    type:'line',
                     data:{
                         labels:ovLabels,
                         datasets:[
                             {
-                                label:'발전량 (MW)',
-                                data:ovPower,
-                                backgroundColor:'rgba(99, 102, 241, 0.5)',
-                                borderColor:'rgba(99, 102, 241, 0.8)',
-                                borderWidth:1,
-                                yAxisID:'yPower',
+                                label:'풍속 (m/s)',
+                                data:ovWind,
+                                borderColor:'rgba(59, 130, 246, 0.7)',
+                                backgroundColor:windGradient,
+                                tension:0.3,
+                                fill:true,
+                                borderWidth:1.5,
+                                pointRadius:0,
+                                yAxisID:'yWind',
                                 order:2
                             },
                             {
-                                label:'풍속 (m/s)',
-                                type:'line',
-                                data:ovWind,
-                                borderColor:'rgb(59,130,246)',
-                                backgroundColor:'rgba(59,130,246,0.05)',
+                                label:'발전량 (MW)',
+                                data:ovPower,
+                                borderColor:'rgb(99, 102, 241)',
+                                backgroundColor:'rgba(99, 102, 241, 0.1)',
                                 tension:0.3,
                                 fill:false,
-                                borderWidth:2,
-                                pointBackgroundColor:ovWindColors,
-                                pointBorderColor:ovWindColors,
-                                pointRadius:4,
-                                yAxisID:'yWind',
+                                borderWidth:2.5,
+                                pointBackgroundColor:powerPointColors,
+                                pointBorderColor:powerPointColors,
+                                pointRadius:3,
+                                pointHoverRadius:6,
+                                yAxisID:'yPower',
                                 order:1
                             }
                         ]
@@ -282,11 +294,11 @@
                                 grid:{
                                     color:function(ctx){
                                         const v=ctx.tick.value;
-                                        if(v===3)return'rgba(135,206,235,0.5)';
-                                        if(v===6)return'rgba(59,130,246,0.5)';
-                                        if(v===10)return'rgba(16,185,129,0.5)';
-                                        if(v===15)return'rgba(239,68,68,0.5)';
-                                        return'rgba(0,0,0,0.05)';
+                                        if(v===3)return'rgba(135,206,235,0.4)';
+                                        if(v===6)return'rgba(59,130,246,0.4)';
+                                        if(v===10)return'rgba(16,185,129,0.4)';
+                                        if(v===15)return'rgba(239,68,68,0.4)';
+                                        return'rgba(0,0,0,0.04)';
                                     }
                                 }
                             },

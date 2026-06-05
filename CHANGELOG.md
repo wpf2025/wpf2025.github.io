@@ -9,9 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **O&M Overview 차트 통합**: 오늘 풍속 예측 차트와 발전량 차트를 듀얼 축 단일 차트로 합침
-  - 왼쪽 Y축: 풍속 (m/s) — 라인 차트, 구간별 포인트 색상 유지
-  - 오른쪽 Y축: 발전량 (MW) — 바 차트
-  - 동일 시간대 풍속-발전량 비교가 직관적으로 가능
+- **Overview 차트 스타일 변경**: 풍속 area fill(배경) + 발전량 line(전면) 조합으로 변경
+  - 풍속: 연한 파란색 그라데이션 area fill, 얇은 테두리, 포인트 없음 (환경 조건 = 배경)
+  - 발전량: 굵은 보라색 실선, 피크 시간대(≥15MW) 포인트 강조 (결과 = 주인공)
+  - 풍속(원인) → 발전량(결과) 인과관계가 시각적으로 직관적
+
+### Fixed
+- **Overview 차트 미표시 버그**: 가시성 체크를 offsetParent → classList.contains('hidden') 기반으로 수정
 
 ## [1.9.1] - 2026-06-04
 

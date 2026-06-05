@@ -170,6 +170,32 @@
                                 <h2 class="section-title">오늘 풍속 예측 및 발전량</h2>
                                 <div class="chart-container h-[320px]"><canvas id="overviewCombinedChart"></canvas></div>
                             </div>
+                            <!-- 주간 발전량 예측 (2주 예측 데이터 연동) -->
+                            <div class="card">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h2 class="section-title mb-0">2주 발전량 예측</h2>
+                                    <button class="text-sm text-blue-600 hover:underline" onclick="document.querySelector('.om-tab-btn[data-om-tab=&quot;2week&quot;]').click()">상세 →</button>
+                                </div>
+                                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                                    <div>
+                                        <h5 class="text-md font-semibold mb-3">주간 총 발전량</h5>
+                                        <div class="space-y-4">
+                                            <div class="p-4 bg-blue-50 rounded-lg">
+                                                <p class="kpi-label">1주차 예상 발전량</p>
+                                                <p id="ovKpiWeek1" class="kpi-value text-3xl">— <span class="text-base">MWh</span></p>
+                                            </div>
+                                            <div class="p-4 bg-blue-50 rounded-lg">
+                                                <p class="kpi-label">2주차 예상 발전량</p>
+                                                <p id="ovKpiWeek2" class="kpi-value text-3xl">— <span class="text-base">MWh</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="lg:col-span-3">
+                                        <h5 class="text-md font-semibold mb-3">일일 총 발전량 (14일)</h5>
+                                        <div class="chart-container h-[220px]"><canvas id="overviewWeeklyChart"></canvas></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="lg:col-span-1 space-y-6">
                             <div class="card">

@@ -313,6 +313,45 @@
                     }
                 });
                 }
+
+                // 2주 발전량 예측 (Overview용)
+                const ovWeeklyCanvas = document.getElementById('overviewWeeklyChart');
+                if (ovWeeklyCanvas) {
+                    const ovToday = new Date();
+                    const ovFmtD = d => `${d.getMonth()+1}/${d.getDate()}`;
+                    const ovDayLabels = Array.from({length:14},(_,i)=>{const dt=new Date(ovToday);dt.setDate(dt.getDate()+i);return ovFmtD(dt);});
+
+                    // 데이터 로드 시도 (2주 예측과 동일 소스)
+                    const ovPlant = document.getElementById('omPlantSelect')?.value || '서남해';
+                    const ovDateStr = formatDate(ovToday);
+                    loadTwoWeekData(ovPlant, ovDateStr).then(realData => {
+                        let ovDailyPower;
+                        if (realData && realData.plant && realData.plant.power) {
+                            ovDailyPower = realData.plant.power.daily_total;
+                        } else {
+                            ovDailyPower = generateRandomData(14, 720, 1440);
+                        }
+
+                        // KPI 업데이트
+                        const ovW1 = ovDailyPower.slice(0,7).reduce((a,b)=>a+b,0);
+                        const ovW2 = ovDailyPower.slice(7).reduce((a,b)=>a+b,0);
+                        const ovKw1 = document.getElementById('ovKpiWeek1');
+                        const ovKw2 = document.getElementById('ovKpiWeek2');
+                        if(ovKw1) ovKw1.innerHTML = `${ovW1.toFixed(0)} <span class="text-base">MWh</span>`;
+                        if(ovKw2) ovKw2.innerHTML = `${ovW2.toFixed(0)} <span class="text-base">MWh</span>`;
+
+                        // 일일 발전량 차트
+                        if (!charts.overviewWeeklyChart) {
+                            charts.overviewWeeklyChart = new Chart(ovWeeklyCanvas.getContext('2d'), {
+                                type:'line',
+                                data:{labels:ovDayLabels, datasets:[
+                                    {label:'일일 총 발전량 (MWh)',data:ovDailyPower,borderColor:'rgb(245,158,11)',backgroundColor:'rgba(245,158,11,0.08)',tension:0.1,fill:true,pointRadius:3,pointBackgroundColor:'rgb(245,158,11)'}
+                                ]},
+                                options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,title:{display:true,text:'MWh'}}}}
+                            });
+                        }
+                    });
+                }
             }
 
             // Short-term Forecast Charts (3 days)
